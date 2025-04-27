@@ -26,6 +26,7 @@ interface CaseDetailsFormProps {
     complexity?: string;
     court?: string;
     number?: string;
+    objective?: string;
   };
   onChange: (field: string, value: string) => void;
   onNext: () => void;
@@ -88,6 +89,27 @@ export function CaseDetailsForm({
                 value={formData.client}
                 onChange={(e) => onChange('client', e.target.value)}
                 placeholder="Nome do cliente"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="objective" className="flex items-center gap-2">
+                Objetivo do Caso
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Qual o objetivo principal a ser alcançado com este caso
+                  </TooltipContent>
+                </Tooltip>
+              </Label>
+              <Textarea
+                id="objective"
+                value={formData.objective || ''}
+                onChange={(e) => onChange('objective', e.target.value)}
+                placeholder="Descreva o objetivo principal deste caso (ex: Obter indenização, reconhecer direito, resolver disputa)"
+                rows={2}
               />
             </div>
           </div>

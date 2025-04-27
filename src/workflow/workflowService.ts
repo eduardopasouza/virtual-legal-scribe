@@ -77,8 +77,10 @@ export class WorkflowService {
     
     // Update context with current stage
     const context = this.getContext(caseId);
-    if (context) {
-      context.currentStageName = data.stage_name;
+    if (context && data.stage_name) {
+      // Ensure stage_name is a valid WorkflowStageName
+      const stageName = data.stage_name as WorkflowStageName;
+      context.currentStageName = stageName;
       this.contextCache.set(caseId, context);
     }
     
@@ -123,7 +125,9 @@ export class WorkflowService {
     }
     
     // Verify stage completeness before advancing
-    const verification = await this.verifyStageCompleteness(caseId, currentStage.stage_name);
+    // Ensure we're passing a valid WorkflowStageName
+    const stageName = currentStage.stage_name as WorkflowStageName;
+    const verification = await this.verifyStageCompleteness(caseId, stageName);
     if (!verification.complete) {
       // Create alert for missing items
       await this.createAlert(caseId, {
@@ -131,7 +135,7 @@ export class WorkflowService {
         description: `Não é possível avançar: ${verification.missingItems.join(', ')}`,
         severity: 'medium',
         type: 'quality',
-        relatedStage: currentStage.stage_name,
+        relatedStage: stageName,
         suggestedAction: 'Verifique os itens faltantes antes de avançar'
       });
       
@@ -150,7 +154,7 @@ export class WorkflowService {
         .eq('id', currentStage.id);
         
       // Log completion of workflow
-      this.logProgress(caseId, 'Workflow completed', { finalStage: currentStage.stage_name });
+      this.logProgress(caseId, 'Workflow completed', { finalStage: stageName });
         
       return { previousStage: currentStage, currentStage: null };
     }
@@ -193,9 +197,11 @@ export class WorkflowService {
     
     // Update context
     const context = this.getContext(caseId);
-    if (context) {
-      context.currentStageName = updatedNextStage.stage_name;
-      this.logToContext(caseId, `Advanced from ${currentStage.stage_name} to ${updatedNextStage.stage_name}`);
+    if (context && updatedNextStage.stage_name) {
+      // Ensure stage_name is a valid WorkflowStageName
+      const nextStageName = updatedNextStage.stage_name as WorkflowStageName;
+      context.currentStageName = nextStageName;
+      this.logToContext(caseId, `Advanced from ${stageName} to ${nextStageName}`);
     }
     
     return {

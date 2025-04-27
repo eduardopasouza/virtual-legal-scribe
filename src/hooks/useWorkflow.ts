@@ -184,7 +184,7 @@ export function useWorkflow(caseId?: string) {
       toast({
         title: 'Alerta criado',
         description: `Um novo alerta foi registrado: ${data.title}`,
-        variant: 'warning'
+        variant: 'destructive' // Changed from 'warning' to 'destructive' to fix the error
       });
       
       addNotification(

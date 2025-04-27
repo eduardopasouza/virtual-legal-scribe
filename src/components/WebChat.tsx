@@ -8,6 +8,7 @@ import { useWebChat } from '@/hooks/useWebChat';
 import { DropZone } from '@/components/document/DropZone';
 import { useDocuments } from '@/hooks/useDocuments';
 import { Button } from '@/components/ui/button';
+import { FilePreview } from '@/components/document/FilePreview';
 import { Paperclip, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -62,6 +63,18 @@ export function WebChat({
 
     try {
       await uploadDocument(selectedFile);
+      
+      // Add message about document upload
+      const uploadMessage = {
+        id: `upload-${Date.now()}`,
+        text: `Documento "${selectedFile.name}" enviado com sucesso.`,
+        sender: 'user',
+        timestamp: new Date(),
+        isSystemMessage: true
+      };
+      
+      // Set as system message to display differently
+      
       toast.success('Documento enviado com sucesso!', {
         description: `${selectedFile.name} foi anexado ao caso.`
       });
@@ -106,24 +119,11 @@ export function WebChat({
               </div>
               {selectedFile ? (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-2 border rounded-md">
-                    <div className="flex items-center gap-2">
-                      <Paperclip className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm font-medium truncate">{selectedFile.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(selectedFile.size / 1024).toFixed(1)} KB
-                        </p>
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => setSelectedFile(null)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <FilePreview 
+                    file={selectedFile}
+                    onRemove={() => setSelectedFile(null)}
+                    disabled={isUploading}
+                  />
                   <div className="flex justify-end gap-2">
                     <Button
                       variant="outline"

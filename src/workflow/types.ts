@@ -78,3 +78,19 @@ export interface WorkflowContext {
     details?: any;
   }>;
 }
+
+export interface DocumentRequirement {
+  type: string;
+  name: string;
+  isRequired: boolean;
+  description?: string;
+  relatedTo?: WorkflowStageName[];
+}
+
+export interface CaseObjective {
+  description: string;
+  createdAt: string;
+  updatedAt?: string;
+  achievementCriteria?: string[];
+  relatedDocuments?: string[];
+}

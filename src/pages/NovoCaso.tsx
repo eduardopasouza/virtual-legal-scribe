@@ -14,6 +14,7 @@ import { NavigationBreadcrumbs } from '@/components/NavigationBreadcrumbs';
 import { Steps, Step } from '@/components/ui/steps';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useWorkflow } from '@/hooks/useWorkflow';
 
 export default function NovoCaso() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function NovoCaso() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const { initializeWorkflow } = useWorkflow();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -32,6 +34,7 @@ export default function NovoCaso() {
     complexity: '',
     court: '',
     number: '',
+    objective: '' // Added objective field
   });
 
   const handleChange = (field: string, value: string) => {
@@ -54,6 +57,16 @@ export default function NovoCaso() {
         status: 'em_andamento',
         created_by: user?.id
       });
+
+      // Initialize workflow for the new case
+      if (newCase?.id) {
+        try {
+          await initializeWorkflow.mutateAsync(user?.id);
+        } catch (error) {
+          console.error("Erro ao inicializar fluxo de trabalho:", error);
+          // Continue even if workflow initialization fails
+        }
+      }
 
       toast.success("Caso criado com sucesso", {
         id: "creating-case",
