@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, CalendarIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
@@ -112,4 +113,3 @@ export function CalendarGrid({
     </div>
   );
 }
-
