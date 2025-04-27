@@ -12,6 +12,7 @@ import { OngoingActivities } from '@/components/dashboard/OngoingActivities';
 import { SystemGuide } from '@/components/dashboard/SystemGuide';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { Footer } from '@/components/Footer';
+import { toast, Toaster } from 'sonner';
 
 const Index = () => {
   const navigate = useNavigate();
