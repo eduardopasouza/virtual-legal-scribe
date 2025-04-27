@@ -45,10 +45,9 @@ export function useAgentInteraction(
       
       addMessage(errorMessage);
       
-      toast({
-        title: "Erro de comunicação",
-        description: error.message || "Não foi possível processar sua solicitação",
-        variant: "destructive"
+      // Fix: Updating the toast function call to match the sonner API
+      toast.error("Erro de comunicação", {
+        description: error.message || "Não foi possível processar sua solicitação"
       });
     } finally {
       setIsProcessing(false);
