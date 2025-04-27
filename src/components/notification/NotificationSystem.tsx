@@ -159,7 +159,6 @@ export function NotificationSystem() {
   );
 }
 
-// Export hook for external usage
 export function useNotifications() {
   const addNotification = (type: 'info' | 'alert' | 'success' | 'warning', title: string, message: string, category?: 'case' | 'deadline' | 'document' | 'system') => {
     if ((window as any).addNotification) {
