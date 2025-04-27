@@ -1,6 +1,6 @@
 
 import { getAgent } from '@/agents';
-import { AgentType, AgentResult, AgentSimulationHook } from './types';
+import { AgentType, AgentResult, AgentSimulationHook, AgentTask } from './types';
 import { useAgentProcessing } from './useAgentProcessing';
 import { useAgentNotifications } from './useAgentNotifications';
 
@@ -8,7 +8,7 @@ export function useAgentSimulation(caseId?: string): AgentSimulationHook {
   const { isProcessing, startProcessing, stopProcessing } = useAgentProcessing();
   const { notifyResult, notifyError } = useAgentNotifications();
 
-  const simulateAgent = async (agentType: AgentType): Promise<AgentResult> => {
+  const simulateAgent = async (agentType: AgentType, task?: Omit<AgentTask, 'caseId'>): Promise<AgentResult> => {
     startProcessing(agentType);
 
     try {
@@ -18,7 +18,11 @@ export function useAgentSimulation(caseId?: string): AgentSimulationHook {
         throw new Error(`Agente ${agentType} não encontrado`);
       }
 
-      const result = await agent.execute({ caseId });
+      const result = await agent.execute({ 
+        caseId,
+        ...task 
+      });
+      
       notifyResult(agent.name, result);
       return result;
     } catch (error: any) {
