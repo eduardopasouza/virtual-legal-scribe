@@ -1,4 +1,5 @@
 
+import { supabase } from "@/integrations/supabase/client";
 import { useDocumentUpload } from './useDocumentUpload';
 import { useDocumentManagement } from './useDocumentManagement';
 import { DocumentProcessingService } from '@/services/documentProcessing';
