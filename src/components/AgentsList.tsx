@@ -4,6 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User2, FileSearch, Lightbulb, Search, PenTool, CheckSquare, Eye } from "lucide-react";
 
+interface AgentsListProps {
+  onAgentSelect?: (agentId: string) => void;
+  expanded?: boolean;
+}
+
 interface Agent {
   id: number;
   name: string;
@@ -13,7 +18,7 @@ interface Agent {
   icon: React.ReactNode;
 }
 
-export function AgentsList() {
+export function AgentsList({ onAgentSelect, expanded }: AgentsListProps) {
   const agents: Agent[] = [
     {
       id: 1,
@@ -85,6 +90,11 @@ export function AgentsList() {
         return 'bg-gray-400';
     }
   };
+
+  // Determine the grid columns based on expanded prop
+  const gridColumns = expanded 
+    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
   
   return (
     <Card>
@@ -95,9 +105,13 @@ export function AgentsList() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className={`grid ${gridColumns} gap-4`}>
           {agents.map((agent) => (
-            <div key={agent.id} className="agent-card rounded-lg p-4 flex items-start gap-3">
+            <div 
+              key={agent.id} 
+              className="agent-card rounded-lg p-4 flex items-start gap-3 cursor-pointer hover:bg-secondary/50 transition-colors"
+              onClick={() => onAgentSelect && onAgentSelect(agent.id.toString())}
+            >
               <div className="mt-1">{agent.icon}</div>
               <div>
                 <div className="flex items-center gap-2">
