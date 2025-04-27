@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/components/notification/NotificationSystem';
-import { AgentType } from '@/types/agent';
 import { getAgent } from '@/agents';
+import { AgentType } from '@/types/agent';
 
 interface SimulationResult {
   success: boolean;

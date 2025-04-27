@@ -1,14 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, AlertCircle, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Loader2, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useAgentSimulation } from '@/hooks/useAgentSimulation';
-import { WorkflowStage } from '@/types/case';
-import { supabase } from '@/integrations/supabase/client';
+import { WorkflowStage } from '@/workflow';
+import { useWorkflow } from '@/hooks/useWorkflow';
 
 interface AgentCoordinatorProps {
   caseId: string;
@@ -16,94 +14,30 @@ interface AgentCoordinatorProps {
 }
 
 export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorProps) {
-  const { toast } = useToast();
-  const { simulateAgent, isProcessing } = useAgentSimulation(caseId);
-  const [currentStage, setCurrentStage] = useState<WorkflowStage | null>(null);
-  const [nextAgentToTrigger, setNextAgentToTrigger] = useState<string | null>(null);
+  const { simulateAgent, isProcessing: isAgentProcessing } = useAgentSimulation(caseId);
+  const { 
+    currentStage,
+    stages,
+    isLoading: isWorkflowLoading,
+    advanceWorkflow,
+    getRecommendedAgent
+  } = useWorkflow(caseId);
 
-  // Get current workflow status
-  const { data: stages, isLoading: isLoadingStages } = useQuery({
-    queryKey: ["workflow_stages", caseId],
-    queryFn: async () => {
-      if (!caseId) return [];
-      const { data, error } = await supabase
-        .from("workflow_stages")
-        .select("*")
-        .eq("case_id", caseId)
-        .order("stage_number", { ascending: true });
-        
-      if (error) throw error;
-      return data as WorkflowStage[];
-    },
-    enabled: !!caseId,
-    initialData: workflowStages
-  });
-
-  // Determine current stage and next agent to trigger
-  useEffect(() => {
-    if (stages && stages.length > 0) {
-      // Find current in-progress stage
-      const inProgressStage = stages.find(stage => stage.status === 'in_progress');
-      setCurrentStage(inProgressStage || null);
-      
-      // Determine which agent should be triggered based on the current stage
-      if (inProgressStage) {
-        const stageName = inProgressStage.stage_name;
-        switch (stageName) {
-          case 'reception':
-            setNextAgentToTrigger('analista-requisitos');
-            break;
-          case 'planning':
-            setNextAgentToTrigger('estrategista');
-            break;
-          case 'analysis':
-            setNextAgentToTrigger('revisor-legal');
-            break;
-          case 'research':
-            setNextAgentToTrigger('pesquisador');
-            break;
-          case 'drafting':
-            setNextAgentToTrigger('assistente-redacao');
-            break;
-          case 'review':
-            setNextAgentToTrigger('revisor-legal');
-            break;
-          default:
-            setNextAgentToTrigger(null);
-        }
-      }
-    }
-  }, [stages]);
+  // Determine next agent to trigger based on current stage
+  const nextAgentToTrigger = currentStage ? getRecommendedAgent() : null;
 
   const triggerCurrentAgent = async () => {
     if (!nextAgentToTrigger || !currentStage) return;
     
     try {
       // Trigger the appropriate agent
-      const result = await simulateAgent(nextAgentToTrigger as any);
-      
-      if (result.success) {
-        toast({
-          title: "Agente executado com sucesso",
-          description: `${result.message}`,
-        });
-      } else {
-        toast({
-          title: "Falha ao executar agente",
-          description: result.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Erro ao executar agente",
-        description: error.message,
-        variant: "destructive",
-      });
+      await simulateAgent(nextAgentToTrigger);
+    } catch (error) {
+      console.error("Error executing agent:", error);
     }
   };
 
-  if (isLoadingStages) {
+  if (isWorkflowLoading) {
     return (
       <Card className="border-dashed border-muted">
         <CardContent className="pt-6 text-center">
@@ -164,11 +98,11 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
                   <Button 
                     size="sm" 
                     variant="outline"
-                    disabled={isProcessing[nextAgentToTrigger as any]}
+                    disabled={isAgentProcessing[nextAgentToTrigger]}
                     onClick={triggerCurrentAgent}
                     className="flex items-center gap-1"
                   >
-                    {isProcessing[nextAgentToTrigger as any] ? (
+                    {isAgentProcessing[nextAgentToTrigger] ? (
                       <>
                         <Loader2 className="h-3 w-3 animate-spin" />
                         Executando...
@@ -193,6 +127,23 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
       
       <CardFooter className="flex justify-between items-center text-xs text-muted-foreground border-t pt-4">
         <span>Última atualização: {new Date().toLocaleTimeString()}</span>
+        {currentStage && (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => advanceWorkflow.mutate()}
+            disabled={advanceWorkflow.isPending}
+          >
+            {advanceWorkflow.isPending ? (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                Avançando...
+              </>
+            ) : (
+              'Avançar Etapa'
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

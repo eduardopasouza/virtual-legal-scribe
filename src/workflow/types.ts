@@ -1,0 +1,52 @@
+
+import { AgentType } from '@/types/agent';
+
+export type WorkflowStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
+
+export interface WorkflowStage {
+  id: string;
+  case_id: string;
+  stage_number: number;
+  stage_name: WorkflowStageName;
+  status: WorkflowStatus;
+  started_at?: string;
+  completed_at?: string;
+  created_at?: string;
+  created_by?: string;
+}
+
+export type WorkflowStageName = 
+  | 'reception'
+  | 'planning'
+  | 'analysis'
+  | 'research'
+  | 'drafting'
+  | 'review'
+  | 'delivery';
+
+export interface WorkflowStageConfig {
+  name: WorkflowStageName;
+  displayName: string;
+  description: string;
+  primaryAgent: AgentType;
+  supportAgents: AgentType[];
+  requiredDocuments?: string[];
+  nextStage?: WorkflowStageName;
+  previousStage?: WorkflowStageName;
+}
+
+export interface WorkflowTransition {
+  from: WorkflowStageName;
+  to: WorkflowStageName;
+  condition?: (caseData: any) => boolean;
+  autoAdvance?: boolean;
+}
+
+export interface WorkflowDefinition {
+  id: string;
+  name: string;
+  description: string;
+  stages: WorkflowStageConfig[];
+  transitions: WorkflowTransition[];
+  initialStage: WorkflowStageName;
+}

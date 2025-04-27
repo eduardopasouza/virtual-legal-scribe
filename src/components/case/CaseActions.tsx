@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Loader2, Info, CheckCircle, AlertCircle } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Info, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/api/agentsApi';
-import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAgentSimulation } from '@/hooks/useAgentSimulation';
+import { useWorkflow } from '@/hooks/useWorkflow';
 
 interface CaseActionsProps {
   caseId: string;
@@ -16,103 +16,79 @@ interface CaseActionsProps {
 export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { simulateAgent, isProcessing } = useAgentSimulation(caseId);
+  const { 
+    currentStage, 
+    advanceWorkflow, 
+    getRecommendedAgent,
+    initializeWorkflow,
+    isProcessing: isWorkflowProcessing,
+    stages
+  } = useWorkflow(caseId);
 
-  const chamarAnalistaMutation = useMutation({
-    mutationFn: async () => {
-      if (!caseData || !caseId) throw new Error("Caso não encontrado");
+  const hasWorkflow = stages && stages.length > 0;
+
+  const handleInitAnalysis = async () => {
+    try {
+      // First initialize workflow if needed
+      if (!hasWorkflow) {
+        await initializeWorkflow.mutateAsync(caseData?.created_by);
+      }
       
-      // 1. Chamar analista de requisitos
-      const res = await chamarAnalistaRequisitos(documents, caseData);
+      // Then trigger the analyst agent
+      await simulateAgent('analista-requisitos');
       
-      // 2. Criar análise no banco
-      await criarAnalise({ 
-        caso_id: caseId, 
-        agente: 'analista-requisitos', 
-        conteudo: JSON.stringify(res) 
-      });
-      
-      // 3. Atualizar etapas do workflow
-      await atualizarEtapa(caseId, 'reception', 'completed');
-      await atualizarEtapa(caseId, 'planning', 'in_progress');
-      
-      return res;
-    },
-    onSuccess: () => {
-      // Exibir toast de sucesso
       toast({
         title: "Triagem concluída",
         description: "O analista de requisitos processou os documentos com sucesso.",
       });
       
-      // Atualizar dados na tela
+      // Invalidate queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
       queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
-    },
-    onError: (error: any) => {
+    } catch (error: any) {
       toast({
         title: "Erro ao processar triagem",
         description: `Falha na triagem: ${error.message}. Tente novamente.`,
         variant: "destructive",
       });
     }
-  });
+  };
 
-  const avancarEtapaMutation = useMutation({
-    mutationFn: async () => {
-      if (!caseId) throw new Error("Caso não encontrado");
+  const handleAdvanceWorkflow = async () => {
+    try {
+      // Get recommended agent for current stage before advancing
+      const recommendedAgent = getRecommendedAgent();
       
-      // Identificar etapa atual e próxima
-      const { data: etapas, error } = await supabase
-        .from("workflow_stages")
-        .select("*")
-        .eq("case_id", caseId)
-        .order("stage_number", { ascending: true });
-        
-      if (error) throw error;
+      // Execute agent first if possible
+      if (recommendedAgent && !isProcessing[recommendedAgent]) {
+        await simulateAgent(recommendedAgent);
+      }
       
-      // Encontrar etapa em andamento
-      const etapaAtual = etapas.find(etapa => etapa.status === 'in_progress');
-      if (!etapaAtual) throw new Error("Nenhuma etapa em andamento encontrada");
+      // Then advance workflow
+      await advanceWorkflow.mutateAsync();
       
-      // Encontrar próxima etapa
-      const proximaEtapa = etapas.find(etapa => etapa.stage_number === etapaAtual.stage_number + 1);
-      if (!proximaEtapa) throw new Error("Esta é a última etapa");
-      
-      // Atualizar etapas
-      await atualizarEtapa(caseId, etapaAtual.stage_name, 'completed');
-      await atualizarEtapa(caseId, proximaEtapa.stage_name, 'in_progress');
-      
-      return { anterior: etapaAtual, proxima: proximaEtapa };
-    },
-    onSuccess: (result) => {
-      toast({
-        title: "Etapa avançada com sucesso",
-        description: `Concluído: ${result.anterior.stage_name}. Iniciado: ${result.proxima.stage_name}.`,
-      });
-      
-      // Atualizar dados na tela
+      // Invalidate queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
-      queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
-    },
-    onError: (error: any) => {
+    } catch (error: any) {
       toast({
         title: "Erro ao avançar etapa",
         description: error.message,
         variant: "destructive",
       });
     }
-  });
+  };
 
   return (
     <div className="flex gap-2 flex-wrap">
       <Button 
-        onClick={() => chamarAnalistaMutation.mutate()}
-        disabled={chamarAnalistaMutation.isPending}
+        onClick={handleInitAnalysis}
+        disabled={isProcessing['analista-requisitos'] || isWorkflowProcessing}
         variant="outline"
       >
-        {chamarAnalistaMutation.isPending ? (
+        {isProcessing['analista-requisitos'] || isWorkflowProcessing ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Processando...
@@ -127,10 +103,10 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       
       <Button 
         className="bg-evji-primary hover:bg-evji-primary/90"
-        onClick={() => avancarEtapaMutation.mutate()}
-        disabled={avancarEtapaMutation.isPending}
+        onClick={handleAdvanceWorkflow}
+        disabled={advanceWorkflow.isPending || !currentStage}
       >
-        {avancarEtapaMutation.isPending ? (
+        {advanceWorkflow.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Atualizando...

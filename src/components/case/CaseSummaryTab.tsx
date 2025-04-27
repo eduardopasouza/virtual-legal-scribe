@@ -4,11 +4,12 @@ import { AgentInteraction } from '@/components/AgentInteraction';
 import { CaseTimeline } from './CaseTimeline';
 import { CaseAlerts } from './CaseAlerts';
 import { DocumentUploader } from '@/components/DocumentUploader';
-import { Alert, WorkflowStage } from '@/types/case';
+import { Alert } from '@/types/case';
 import { useQueryClient } from '@tanstack/react-query';
 import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { WorkflowStage } from '@/workflow';
 
 interface CaseSummaryTabProps {
   caseId: string;
