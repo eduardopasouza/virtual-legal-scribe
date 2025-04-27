@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { queryClient } from "./lib/react-query/queryClient";
 import { MobileProvider } from "./hooks/use-mobile";
+import { AuthProvider } from "./lib/auth/AuthContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -35,24 +36,26 @@ function App() {
         <MobileProvider>
           <Toaster richColors closeButton position="top-right" />
           <Router>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/cases" element={<Cases />} />
-              <Route path="/case/:caseId" element={<CaseDetails />} />
-              <Route path="/novo-caso" element={<NovoCaso />} />
-              <Route path="/webchat" element={<WebChatPage />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/clients" element={<ClientsList />} />
-              <Route path="/stats" element={<Statistics />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/activity-history" element={<ActivityHistory />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/documents" element={<DocumentsPage />} />
-              <Route path="/integrations" element={<IntegrationsPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/cases" element={<Cases />} />
+                <Route path="/case/:caseId" element={<CaseDetails />} />
+                <Route path="/novo-caso" element={<NovoCaso />} />
+                <Route path="/webchat" element={<WebChatPage />} />
+                <Route path="/calendar" element={<Calendar />} />
+                <Route path="/clients" element={<ClientsList />} />
+                <Route path="/stats" element={<Statistics />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/activity-history" element={<ActivityHistory />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
+                <Route path="/integrations" element={<IntegrationsPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
           </Router>
         </MobileProvider>
       </QueryClientProvider>
