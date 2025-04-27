@@ -8,12 +8,16 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
 import { ptBR } from 'date-fns/locale';
 import { CalendarGrid } from '@/components/calendar/CalendarGrid';
 import { UpcomingEvents } from '@/components/calendar/UpcomingEvents';
-import { EventForm } from '@/components/calendar/EventForm';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FeedbackForm } from '@/components/client-communication/FeedbackForm';
 import { useFeedbackRecording } from '@/hooks/workflow/communication/useFeedbackRecording';
 import { toast } from "sonner";
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Event } from '@/types/calendar';
 
 const Calendar = () => {
@@ -54,6 +58,15 @@ const Calendar = () => {
     }
   ]);
   
+  const [newEvent, setNewEvent] = useState<Omit<Event, 'id'>>({
+    title: '',
+    date: selectedDate,
+    startTime: '09:00',
+    endTime: '10:00',
+    type: 'reuniao',
+    description: ''
+  });
+  
   const [feedbackType, setFeedbackType] = useState<'question' | 'correction' | 'approval'>('question');
   const [feedbackContent, setFeedbackContent] = useState('');
   const { mutateAsync: recordFeedback, isPending: isRecordingFeedback } = useFeedbackRecording();
@@ -79,18 +92,21 @@ const Calendar = () => {
   
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
+    setNewEvent(prev => ({ ...prev, date }));
   };
   
-  const handleAddEvent = (event: Omit<Event, 'id'>) => {
-    const newEvent = {
-      ...event,
+  const handleAddEvent = () => {
+    if (!newEvent.title) return;
+    
+    const eventToAdd = {
+      ...newEvent,
       id: Math.random().toString(36).substring(2, 9)
     };
     
-    setEvents(prevEvents => [...prevEvents, newEvent]);
+    setEvents(prevEvents => [...prevEvents, eventToAdd]);
     setShowEventForm(false);
     toast.success("Evento adicionado com sucesso", {
-      description: `${event.title} em ${format(event.date, 'dd/MM/yyyy')}`
+      description: `${newEvent.title} em ${format(newEvent.date, 'dd/MM/yyyy')}`
     });
   };
   
@@ -144,7 +160,7 @@ const Calendar = () => {
       await recordFeedback({
         type: feedbackType,
         content: feedbackContent,
-        priority: 'normal' // Adding missing priority field
+        priority: 'medium' // Changed from 'normal' to 'medium'
       });
       
       setFeedbackContent('');
@@ -158,6 +174,11 @@ const Calendar = () => {
       });
     }
   };
+  
+  // Update newEvent.date when selectedDate changes
+  useEffect(() => {
+    setNewEvent(prev => ({ ...prev, date: selectedDate }));
+  }, [selectedDate]);
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -241,11 +262,105 @@ const Calendar = () => {
             </Tabs>
             
             {showEventForm && (
-              <EventForm 
-                onSubmit={handleAddEvent}
-                onCancel={() => setShowEventForm(false)}
-                initialDate={selectedDate}
-              />
+              <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Novo Evento</DialogTitle>
+                    <DialogDescription>
+                      Adicione um novo evento ao calendário
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Título</Label>
+                      <Input 
+                        id="title" 
+                        value={newEvent.title} 
+                        onChange={e => setNewEvent({...newEvent, title: e.target.value})}
+                        placeholder="Título do evento"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Data</Label>
+                        <div className="flex items-center h-10 rounded-md border border-input px-3 py-2">
+                          {newEvent.date.toLocaleDateString()}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="type">Tipo</Label>
+                        <Select 
+                          value={newEvent.type}
+                          onValueChange={value => setNewEvent({...newEvent, type: value as Event['type']})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="audiencia">Audiência</SelectItem>
+                            <SelectItem value="prazo">Prazo</SelectItem>
+                            <SelectItem value="reuniao">Reunião</SelectItem>
+                            <SelectItem value="outro">Outro</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="startTime">Hora de Início</Label>
+                        <Input 
+                          id="startTime" 
+                          type="time" 
+                          value={newEvent.startTime}
+                          onChange={e => setNewEvent({...newEvent, startTime: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="endTime">Hora de Término</Label>
+                        <Input 
+                          id="endTime" 
+                          type="time" 
+                          value={newEvent.endTime}
+                          onChange={e => setNewEvent({...newEvent, endTime: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="relatedCase">Processo Relacionado (opcional)</Label>
+                      <Input 
+                        id="relatedCase" 
+                        value={newEvent.relatedCase || ''}
+                        onChange={e => setNewEvent({...newEvent, relatedCase: e.target.value})}
+                        placeholder="Número do processo ou nome do caso"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Descrição</Label>
+                      <Textarea 
+                        id="description" 
+                        value={newEvent.description}
+                        onChange={e => setNewEvent({...newEvent, description: e.target.value})}
+                        placeholder="Detalhes adicionais sobre o evento"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                  
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancelar</Button>
+                    </DialogClose>
+                    <Button onClick={handleAddEvent} disabled={!newEvent.title}>Salvar</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
         </main>
