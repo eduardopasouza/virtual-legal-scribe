@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Loader2, Info, CheckCircle } from 'lucide-react';
+import { Loader2, Info, CheckCircle, BarChart2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
@@ -22,7 +22,9 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     getRecommendedAgent,
     initializeWorkflow,
     isProcessing: isWorkflowProcessing,
-    stages
+    stages,
+    isStrategicStage,
+    executeCurrentStrategicPhase
   } = useWorkflow(caseId);
 
   const hasWorkflow = stages && stages.length > 0;
@@ -60,8 +62,12 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       // Get recommended agent for current stage before advancing
       const recommendedAgent = getRecommendedAgent();
       
-      // Execute agent first if possible
-      if (recommendedAgent && !isProcessing[recommendedAgent]) {
+      // If we're in a strategic stage, execute the strategic phase
+      if (isStrategicStage()) {
+        await executeCurrentStrategicPhase();
+      }
+      // Otherwise execute recommended agent if possible
+      else if (recommendedAgent && !isProcessing[recommendedAgent]) {
         await simulateAgent(recommendedAgent);
       }
       
@@ -71,6 +77,7 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       // Invalidate queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
     } catch (error: any) {
       toast({
         title: "Erro ao avançar etapa",
@@ -79,6 +86,33 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       });
     }
   };
+
+  const handleExecuteStrategy = async () => {
+    try {
+      if (!isStrategicStage()) {
+        toast({
+          title: "Ação indisponível",
+          description: "Esta ação só está disponível em etapas estratégicas.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await executeCurrentStrategicPhase();
+      
+      // Invalidate queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ["case", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao executar estratégia",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const isCurrentStageStrategic = isStrategicStage();
 
   return (
     <div className="flex gap-2 flex-wrap">
@@ -99,6 +133,27 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
           </>
         )}
       </Button>
+      
+      {isCurrentStageStrategic && (
+        <Button 
+          onClick={handleExecuteStrategy}
+          disabled={isWorkflowProcessing}
+          variant="outline"
+          className="bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200"
+        >
+          {isWorkflowProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processando...
+            </>
+          ) : (
+            <>
+              <BarChart2 className="mr-2 h-4 w-4" />
+              Executar Estratégia
+            </>
+          )}
+        </Button>
+      )}
       
       <Button 
         className="bg-evji-primary hover:bg-evji-primary/90"

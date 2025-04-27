@@ -1,3 +1,4 @@
+
 import { AgentType } from '@/types/agent';
 
 export type WorkflowStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
@@ -19,7 +20,9 @@ export type WorkflowStageName =
   | 'planning'
   | 'analysis'
   | 'research'
+  | 'strategy-review'   // Nova etapa de revisão estratégica intermediária
   | 'drafting'
+  | 'strategic-validation'  // Nova etapa de validação estratégica final
   | 'review'
   | 'delivery';
 

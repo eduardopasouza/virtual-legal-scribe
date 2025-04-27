@@ -5,3 +5,4 @@ export * from './useWorkflowAdvancement';
 export * from './useWorkflowAlerts';
 export * from './useWorkflowStatus';
 export * from './useWorkflow';
+export * from './useWorkflowStrategy';

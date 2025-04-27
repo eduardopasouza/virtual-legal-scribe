@@ -10,6 +10,7 @@ import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { mapWorkflowStatus } from '@/types/workflow';
+import { CaseStrategy } from './CaseStrategy';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -30,6 +31,24 @@ export function CaseSummaryTab({
     status: mapWorkflowStatus(stage.status)
   }));
 
+  // Mock strategy data for demonstration (in a real app, this would come from the API)
+  const mockStrategyData = {
+    mainThesis: 'Abordagem baseada na violação contratual com foco em restituição econômica',
+    objectives: [
+      'Demonstrar descumprimento dos termos contratuais',
+      'Estabelecer nexo causal entre violação e danos'
+    ],
+    risks: [
+      'Documentação insuficiente para comprovar danos',
+      'Possível alegação de força maior pela contraparte'
+    ],
+    recommendations: [
+      'Priorizar argumentos de boa-fé contratual',
+      'Focar em jurisprudência favorável identificada na pesquisa'
+    ],
+    currentPhase: 'intermediate' as 'initial' | 'intermediate' | 'final'
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 space-y-6">
@@ -43,6 +62,8 @@ export function CaseSummaryTab({
             </CardContent>
           </Card>
         )}
+        
+        <CaseStrategy strategyData={mockStrategyData} />
         
         <Card>
           <CardHeader className="pb-3">
