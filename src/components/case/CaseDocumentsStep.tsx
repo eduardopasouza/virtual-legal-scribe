@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { DocumentUploader } from "@/components/DocumentUploader";
+import { ArrowLeft } from 'lucide-react';
+import { DocumentUploader } from '@/components/DocumentUploader';
 
 interface CaseDocumentsStepProps {
   onBack: () => void;
@@ -18,24 +19,24 @@ export function CaseDocumentsStep({
 }: CaseDocumentsStepProps) {
   return (
     <div className="space-y-6">
-      <DocumentUploader 
-        optional={true}
-        onSuccess={onFileSelect}
+      <DocumentUploader
+        optional
+        onSuccess={(files) => onFileSelect(files)}
       />
-      
-      <div className="flex gap-4 pt-4">
-        <Button 
-          variant="outline" 
+
+      <div className="flex justify-between">
+        <Button
+          variant="outline"
           onClick={onBack}
           disabled={isSubmitting}
-          className="flex-1"
         >
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
+
         <Button 
           onClick={onFinish}
           disabled={isSubmitting}
-          className="flex-1"
         >
           {isSubmitting ? 'Criando caso...' : 'Finalizar'}
         </Button>
