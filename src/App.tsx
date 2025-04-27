@@ -70,7 +70,7 @@ function App() {
                   />
                   <Route 
                     path="/casos/:caseId" 
-                    element={<Navigate to={location => `/cases/${location.pathname.split('/').pop()}`} />} 
+                    element={<Navigate to={`/cases/${window.location.pathname.split('/').pop()}`} />} 
                   />
                   <Route 
                     path="/cases/list" 
