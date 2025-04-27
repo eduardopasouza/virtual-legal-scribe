@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Calendar, CircleDot, AlertTriangle, CheckCircle2 } from "lucide-react";
@@ -26,20 +25,21 @@ interface FactsAnalysis {
 interface CaseFactsProps {
   analysisData?: FactsAnalysis | null;
   isLoading?: boolean;
+  iconColor?: string;
 }
 
-export function CaseFacts({ analysisData, isLoading }: CaseFactsProps) {
+export function CaseFacts({ analysisData, isLoading, iconColor = 'text-gray-600' }: CaseFactsProps) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className={`h-5 w-5 ${iconColor}`} />
             Análise de Fatos
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-gray-600" />
         </CardContent>
       </Card>
     );

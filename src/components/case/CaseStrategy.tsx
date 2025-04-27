@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb, Target, AlertTriangle, CheckCircle2, BarChart2 } from "lucide-react";
@@ -8,15 +7,16 @@ import { StrategyData } from './types';
 interface CaseStrategyProps {
   strategyData?: StrategyData;
   isLoading?: boolean;
+  iconColor?: string;
 }
 
-export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyProps) {
+export function CaseStrategy({ strategyData, isLoading = false, iconColor = 'text-gray-600' }: CaseStrategyProps) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-yellow-600" />
+            <Lightbulb className={`h-5 w-5 ${iconColor}`} />
             Estratégia e Recomendações
           </CardTitle>
         </CardHeader>
@@ -33,7 +33,7 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-yellow-600" />
+            <Lightbulb className={`h-5 w-5 ${iconColor}`} />
             Estratégia e Recomendações
           </CardTitle>
         </CardHeader>
@@ -52,7 +52,7 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-yellow-600" />
+          <Lightbulb className={`h-5 w-5 ${iconColor}`} />
           Estratégia e Recomendações
           <Badge className={
             currentPhase === 'final' ? 'bg-green-100 text-green-800' :
@@ -66,7 +66,6 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Tese Principal */}
         <div>
           <h3 className="font-medium flex items-center gap-2 mb-2">
             <BarChart2 className="h-4 w-4 text-green-600" />
@@ -75,7 +74,6 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
           <p className="text-sm bg-green-50 p-3 rounded-md">{mainThesis}</p>
         </div>
         
-        {/* Objetivos */}
         <div>
           <h3 className="font-medium flex items-center gap-2 mb-2">
             <Target className="h-4 w-4 text-blue-600" />
@@ -91,7 +89,6 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
           </ul>
         </div>
         
-        {/* Riscos */}
         <div>
           <h3 className="font-medium flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -107,7 +104,6 @@ export function CaseStrategy({ strategyData, isLoading = false }: CaseStrategyPr
           </ul>
         </div>
         
-        {/* Recomendações */}
         <div>
           <h3 className="font-medium flex items-center gap-2 mb-2">
             <CheckCircle2 className="h-4 w-4 text-purple-600" />

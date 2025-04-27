@@ -29,12 +29,14 @@ export default function CaseDetails() {
 
   return (
     <DashboardLayout>
-      <CaseDetailsContent 
-        caseId={caseId}
-        caseData={caseData}
-        activities={activities}
-        isLoadingActivities={isLoadingActivities}
-      />
+      <div className="overflow-y-auto">
+        <CaseDetailsContent 
+          caseId={caseId}
+          caseData={caseData}
+          activities={activities}
+          isLoadingActivities={isLoadingActivities}
+        />
+      </div>
     </DashboardLayout>
   );
 }

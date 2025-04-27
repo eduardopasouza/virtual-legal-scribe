@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpCircle, AlertTriangle, Info } from "lucide-react";
@@ -8,15 +7,16 @@ import { LegalIssue } from './types';
 interface CaseLegalIssuesProps {
   issuesData?: LegalIssue[];
   isLoading?: boolean;
+  iconColor?: string;
 }
 
-export function CaseLegalIssues({ issuesData, isLoading = false }: CaseLegalIssuesProps) {
+export function CaseLegalIssues({ issuesData, isLoading = false, iconColor = 'text-gray-600' }: CaseLegalIssuesProps) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-amber-600" />
+            <HelpCircle className={`h-5 w-5 ${iconColor}`} />
             Problemas Jurídicos Identificados
           </CardTitle>
         </CardHeader>
@@ -33,7 +33,7 @@ export function CaseLegalIssues({ issuesData, isLoading = false }: CaseLegalIssu
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-amber-600" />
+            <HelpCircle className={`h-5 w-5 ${iconColor}`} />
             Problemas Jurídicos Identificados
           </CardTitle>
         </CardHeader>
@@ -50,7 +50,7 @@ export function CaseLegalIssues({ issuesData, isLoading = false }: CaseLegalIssu
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <HelpCircle className="h-5 w-5 text-amber-600" />
+          <HelpCircle className={`h-5 w-5 ${iconColor}`} />
           Problemas Jurídicos Identificados
         </CardTitle>
       </CardHeader>

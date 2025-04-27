@@ -134,7 +134,7 @@ export function CaseSummaryTab({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-visible">
       <div className="lg:col-span-8 space-y-6">
         {objective && (
           <Card>
@@ -151,21 +151,29 @@ export function CaseSummaryTab({
         <CaseFacts 
           analysisData={factsAnalysis} 
           isLoading={isLoadingFacts} 
+          iconColor="text-gray-600"
         />
         
-        {/* Rules Section */}
-        <CaseRules rulesData={mockRulesData} />
+        <CaseRules 
+          rulesData={mockRulesData}
+          iconColor="text-gray-600"
+        />
         
-        {/* Legal Issues Section */}
-        <CaseLegalIssues issuesData={mockLegalIssuesData} />
+        <CaseLegalIssues 
+          issuesData={mockLegalIssuesData}
+          iconColor="text-gray-600"
+        />
         
-        {/* Arguments Analysis Section */}
-        <CaseArgumentsAnalysis analysisData={mockArgumentsAnalysisData} />
+        <CaseArgumentsAnalysis 
+          analysisData={mockArgumentsAnalysisData}
+          iconColor="text-gray-600"
+        />
         
-        {/* Strategy Section */}
-        <CaseStrategy strategyData={mockStrategyData} />
+        <CaseStrategy 
+          strategyData={mockStrategyData}
+          iconColor="text-gray-600"
+        />
         
-        {/* Workflow Process Timeline */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Fluxo do Processo</CardTitle>

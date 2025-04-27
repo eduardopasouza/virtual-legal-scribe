@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollText, BookOpen, Scale } from "lucide-react";
@@ -8,15 +7,16 @@ import { RulesData } from './types';
 interface CaseRulesProps {
   rulesData?: RulesData;
   isLoading?: boolean;
+  iconColor?: string;
 }
 
-export function CaseRules({ rulesData, isLoading = false }: CaseRulesProps) {
+export function CaseRules({ rulesData, isLoading = false, iconColor = 'text-gray-600' }: CaseRulesProps) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Scale className="h-5 w-5 text-purple-600" />
+            <Scale className={`h-5 w-5 ${iconColor}`} />
             Regras Jurídicas Aplicáveis
           </CardTitle>
         </CardHeader>
@@ -33,7 +33,7 @@ export function CaseRules({ rulesData, isLoading = false }: CaseRulesProps) {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <Scale className="h-5 w-5 text-purple-600" />
+            <Scale className={`h-5 w-5 ${iconColor}`} />
             Regras Jurídicas Aplicáveis
           </CardTitle>
         </CardHeader>
@@ -50,7 +50,7 @@ export function CaseRules({ rulesData, isLoading = false }: CaseRulesProps) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <Scale className="h-5 w-5 text-purple-600" />
+          <Scale className={`h-5 w-5 ${iconColor}`} />
           Regras Jurídicas Aplicáveis
         </CardTitle>
       </CardHeader>
