@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useNotifications } from '@/components/NotificationSystem';
+import { useNotifications } from '@/components/notification/NotificationSystem';
 
 export type AgentType = 
   | 'analista-requisitos' 

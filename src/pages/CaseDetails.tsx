@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -20,7 +19,7 @@ import { CaseAlerts } from '@/components/case/CaseAlerts';
 import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/api/agentsApi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AgentInteraction } from '@/components/AgentInteraction';
-import { NotificationSystem } from '@/components/NotificationSystem';
+import { NotificationSystem } from '@/components/notification/NotificationSystem';
 
 const CaseDetails = () => {
   const { caseId } = useParams<{ caseId: string }>();
