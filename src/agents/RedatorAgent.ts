@@ -4,6 +4,7 @@ import { BaseAgent } from './base/BaseAgent';
 import { DocumentGenerator } from './redator/documentGenerator';
 import { documentStructures } from './redator/documentStructures';
 import { GeneratedDocument } from './redator/types';
+import { supabase } from '@/integrations/supabase/client';
 
 export class RedatorAgent extends BaseAgent {
   constructor() {
