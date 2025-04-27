@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UploadProgress } from './UploadProgress';
 import { UploadForm } from './UploadForm';
 import { toast } from 'sonner';
-import { useFileUpload } from "@/hooks/useFileUpload";
+import { useFileProcessing } from "@/hooks/useFileProcessing";
 
 interface UploadContainerProps {
   caseId?: string;
@@ -32,7 +31,7 @@ export function UploadContainer({
     handleFileSelection,
     processDocument,
     clearSelectedFile
-  } = useFileUpload({ onSuccess, caseId });
+  } = useFileProcessing({ onSuccess, caseId });
 
   const handleSubmit = async () => {
     if (!selectedFile) {

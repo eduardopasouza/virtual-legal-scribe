@@ -1,10 +1,11 @@
 
+// Renamed to be consistent with collection naming
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Activity } from '@/types/case';
 import { useGlobalState } from './useGlobalState';
 
-export function useActivities(caseId?: string) {
+export function useActivitiesList(caseId?: string) {
   const { queryClient, queryKeys, handleError } = useGlobalState();
 
   const { data: activities, isLoading } = useQuery({

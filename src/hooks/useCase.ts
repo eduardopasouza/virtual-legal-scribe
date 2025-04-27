@@ -1,10 +1,11 @@
 
+// Renamed from useCase to useSingleCase for clarity and consistency
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
 import { useGlobalState } from './useGlobalState';
 
-export function useCase(id?: string) {
+export function useSingleCase(id?: string) {
   const { queryClient, queryKeys, handleError } = useGlobalState();
 
   const { data: caseData, isLoading } = useQuery({
@@ -15,7 +16,7 @@ export function useCase(id?: string) {
         .from('cases')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data as Case;
