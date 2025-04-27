@@ -1,4 +1,3 @@
-
 export interface AgentResult {
   success: boolean;
   message: string;
@@ -32,3 +31,12 @@ export type AgentType =
   | 'revisor-legal'
   | 'revisor-texto'
   | 'comunicador';
+
+export type AgentSimulationState = {
+  [key in AgentType]?: boolean;
+};
+
+export interface AgentSimulationHook {
+  simulateAgent: (agentType: AgentType) => Promise<AgentResult>;
+  isProcessing: AgentSimulationState;
+}

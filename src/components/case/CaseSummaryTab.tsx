@@ -9,7 +9,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { WorkflowStage } from '@/workflow';
+import { WorkflowStage } from '@/types/workflow';
+import { mapWorkflowStatus } from '@/types/workflow';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -19,6 +20,10 @@ interface CaseSummaryTabProps {
 
 export function CaseSummaryTab({ caseId, workflowStages, alerts }: CaseSummaryTabProps) {
   const queryClient = useQueryClient();
+  const mappedWorkflowStages = workflowStages.map(stage => ({
+    ...stage,
+    status: mapWorkflowStatus(stage.status)
+  }));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
