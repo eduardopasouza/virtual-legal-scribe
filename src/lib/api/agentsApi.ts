@@ -1,3 +1,4 @@
+
 import { DocumentMetadata } from "@/hooks/useDocuments";
 import { Case } from "@/types/case";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,7 +27,7 @@ export async function chamarAnalistaRequisitos(
   };
 }
 
-// Existing functions kept the same
+// Cria uma análise no banco de dados
 export async function criarAnalise({ 
   caso_id, 
   agente, 
@@ -50,6 +51,7 @@ export async function criarAnalise({
   if (error) throw error;
 }
 
+// Atualiza a etapa do fluxo de trabalho
 export async function atualizarEtapa(
   caso_id: string,
   nome_etapa: string,
