@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Event } from '@/types/calendar';
 
 interface EventFormDialogProps {
@@ -112,6 +113,81 @@ export function EventFormDialog({
               placeholder="Detalhes adicionais sobre o evento"
               rows={3}
             />
+          </div>
+
+          {/* Notification Settings */}
+          <div className="space-y-2 border-t pt-4 mt-4">
+            <Label>Configurações de Notificação</Label>
+            
+            <div className="flex items-center space-x-2 mt-2">
+              <Checkbox 
+                id="enableNotification"
+                checked={!!newEvent.notificationSettings}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setNewEvent({
+                      ...newEvent, 
+                      notificationSettings: { 
+                        notifyBefore: 1, 
+                        notified: false, 
+                        priority: 'medium' 
+                      }
+                    });
+                  } else {
+                    const { notificationSettings, ...rest } = newEvent;
+                    setNewEvent(rest);
+                  }
+                }}
+              />
+              <Label htmlFor="enableNotification" className="cursor-pointer">
+                Ativar Notificações
+              </Label>
+            </div>
+            
+            {newEvent.notificationSettings && (
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div className="space-y-2">
+                  <Label htmlFor="notifyBefore">Notificar com Antecedência (dias)</Label>
+                  <Input 
+                    id="notifyBefore"
+                    type="number"
+                    min={0}
+                    max={30}
+                    value={newEvent.notificationSettings.notifyBefore}
+                    onChange={e => setNewEvent({
+                      ...newEvent, 
+                      notificationSettings: {
+                        ...newEvent.notificationSettings!,
+                        notifyBefore: parseInt(e.target.value) || 0
+                      }
+                    })}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Prioridade</Label>
+                  <Select 
+                    value={newEvent.notificationSettings.priority}
+                    onValueChange={value => setNewEvent({
+                      ...newEvent,
+                      notificationSettings: {
+                        ...newEvent.notificationSettings!,
+                        priority: value as 'high' | 'medium' | 'low'
+                      }
+                    })}
+                  >
+                    <SelectTrigger id="priority">
+                      <SelectValue placeholder="Selecione a prioridade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">Alta</SelectItem>
+                      <SelectItem value="medium">Média</SelectItem>
+                      <SelectItem value="low">Baixa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         

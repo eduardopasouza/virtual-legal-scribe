@@ -15,7 +15,12 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
     startTime: '09:00',
     endTime: '10:00',
     type: 'reuniao',
-    description: ''
+    description: '',
+    notificationSettings: {
+      notifyBefore: 1,
+      notified: false,
+      priority: 'medium'
+    }
   });
 
   // Get all days in current month

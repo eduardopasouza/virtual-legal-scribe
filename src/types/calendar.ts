@@ -15,4 +15,9 @@ export interface Event {
     status: 'pending' | 'reviewed' | 'addressed';
   }[];
   activitySummary?: string;
+  notificationSettings?: {
+    notifyBefore: number; // days before to send notification
+    notified: boolean;    // if notification was already sent
+    priority: 'high' | 'medium' | 'low';
+  };
 }

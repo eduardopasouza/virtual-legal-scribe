@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
@@ -11,6 +12,7 @@ import { useFeedbackRecording } from '@/hooks/workflow/communication/useFeedback
 import { useCalendarEvents } from '@/hooks/useCalendarEvents';
 import { EventFormDialog } from '@/components/calendar/EventFormDialog';
 import { toast } from "sonner";
+import { CalendarNotifications } from '@/components/calendar/CalendarNotifications';
 
 const Calendar = () => {
   const { 
@@ -94,6 +96,9 @@ const Calendar = () => {
       <div className="flex-1 flex">
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
+          {/* Add the CalendarNotifications component */}
+          <CalendarNotifications events={events} />
+          
           <div className="space-y-6 max-w-6xl mx-auto">
             <div className="flex justify-between items-center">
               <h2 className="font-serif text-3xl font-bold text-evji-primary">Calendário</h2>
