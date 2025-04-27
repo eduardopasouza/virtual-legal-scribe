@@ -13,14 +13,23 @@ interface CaseCardProps {
 }
 
 export function CaseCard({ caseItem }: CaseCardProps) {
+  // Map the status to display format
+  const statusDisplay = {
+    em_andamento: 'Em andamento',
+    concluido: 'Concluído',
+    arquivado: 'Arquivado'
+  }[caseItem.status];
+
+  const statusVariant = caseItem.status === 'em_andamento' ? 'default' : 'secondary';
+
   return (
-    <Link to={`/casos/${caseItem.id}`}>
+    <Link to={`/casos/${caseItem.id}`} className="block transition-all duration-200">
       <Card className="hover-scale card-hover h-full">
         <CardHeader className="space-y-2">
           <div className="flex justify-between items-start gap-2">
-            <h3 className="font-medium leading-tight line-clamp-2">{caseItem.title}</h3>
-            <Badge variant={caseItem.status === 'Em andamento' ? 'default' : 'secondary'}>
-              {caseItem.status}
+            <h3 className="text-lg font-medium leading-tight line-clamp-2 font-serif">{caseItem.title}</h3>
+            <Badge variant={statusVariant} className="whitespace-nowrap">
+              {statusDisplay}
             </Badge>
           </div>
         </CardHeader>
