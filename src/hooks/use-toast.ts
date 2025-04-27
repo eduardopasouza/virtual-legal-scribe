@@ -1,4 +1,3 @@
-
 import * as React from "react"
 
 import type {
@@ -136,13 +135,15 @@ function dispatch(action: Action) {
   })
 }
 
-type Toast = Omit<ToasterToast, "id">
+type ToastVariant = "default" | "destructive" | "alert"
 
-// Adicionando a integração com o sistema de notificações
+type Toast = Omit<ToasterToast, "id"> & {
+  variant?: ToastVariant
+}
+
 function toast({ ...props }: Toast) {
   const id = genId()
 
-  // Sincronizar com sistema de notificações para alertas importantes
   if (props.variant === "destructive" || props.variant === "alert") {
     const notificationSystem = (window as any).addNotification;
     if (typeof notificationSystem === "function") {
