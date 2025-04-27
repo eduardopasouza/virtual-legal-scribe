@@ -11,6 +11,8 @@ import { DocumentUploader } from '@/components/DocumentUploader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, Folder } from "lucide-react";
+import { ChatbotAssistant } from '@/components/ChatbotAssistant';
+import { SidebarNav } from '@/components/SidebarNav';
 
 const Index = () => {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
@@ -106,6 +108,7 @@ const Index = () => {
           {currentView === 'dashboard' ? renderDashboardView() : renderNewCaseView()}
         </main>
       </div>
+      <ChatbotAssistant />
     </div>
   );
 };

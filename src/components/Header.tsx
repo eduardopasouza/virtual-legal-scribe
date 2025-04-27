@@ -1,36 +1,51 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Bell, Settings, User } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import { useMobileContext } from '@/hooks/use-mobile';
+import { NotificationSystem } from './NotificationSystem';
 
 export function Header() {
+  const { toggleSidebar } = useMobileContext();
+
   return (
-    <header className="border-b border-border bg-card py-4 px-6">
-      <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur-sm">
+      <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <h1 className="font-serif text-2xl font-bold text-evji-primary">EVJI</h1>
-          <Separator orientation="vertical" className="h-6" />
-          <span className="text-sm text-muted-foreground">Escritório Virtual Jurídico Inteligente</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={toggleSidebar}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+          <Link to="/" className="flex items-center">
+            <span className="font-serif font-bold text-2xl text-evji-primary">
+              EVJI
+            </span>
+            <span className="ml-2 text-sm text-muted-foreground hidden md:inline-block">
+              Escritório Virtual Jurídico Inteligente
+            </span>
+          </Link>
         </div>
-        
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+        <div className="flex items-center gap-2">
+          <NotificationSystem />
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="rounded-full border border-border"
+          >
+            <Link to="/settings">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted uppercase text-sm">
+                U
+              </span>
+              <span className="sr-only">Perfil</span>
+            </Link>
           </Button>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
-          <Separator orientation="vertical" className="h-6" />
-          <div className="flex items-center gap-3">
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium">Dr. Usuário</p>
-              <p className="text-xs text-muted-foreground">Advogado</p>
-            </div>
-            <Button variant="outline" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
-          </div>
         </div>
       </div>
     </header>

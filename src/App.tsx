@@ -7,6 +7,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StrictMode } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import CaseDetails from "./pages/CaseDetails";
+import ClientsList from "./pages/ClientsList";
+import AdvancedStats from "./pages/AdvancedStats";
+import Calendar from "./pages/Calendar";
+import Settings from "./pages/Settings";
+import SearchPage from "./pages/SearchPage";
+import ActivityHistory from "./pages/ActivityHistory";
 
 // Criando o queryClient dentro do componente para garantir
 // que ele seja criado apenas durante a renderização
@@ -28,7 +36,15 @@ function App() {
           <Sonner />
           <BrowserRouter>
             <Routes>
+              <Route path="/login" element={<Login />} />
               <Route path="/" element={<Index />} />
+              <Route path="/cases/:caseId" element={<CaseDetails />} />
+              <Route path="/clients" element={<ClientsList />} />
+              <Route path="/stats" element={<AdvancedStats />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/history" element={<ActivityHistory />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
