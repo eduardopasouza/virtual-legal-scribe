@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { UploadCloud } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 interface DropZoneProps {
   onFileSelect: (file: File) => void;
@@ -11,6 +12,7 @@ interface DropZoneProps {
 
 export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -42,6 +44,10 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
     }
   };
 
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div 
       className={`border-2 border-dashed rounded-md p-6 text-center mt-4 transition-all duration-200
@@ -55,24 +61,28 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
         <div className="flex justify-center">
           <UploadCloud className="h-12 w-12 text-muted-foreground" />
         </div>
-        <div>
+        <div className="space-y-2">
           <p className="text-sm font-medium">
-            Arraste e solte seu PDF aqui, ou
+            Arraste e solte seu PDF aqui
           </p>
-          <Label 
-            htmlFor="file-upload" 
-            className="relative cursor-pointer text-sm text-primary hover:text-primary/80"
+          <Button 
+            onClick={handleButtonClick}
+            variant="outline"
+            disabled={disabled}
+            className="mx-auto"
           >
-            <span>selecione um arquivo</span>
-            <Input
-              id="file-upload"
-              type="file"
-              accept=".pdf"
-              className="sr-only"
-              onChange={handleFileChange}
-              disabled={disabled}
-            />
-          </Label>
+            <UploadCloud className="mr-2 h-4 w-4" />
+            Selecionar arquivo
+          </Button>
+          <Input
+            ref={fileInputRef}
+            id="file-upload"
+            type="file"
+            accept=".pdf"
+            className="sr-only"
+            onChange={handleFileChange}
+            disabled={disabled}
+          />
         </div>
         <p className="text-xs text-muted-foreground">
           Apenas arquivos PDF são aceitos.
