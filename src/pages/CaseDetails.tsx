@@ -29,7 +29,7 @@ export default function CaseDetails() {
 
   return (
     <DashboardLayout>
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto h-full">
         <CaseDetailsContent 
           caseId={caseId}
           caseData={caseData}

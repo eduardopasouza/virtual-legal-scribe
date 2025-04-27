@@ -5,16 +5,17 @@ import { MessageSquare, Shield, ShieldAlert, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ArgumentsAnalysisData } from './types';
 
-export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: {
+export function CaseArgumentsAnalysis({ analysisData, isLoading = false, iconColor = 'text-blue-600' }: {
   analysisData?: ArgumentsAnalysisData;
   isLoading?: boolean;
+  iconColor?: string;
 }) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
+            <MessageSquare className={`h-5 w-5 ${iconColor}`} />
             Análise de Argumentos
           </CardTitle>
         </CardHeader>
@@ -31,7 +32,7 @@ export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
+            <MessageSquare className={`h-5 w-5 ${iconColor}`} />
             Análise de Argumentos
           </CardTitle>
         </CardHeader>
@@ -61,7 +62,7 @@ export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-blue-600" />
+          <MessageSquare className={`h-5 w-5 ${iconColor}`} />
           Análise de Argumentos
         </CardTitle>
       </CardHeader>
