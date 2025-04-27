@@ -44,14 +44,25 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <span className="text-xs font-medium">{agent.name}</span>
             {message.action && (
               <Badge 
-                variant={message.action === 'info' ? 'secondary' : 
-                       message.action === 'request' ? 'outline' : 'default'} 
+                variant={
+                  message.action === 'info' ? 'secondary' : 
+                  message.action === 'request' ? 'outline' : 
+                  message.action === 'confirmation' ? 'default' :
+                  message.action === 'warning' ? 'destructive' :
+                  message.action === 'analysis' ? 'outline' :
+                  message.action === 'legal_advice' ? 'default' :
+                  message.action === 'document_analysis' ? 'secondary' :
+                  'default'
+                } 
                 className="text-[10px] px-1 py-0 h-4"
               >
                 {message.action === 'info' ? 'Informação' : 
                  message.action === 'request' ? 'Solicitação' : 
                  message.action === 'legal_advice' ? 'Orientação Jurídica' :
                  message.action === 'document_analysis' ? 'Análise Documental' :
+                 message.action === 'confirmation' ? 'Confirmação' :
+                 message.action === 'warning' ? 'Alerta' :
+                 message.action === 'analysis' ? 'Análise' :
                  message.action}
               </Badge>
             )}

@@ -1,30 +1,21 @@
-import { AgentType } from '@/hooks/agent/types';
 
 export interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'agent';
+  sender: 'user' | 'agent' | 'system';
   timestamp: Date;
-  agentType?: AgentType;
-  action?: 'info' | 'request' | 'confirmation' | 'warning' | 'analysis';
-  metadata?: any;
-}
-
-export interface AgentOption {
-  value: AgentType;
-  label: string;
-  description: string;
-}
-
-export interface AgentChatProps {
-  caseId?: string;
-  initialAgent?: AgentType;
-  onAgentResponse?: (response: any) => void;
-  onWorkflowAction?: (action: string, data: any) => void;
-}
-
-export interface AgentAction {
-  type: string;
-  payload: any;
-  timestamp: Date;
+  agentType?: string;
+  isSystemMessage?: boolean;
+  action?: 'info' | 'request' | 'legal_advice' | 'document_analysis' | 
+          'confirmation' | 'warning' | 'analysis';
+  metadata?: {
+    documentAnalysis?: {
+      keyPoints?: string[];
+      summary?: string;
+      riskLevel?: 'low' | 'medium' | 'high';
+    };
+    legalReferences?: string[];
+    nextSteps?: string[];
+    [key: string]: any;
+  }
 }

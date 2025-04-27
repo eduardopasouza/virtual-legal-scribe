@@ -64,6 +64,28 @@ export function WebChat({
     }
   }, [messages]);
 
+  // Case-specific welcome message
+  useEffect(() => {
+    if (caseId && messages.length <= 1) {
+      const timer = setTimeout(() => {
+        // Additional welcome message for case-specific context
+        const caseContextMessage = {
+          id: `case-context-${Date.now()}`,
+          text: `Estou analisando os detalhes do caso. Posso ajudar com análises documentais, redação de peças ou tirar dúvidas específicas sobre este processo. O que você gostaria de fazer?`,
+          sender: 'agent',
+          timestamp: new Date(),
+          agentType: 'estrategista',
+          action: 'info'
+        };
+        
+        // Add to messages
+        // Your message handling logic here
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [caseId, messages]);
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSendMessage();
@@ -104,7 +126,8 @@ export function WebChat({
           text: `Recebi o documento "${selectedFile.name}". Gostaria que eu fizesse uma análise preliminar deste documento ou o associe a um caso específico?`,
           sender: 'agent',
           timestamp: new Date(),
-          agentType: activeAgent
+          agentType: activeAgent,
+          action: 'document_analysis'
         };
         
         // Add to messages
@@ -129,6 +152,15 @@ export function WebChat({
     setShowTips(false);
     localStorage.setItem('evji_tips_seen', 'true');
   };
+
+  // Legal-specific suggestions for the chat
+  const legalSuggestions = [
+    "Analisar documentos do caso",
+    "Elaborar minuta de petição",
+    "Pesquisar jurisprudência aplicável",
+    "Verificar prazos processuais",
+    "Gerar relatório para cliente"
+  ];
 
   return (
     <Card className={`flex flex-col ${fullScreen ? 'h-[calc(100vh-8rem)]' : 'h-[600px]'}`}>
@@ -215,7 +247,23 @@ export function WebChat({
       </CardContent>
       
       <CardFooter className="border-t pt-3 pb-3">
-        <div className="w-full">
+        <div className="w-full space-y-3">
+          {!showUploader && (
+            <div className="flex flex-wrap gap-2 px-1">
+              {legalSuggestions.map((suggestion, index) => (
+                <Button 
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs py-1 h-auto"
+                  onClick={() => setNewMessage(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          )}
+          
           <ChatInput
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
