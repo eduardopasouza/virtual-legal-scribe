@@ -97,6 +97,7 @@ export function Sidebar() {
             isPinned && "bg-evji-accent/20"
           )}
           onClick={togglePin}
+          aria-label={isPinned ? 'Desafixar menu' : 'Fixar menu'}
         >
           {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
           <span className="sr-only">

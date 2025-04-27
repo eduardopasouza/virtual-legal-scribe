@@ -58,7 +58,7 @@ export function MobileProvider({ children }: { children: React.ReactNode }) {
 export function useMobileContext() {
   const context = React.useContext(MobileContext)
   if (context === undefined) {
-    throw new Error("useMobileContext must be used within a MobileProvider")
+    throw new Error("useMobileContext deve ser usado dentro de um MobileProvider")
   }
   return context
 }
