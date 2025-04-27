@@ -37,13 +37,13 @@ export function useDocuments(caseId?: string) {
       if (storageError) throw storageError;
 
       // Store document metadata in database
-      const documentMetadata: DocumentMetadata = {
+      const documentMetadata = {
         id: uuidv4(),
         name: file.name,
         size: file.size,
         type: file.type,
         case_id: caseId,
-        uploaded_at: new Date(),
+        uploaded_at: new Date().toISOString(),
         file_path: filePath
       };
 
