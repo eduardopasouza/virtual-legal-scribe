@@ -17,8 +17,6 @@ import Settings from "./pages/Settings";
 import SearchPage from "./pages/SearchPage";
 import ActivityHistory from "./pages/ActivityHistory";
 
-// Criando o queryClient dentro do componente para garantir
-// que ele seja criado apenas durante a renderização
 function App() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -32,11 +30,11 @@ function App() {
   return (
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <MobileProvider>
-            <BrowserRouter>
+        <BrowserRouter>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <MobileProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Index />} />
@@ -51,9 +49,9 @@ function App() {
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </MobileProvider>
-        </TooltipProvider>
+            </MobileProvider>
+          </TooltipProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </StrictMode>
   );

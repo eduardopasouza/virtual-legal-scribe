@@ -13,7 +13,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { 
+  Tooltip,
+  TooltipContent, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 
 export function SidebarNav() {
   const location = useLocation();
@@ -35,29 +39,23 @@ export function SidebarNav() {
         const isActive = location.pathname === item.path || 
                          (item.path === '/cases/list' && location.pathname.startsWith('/cases/'));
         return (
-          <Tooltip key={item.path}>
-            <TooltipTrigger asChild>
-              <Button
-                asChild
-                variant={isActive ? 'secondary' : 'ghost'}
-                size="sm"
-                className={cn(
-                  'w-full flex justify-start gap-3 h-10 px-3',
-                  isActive 
-                    ? 'bg-sidebar-accent text-sidebar-accent-foreground' 
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
-                )}
-              >
-                <NavLink to={item.path} className="flex items-center w-full">
-                  <item.icon className="h-5 w-5" />
-                  <span className="ml-2">{item.label}</span>
-                </NavLink>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              {item.label}
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            key={item.path}
+            asChild
+            variant={isActive ? 'secondary' : 'ghost'}
+            size="sm"
+            className={cn(
+              'w-full flex justify-start gap-3 h-10 px-3',
+              isActive 
+                ? 'bg-sidebar-accent text-sidebar-accent-foreground' 
+                : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+            )}
+          >
+            <NavLink to={item.path} className="flex items-center w-full">
+              <item.icon className="h-5 w-5" />
+              <span className="ml-2">{item.label}</span>
+            </NavLink>
+          </Button>
         );
       })}
     </div>
