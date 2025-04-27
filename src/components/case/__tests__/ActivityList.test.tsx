@@ -12,7 +12,7 @@ describe('ActivityList', () => {
       case_id: '123',
       action: 'Created document',
       agent: 'System',
-      status: 'concluido',
+      status: 'concluido' as const,
       created_at: '2024-04-27T10:00:00Z'
     },
     {
@@ -20,7 +20,7 @@ describe('ActivityList', () => {
       case_id: '123',
       action: 'Updated case',
       agent: 'User',
-      status: 'concluido',
+      status: 'concluido' as const,
       created_at: '2024-04-27T11:00:00Z'
     }
   ];

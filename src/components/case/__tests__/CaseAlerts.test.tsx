@@ -11,8 +11,8 @@ describe('CaseAlerts', () => {
       title: 'High Priority Alert',
       description: 'This needs immediate attention',
       type: 'warning',
-      priority: 'high',
-      status: 'pending',
+      priority: 'high' as const,
+      status: 'pending' as const,
     },
     {
       id: '2',
@@ -20,8 +20,8 @@ describe('CaseAlerts', () => {
       title: 'Medium Priority Alert',
       description: 'This needs attention soon',
       type: 'info',
-      priority: 'medium',
-      status: 'pending',
+      priority: 'medium' as const,
+      status: 'pending' as const,
     }
   ];
 
