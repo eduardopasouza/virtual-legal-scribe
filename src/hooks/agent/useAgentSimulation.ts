@@ -1,6 +1,7 @@
 
 import { getAgent } from '@/agents';
-import { AgentType, AgentResult, AgentSimulationHook, AgentTask } from './types';
+import { AgentType, AgentResult, AgentSimulationHook } from './types';
+import { AgentTask } from '@/types/agent';
 import { useAgentProcessing } from './useAgentProcessing';
 import { useAgentNotifications } from './useAgentNotifications';
 
