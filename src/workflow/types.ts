@@ -1,4 +1,3 @@
-
 import { AgentType } from '@/types/agent';
 
 export type WorkflowStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
