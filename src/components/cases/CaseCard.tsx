@@ -23,7 +23,7 @@ export function CaseCard({ caseItem }: CaseCardProps) {
   const statusVariant = caseItem.status === 'em_andamento' ? 'default' : 'secondary';
 
   return (
-    <Link to={`/casos/${caseItem.id}`} className="block transition-all duration-200">
+    <Link to={`/cases/${caseItem.id}`} className="block transition-all duration-200">
       <Card className="hover-scale card-hover h-full">
         <CardHeader className="space-y-2">
           <div className="flex justify-between items-start gap-2">
