@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,7 @@ import SearchPage from "./pages/SearchPage";
 import ActivityHistory from "./pages/ActivityHistory";
 import NovoCaso from "./pages/NovoCaso";
 import WebChatPage from "./pages/WebChatPage";
+import Statistics from "./pages/Statistics";
 import { FloatingChatButton } from "./components/FloatingChatButton";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -144,6 +144,7 @@ function App() {
                       </ProtectedRoute>
                     } 
                   />
+                  <Route path="/statistics" element={<Statistics />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <FloatingChatButton />
