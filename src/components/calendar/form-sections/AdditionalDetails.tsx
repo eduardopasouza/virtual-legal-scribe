@@ -2,7 +2,9 @@
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { FormSection } from "./FormSection"
 import type { Event } from '@/types/calendar'
+import { useFormValidation } from '@/hooks/useFormValidation'
 
 interface AdditionalDetailsProps {
   event: Omit<Event, 'id'>;
@@ -10,10 +12,20 @@ interface AdditionalDetailsProps {
 }
 
 export function AdditionalDetails({ event, onEventChange }: AdditionalDetailsProps) {
+  const { validateField } = useFormValidation();
+  
+  const validateDescription = (value: string) => {
+    const error = validateField('description', value, { required: true, minLength: 10 });
+    if (error) {
+      return error;
+    }
+    onEventChange({...event, description: value});
+  };
+
   return (
-    <div className="space-y-4">
+    <FormSection>
       <div className="space-y-2">
-        <Label htmlFor="relatedCase">Processo Relacionado (opcional)</Label>
+        <Label htmlFor="relatedCase" className="font-medium">Processo Relacionado (opcional)</Label>
         <Input 
           id="relatedCase" 
           value={event.relatedCase || ''}
@@ -23,15 +35,16 @@ export function AdditionalDetails({ event, onEventChange }: AdditionalDetailsPro
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="description">Descrição</Label>
+        <Label htmlFor="description" className="font-medium">Descrição</Label>
         <Textarea 
           id="description" 
           value={event.description}
-          onChange={e => onEventChange({...event, description: e.target.value})}
+          onChange={e => validateDescription(e.target.value)}
           placeholder="Detalhes adicionais sobre o evento"
           rows={3}
+          required
         />
       </div>
-    </div>
+    </FormSection>
   );
 }
