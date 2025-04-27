@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Loader2, Info, CheckCircle } from 'lucide-react';
+import { Loader2, Info, CheckCircle, AlertCircle } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/api/agentsApi';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CaseActionsProps {
   caseId: string;
@@ -57,6 +57,61 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     }
   });
 
+  const avancarEtapaMutation = useMutation({
+    mutationFn: async () => {
+      if (!caseId) throw new Error("Caso não encontrado");
+      
+      // Identificar etapa atual e próxima
+      const { data: etapas, error } = await queryClient.fetchQuery({ 
+        queryKey: ["workflow_stages", caseId],
+        queryFn: async () => {
+          const response = await supabase
+            .from("workflow_stages")
+            .select("*")
+            .eq("case_id", caseId)
+            .order("stage_number", { ascending: true });
+            
+          if (response.error) throw response.error;
+          return response.data;
+        }
+      });
+      
+      if (error) throw error;
+      
+      // Encontrar etapa em andamento
+      const etapaAtual = etapas.find(etapa => etapa.status === 'in_progress');
+      if (!etapaAtual) throw new Error("Nenhuma etapa em andamento encontrada");
+      
+      // Encontrar próxima etapa
+      const proximaEtapa = etapas.find(etapa => etapa.stage_number === etapaAtual.stage_number + 1);
+      if (!proximaEtapa) throw new Error("Esta é a última etapa");
+      
+      // Atualizar etapas
+      await atualizarEtapa(caseId, etapaAtual.stage_name, 'completed');
+      await atualizarEtapa(caseId, proximaEtapa.stage_name, 'in_progress');
+      
+      return { anterior: etapaAtual, proxima: proximaEtapa };
+    },
+    onSuccess: (result) => {
+      toast({
+        title: "Etapa avançada com sucesso",
+        description: `Concluído: ${result.anterior.stage_name}. Iniciado: ${result.proxima.stage_name}.`,
+      });
+      
+      // Atualizar dados na tela
+      queryClient.invalidateQueries({ queryKey: ["case", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao avançar etapa",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
   return (
     <div className="flex gap-2 flex-wrap">
       <Button 
@@ -77,9 +132,22 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
         )}
       </Button>
       
-      <Button className="bg-evji-primary hover:bg-evji-primary/90">
-        <CheckCircle className="mr-2 h-4 w-4" />
-        Avançar Etapa
+      <Button 
+        className="bg-evji-primary hover:bg-evji-primary/90"
+        onClick={() => avancarEtapaMutation.mutate()}
+        disabled={avancarEtapaMutation.isPending}
+      >
+        {avancarEtapaMutation.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Atualizando...
+          </>
+        ) : (
+          <>
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Avançar Etapa
+          </>
+        )}
       </Button>
     </div>
   );
