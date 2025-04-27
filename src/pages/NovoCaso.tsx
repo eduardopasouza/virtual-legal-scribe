@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -14,7 +13,7 @@ import { NavigationBreadcrumbs } from '@/components/NavigationBreadcrumbs';
 import { Steps, Step } from '@/components/ui/steps';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useWorkflow } from '@/hooks/useWorkflow';
+import { useWorkflow } from '@/hooks/workflow';
 
 export default function NovoCaso() {
   const navigate = useNavigate();
@@ -34,7 +33,7 @@ export default function NovoCaso() {
     complexity: '',
     court: '',
     number: '',
-    objective: '' // Added objective field
+    objective: ''
   });
 
   const handleChange = (field: string, value: string) => {
@@ -49,7 +48,6 @@ export default function NovoCaso() {
     setIsSubmitting(true);
     
     try {
-      // Show toast at the beginning to give immediate feedback
       toast.loading("Criando caso...", { id: "creating-case" });
 
       const newCase = await createCase.mutateAsync({
@@ -58,13 +56,11 @@ export default function NovoCaso() {
         created_by: user?.id
       });
 
-      // Initialize workflow for the new case
       if (newCase?.id) {
         try {
           await initializeWorkflow.mutateAsync(user?.id);
         } catch (error) {
           console.error("Erro ao inicializar fluxo de trabalho:", error);
-          // Continue even if workflow initialization fails
         }
       }
 
@@ -89,7 +85,6 @@ export default function NovoCaso() {
     navigate('/cases');
   };
 
-  // Add page transition effect
   useEffect(() => {
     const mainContent = document.querySelector('main');
     if (mainContent) {
@@ -128,7 +123,6 @@ export default function NovoCaso() {
               </div>
             </div>
 
-            {/* Progress indicator */}
             <Card className="border-muted/40 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="py-5">
                 <Steps currentStep={step} className="mb-0">

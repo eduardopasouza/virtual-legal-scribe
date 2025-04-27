@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Loader2, Info, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
-import { useWorkflow } from '@/hooks/useWorkflow';
+import { useWorkflow } from '@/hooks/workflow';
 
 interface CaseActionsProps {
   caseId: string;

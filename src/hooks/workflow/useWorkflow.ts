@@ -48,4 +48,3 @@ export function useWorkflow(caseId?: string) {
     workflowMetadata: workflowService.getWorkflowMetadata()
   };
 }
-

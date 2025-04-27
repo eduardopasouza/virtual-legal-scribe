@@ -1,3 +1,4 @@
+
 import { AgentType } from '@/types/agent';
 
 export type WorkflowStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
@@ -93,3 +94,6 @@ export interface CaseObjective {
   achievementCriteria?: string[];
   relatedDocuments?: string[];
 }
+
+// Re-export AgentType to make it available from workflow
+export { AgentType };

@@ -1,6 +1,7 @@
 
-import { WorkflowDefinition, WorkflowStageName, AgentType } from '../types';
+import { WorkflowDefinition, WorkflowStageName } from '../types';
 import { defaultWorkflow } from '../configurations/defaultWorkflow';
+import { AgentType } from '@/types/agent';
 
 export class WorkflowConfigService {
   private workflow: WorkflowDefinition;

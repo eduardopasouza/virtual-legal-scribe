@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, AlertTriangle, ArrowRight, Info, FileX } from 'lucide-react';
-import { AgentType } from '@/hooks/agent/types';
+import { AgentType } from '@/types/agent';
 import { WorkflowStage } from '@/workflow';
-import { useWorkflow } from '@/hooks/useWorkflow';
+import { useWorkflow } from '@/hooks/workflow';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';

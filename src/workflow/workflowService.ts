@@ -11,8 +11,8 @@ import {
   WorkflowStatus, 
   WorkflowAlert,
   WorkflowVerificationResult,
-  AgentType
 } from './types';
+import { AgentType } from '@/types/agent';
 
 /**
  * Service for managing workflow operations
