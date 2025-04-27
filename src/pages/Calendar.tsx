@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
