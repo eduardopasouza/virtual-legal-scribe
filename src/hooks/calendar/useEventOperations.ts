@@ -8,7 +8,10 @@ import type { Event } from '@/types/calendar';
 export function useEventOperations() {
   const { toast } = useToast();
 
-  const loadEvents = useCallback(async (setEvents: (events: Event[]) => void, setIsLoading: (loading: boolean) => void) => {
+  const loadEvents = useCallback(async (
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>,
+    setIsLoading: (loading: boolean) => void
+  ) => {
     try {
       const { data, error } = await supabase.from('events').select('*');
       
@@ -30,12 +33,13 @@ export function useEventOperations() {
 
   const handleAddEvent = useCallback(async (
     newEvent: Omit<Event, 'id'>,
-    setEvents: (events: Event[]) => void,
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>,
     setShowEventForm: (show: boolean) => void
   ) => {
     if (!newEvent.title) return;
     
     try {
+      // Convert Event to DB format
       const eventToSave = transformEventToDB(newEvent);
       
       const { data, error } = await supabase
@@ -46,6 +50,7 @@ export function useEventOperations() {
       
       if (error) throw error;
       
+      // Convert DB response back to Event format
       const eventToAdd: Event = transformEventFromDB(data);
       
       setEvents(prevEvents => [...prevEvents, eventToAdd]);
@@ -69,7 +74,7 @@ export function useEventOperations() {
     date: Date, 
     note: string,
     events: Event[],
-    setEvents: (events: Event[]) => void
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>
   ) => {
     if (!note.trim()) return;
     
@@ -82,6 +87,7 @@ export function useEventOperations() {
       );
       
       if (existingEvent) {
+        // If an event for this day already exists, update it
         const { error } = await supabase
           .from('events')
           .update({
@@ -102,14 +108,18 @@ export function useEventOperations() {
           return e;
         }));
       } else {
-        const eventToSave = {
+        // Create a new event/note for this day
+        const noteEvent = {
           title: 'Anotação',
           date: date,
-          start_time: '00:00',
-          end_time: '00:00',
+          startTime: '00:00',
+          endTime: '00:00',
           type: 'outro',
           description: note
-        };
+        } as Omit<Event, 'id'>;
+        
+        // Transform to DB format before saving
+        const eventToSave = transformEventToDB(noteEvent);
         
         const { data, error } = await supabase
           .from('events')

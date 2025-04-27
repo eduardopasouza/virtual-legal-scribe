@@ -1,6 +1,6 @@
 
 import { Event } from '@/types/calendar';
-import { addDays, format } from 'date-fns';
+import { format } from 'date-fns';
 
 export const transformEventFromDB = (data: any): Event => ({
   id: data.id,
@@ -9,7 +9,7 @@ export const transformEventFromDB = (data: any): Event => ({
   startTime: data.start_time,
   endTime: data.end_time,
   type: data.type || 'reuniao',
-  description: data.description,
+  description: data.description || '',
   relatedCase: data.related_case,
   notificationSettings: {
     notifyBefore: 1,
