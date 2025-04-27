@@ -15,6 +15,7 @@ export type Database = {
           agent: string
           case_id: string | null
           created_at: string | null
+          created_by: string | null
           id: string
           result: string | null
           status: string | null
@@ -24,6 +25,7 @@ export type Database = {
           agent: string
           case_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           result?: string | null
           status?: string | null
@@ -33,6 +35,7 @@ export type Database = {
           agent?: string
           case_id?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           result?: string | null
           status?: string | null
@@ -51,6 +54,7 @@ export type Database = {
         Row: {
           case_id: string
           created_at: string | null
+          created_by: string | null
           description: string | null
           id: string
           priority: string
@@ -62,6 +66,7 @@ export type Database = {
         Insert: {
           case_id: string
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           id?: string
           priority?: string
@@ -73,6 +78,7 @@ export type Database = {
         Update: {
           case_id?: string
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           id?: string
           priority?: string
@@ -97,6 +103,7 @@ export type Database = {
           client: string
           court: string | null
           created_at: string | null
+          created_by: string | null
           description: string | null
           id: string
           main_agent: string | null
@@ -111,6 +118,7 @@ export type Database = {
           client: string
           court?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           id?: string
           main_agent?: string | null
@@ -125,6 +133,7 @@ export type Database = {
           client?: string
           court?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           id?: string
           main_agent?: string | null
@@ -215,6 +224,7 @@ export type Database = {
       documents: {
         Row: {
           case_id: string | null
+          created_by: string | null
           file_path: string | null
           id: string
           name: string
@@ -224,6 +234,7 @@ export type Database = {
         }
         Insert: {
           case_id?: string | null
+          created_by?: string | null
           file_path?: string | null
           id?: string
           name: string
@@ -233,6 +244,7 @@ export type Database = {
         }
         Update: {
           case_id?: string | null
+          created_by?: string | null
           file_path?: string | null
           id?: string
           name?: string
@@ -299,6 +311,7 @@ export type Database = {
           case_id: string
           completed_at: string | null
           created_at: string | null
+          created_by: string | null
           id: string
           stage_name: string
           stage_number: number
@@ -309,6 +322,7 @@ export type Database = {
           case_id: string
           completed_at?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           stage_name: string
           stage_number: number
@@ -319,6 +333,7 @@ export type Database = {
           case_id?: string
           completed_at?: string | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           stage_name?: string
           stage_number?: number
