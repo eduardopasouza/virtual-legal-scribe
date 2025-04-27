@@ -6,6 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Message } from '@/types/agent-chat';
 import { agents } from '@/constants/agents';
+import { Badge } from '@/components/ui/badge';
 
 interface MessageBubbleProps {
   message: Message;
@@ -33,6 +34,21 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         "max-w-[80%]",
         isAgent ? "order-2" : "order-1"
       )}>
+        {isAgent && agent && (
+          <div className="mb-1 flex items-center gap-1">
+            <span className="text-xs font-medium">{agent.name}</span>
+            {message.action && (
+              <Badge 
+                variant={message.action === 'info' ? 'secondary' : 
+                       message.action === 'request' ? 'outline' : 'default'} 
+                className="text-[10px] px-1 py-0 h-4"
+              >
+                {message.action}
+              </Badge>
+            )}
+          </div>
+        )}
+        
         <div className={cn(
           "rounded-lg px-4 py-2 inline-block",
           isAgent 

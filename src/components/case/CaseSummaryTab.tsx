@@ -6,6 +6,9 @@ import { CaseAlerts } from './CaseAlerts';
 import { DocumentUploader } from '@/components/DocumentUploader';
 import { Alert, WorkflowStage } from '@/types/case';
 import { useQueryClient } from '@tanstack/react-query';
+import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -19,7 +22,19 @@ export function CaseSummaryTab({ caseId, workflowStages, alerts }: CaseSummaryTa
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 space-y-6">
-        <CaseTimeline stages={workflowStages} />
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle>Fluxo do Processo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CaseTimeline stages={workflowStages} />
+          </CardContent>
+        </Card>
+        
+        <AgentCoordinator caseId={caseId} workflowStages={workflowStages} />
+        
+        <Separator className="my-6" />
+        
         <AgentInteraction caseId={caseId} />
         {alerts.length > 0 && <CaseAlerts alerts={alerts} />}
       </div>

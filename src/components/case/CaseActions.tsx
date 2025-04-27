@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Loader2, Info, CheckCircle, AlertCircle } from 'lucide-react';
@@ -62,20 +63,12 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       if (!caseId) throw new Error("Caso não encontrado");
       
       // Identificar etapa atual e próxima
-      const { data: etapas, error } = await queryClient.fetchQuery({ 
-        queryKey: ["workflow_stages", caseId],
-        queryFn: async () => {
-          const response = await supabase
-            .from("workflow_stages")
-            .select("*")
-            .eq("case_id", caseId)
-            .order("stage_number", { ascending: true });
-            
-          if (response.error) throw response.error;
-          return response.data;
-        }
-      });
-      
+      const { data: etapas, error } = await supabase
+        .from("workflow_stages")
+        .select("*")
+        .eq("case_id", caseId)
+        .order("stage_number", { ascending: true });
+        
       if (error) throw error;
       
       // Encontrar etapa em andamento

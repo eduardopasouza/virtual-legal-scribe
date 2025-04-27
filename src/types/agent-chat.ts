@@ -7,7 +7,7 @@ export interface Message {
   sender: 'user' | 'agent';
   timestamp: Date;
   agentType?: AgentType;
-  action?: 'info' | 'request' | 'confirmation';
+  action?: 'info' | 'request' | 'confirmation' | 'warning' | 'analysis';
   metadata?: any;
 }
 
@@ -19,4 +19,13 @@ export interface AgentOption {
 
 export interface AgentChatProps {
   caseId?: string;
+  initialAgent?: AgentType;
+  onAgentResponse?: (response: any) => void;
+  onWorkflowAction?: (action: string, data: any) => void;
+}
+
+export interface AgentAction {
+  type: string;
+  payload: any;
+  timestamp: Date;
 }
