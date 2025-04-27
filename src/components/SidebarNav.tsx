@@ -1,6 +1,6 @@
 
 import { NavLink } from "react-router-dom";
-import { Home, User, Users, Calendar, FileText, Settings, BookText, Search, FolderArchive } from "lucide-react";
+import { Home, User, Users, Calendar, FileText, Settings, BookText, Search, FolderArchive, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarNavProps {
@@ -16,6 +16,7 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
     { to: "/documents", icon: <FolderArchive className="mr-2 h-4 w-4" />, label: "Documentos" },
     { to: "/search", icon: <Search className="mr-2 h-4 w-4" />, label: "Busca" },
     { to: "/stats", icon: <BookText className="mr-2 h-4 w-4" />, label: "Estatísticas" },
+    { to: "/integrations", icon: <Activity className="mr-2 h-4 w-4" />, label: "Integrações" },
     { to: "/settings", icon: <Settings className="mr-2 h-4 w-4" />, label: "Configurações" },
   ];
 

@@ -22,6 +22,7 @@ import Settings from "./pages/Settings";
 import ActivityHistory from "./pages/ActivityHistory";
 import SearchPage from "./pages/SearchPage";
 import DocumentsPage from "./pages/DocumentsPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
 import NotFound from "./pages/NotFound";
 
 // Styles
@@ -49,6 +50,7 @@ function App() {
               <Route path="/activity-history" element={<ActivityHistory />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/documents" element={<DocumentsPage />} />
+              <Route path="/integrations" element={<IntegrationsPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
