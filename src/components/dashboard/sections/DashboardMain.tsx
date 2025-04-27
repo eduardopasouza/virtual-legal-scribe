@@ -19,11 +19,11 @@ export function DashboardMain({ cases, isLoading }: DashboardMainProps) {
 
   return (
     <div className="lg:col-span-2 space-y-4 lg:space-y-6">
-      <Card className="shadow-sm">
+      <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Assistente EVJI</CardTitle>
+          <CardTitle className="text-lg font-semibold">Assistente EVJI</CardTitle>
         </CardHeader>
-        <CardContent className="h-[400px] p-0">
+        <CardContent className="h-[400px] p-0 rounded-b-lg overflow-hidden">
           <WebChat fullScreen={false} />
         </CardContent>
       </Card>

@@ -24,17 +24,19 @@ interface CasesSummaryProps {
 export function CasesSummary({ activeCases, completedCases, archivedCases, isLoading }: CasesSummaryProps) {
   return (
     <>
-      <Card>
+      <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg">Casos Ativos</CardTitle>
+            <div>
+              <CardTitle className="text-lg font-semibold">Casos Ativos</CardTitle>
+              <CardDescription className="text-sm">Casos jurídicos em andamento</CardDescription>
+            </div>
             <Link to="/cases">
               <Button variant="outline" size="sm">
                 Ver Todos
               </Button>
             </Link>
           </div>
-          <CardDescription>Casos jurídicos em andamento</CardDescription>
         </CardHeader>
         
         <CardContent>
@@ -49,18 +51,18 @@ export function CasesSummary({ activeCases, completedCases, archivedCases, isLoa
               {activeCases.slice(0, 5).map((caseItem) => (
                 <Link key={caseItem.id} to={`/cases/${caseItem.id}`}>
                   <div className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-evji-primary/20 flex items-center justify-center">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-evji-primary/20 flex items-center justify-center">
                         <FileText className="w-4 h-4 text-evji-primary" />
                       </div>
-                      <div>
-                        <h4 className="font-medium">{caseItem.title}</h4>
-                        <p className="text-xs text-muted-foreground">{caseItem.client} • {caseItem.type || 'Caso Geral'}</p>
+                      <div className="overflow-hidden">
+                        <h4 className="font-medium text-sm truncate">{caseItem.title}</h4>
+                        <p className="text-xs text-muted-foreground truncate">{caseItem.client} • {caseItem.type || 'Caso Geral'}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                       <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
                         {new Date(caseItem.created_at).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
@@ -83,11 +85,11 @@ export function CasesSummary({ activeCases, completedCases, archivedCases, isLoa
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
         {/* Completed Cases */}
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base">Casos Concluídos</CardTitle>
-              <div className="bg-green-100 text-green-700 rounded-full w-6 h-6 flex items-center justify-center text-xs">
+              <CardTitle className="text-base font-medium">Casos Concluídos</CardTitle>
+              <div className="bg-green-100 text-green-700 rounded-full w-6 h-6 flex items-center justify-center text-xs font-semibold">
                 {completedCases.length}
               </div>
             </div>
@@ -103,9 +105,9 @@ export function CasesSummary({ activeCases, completedCases, archivedCases, isLoa
                 {completedCases.slice(0, 3).map((caseItem) => (
                   <Link key={caseItem.id} to={`/cases/${caseItem.id}`}>
                     <div className="flex items-center justify-between p-2 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-green-500" />
-                        <p className="text-sm font-medium truncate max-w-[180px]">{caseItem.title}</p>
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <p className="text-sm font-medium truncate">{caseItem.title}</p>
                       </div>
                     </div>
                   </Link>
@@ -120,11 +122,11 @@ export function CasesSummary({ activeCases, completedCases, archivedCases, isLoa
         </Card>
 
         {/* Archived Cases */}
-        <Card>
+        <Card className="shadow-sm hover:shadow-md transition-shadow duration-300">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-base">Casos Arquivados</CardTitle>
-              <div className="bg-gray-100 text-gray-700 rounded-full w-6 h-6 flex items-center justify-center text-xs">
+              <CardTitle className="text-base font-medium">Casos Arquivados</CardTitle>
+              <div className="bg-gray-100 text-gray-700 rounded-full w-6 h-6 flex items-center justify-center text-xs font-semibold">
                 {archivedCases.length}
               </div>
             </div>
@@ -140,9 +142,9 @@ export function CasesSummary({ activeCases, completedCases, archivedCases, isLoa
                 {archivedCases.slice(0, 3).map((caseItem) => (
                   <Link key={caseItem.id} to={`/cases/${caseItem.id}`}>
                     <div className="flex items-center justify-between p-2 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-500" />
-                        <p className="text-sm font-medium truncate max-w-[180px]">{caseItem.title}</p>
+                      <div className="flex items-center gap-2 overflow-hidden">
+                        <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                        <p className="text-sm font-medium truncate">{caseItem.title}</p>
                       </div>
                     </div>
                   </Link>

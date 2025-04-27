@@ -62,7 +62,7 @@ export function Sidebar() {
         
         <Separator className="bg-sidebar-border" />
         
-        <nav className="flex-1 p-4 overflow-hidden">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <SidebarNav isCollapsed={isCollapsed} />
         </nav>
         
