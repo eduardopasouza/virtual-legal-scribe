@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -23,11 +24,6 @@ const mockCaseData = {
   court: '3ª Vara Cível de São Paulo',
   mainAgent: 'Estrategista',
   description: 'Caso de indenização por danos morais devido a publicação indevida de dados pessoais da cliente em plataforma digital.',
-  documents: [
-    { name: 'Petição Inicial.pdf', size: '1.4MB', date: new Date('2024-04-10') },
-    { name: 'Procuração.pdf', size: '320KB', date: new Date('2024-04-10') },
-    { name: 'Comprovantes.zip', size: '4.2MB', date: new Date('2024-04-12') }
-  ],
   activities: [
     { 
       id: '1', 
@@ -127,7 +123,7 @@ const CaseDetails = () => {
               </TabsContent>
               
               <TabsContent value="documents" className="mt-4">
-                <CaseDocuments documents={caseData.documents} />
+                <CaseDocuments caseId={caseId} />
               </TabsContent>
               
               <TabsContent value="activities" className="mt-4">
