@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Notification } from '@/types/notification';
 import { NotificationContent } from './NotificationContent';
@@ -15,7 +13,6 @@ import {
 } from "@/components/ui/popover";
 
 export function NotificationSystem() {
-  const { toast: showToast } = useToast();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: '1',
@@ -82,15 +79,7 @@ export function NotificationSystem() {
     
     setNotifications(prev => [newNotification, ...prev]);
     
-    let variant: "default" | "destructive" | undefined = "default";
-    if (type === 'alert') variant = "destructive";
-    
-    showToast({
-      title,
-      description: message,
-      variant,
-    });
-    
+    // Usar apenas o Sonner para notificações toast
     toast[type === 'alert' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'](
       title,
       {
