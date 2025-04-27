@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { AgentType } from '@/hooks/agent/types';
-import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen, ClipboardCheck, Edit, Users, MessageSquare } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen, ClipboardCheck, Edit, Users, MessageSquare, Search, Scale, PenTool } from "lucide-react";
 
 interface AgentInteractionProps {
   caseId?: string;
@@ -42,6 +42,18 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       icon: <FileText className="h-5 w-5" />
     },
     {
+      type: 'pesquisador',
+      name: 'Pesquisador Jurídico',
+      description: 'Pesquisa legislação, jurisprudência e doutrina aplicáveis ao caso.',
+      icon: <Search className="h-5 w-5" />
+    },
+    {
+      type: 'analista-argumentacao',
+      name: 'Analista de Argumentação',
+      description: 'Estrutura argumentos e contra-argumentos, avaliando premissas e força da argumentação.',
+      icon: <Scale className="h-5 w-5" />
+    },
+    {
       type: 'especialista-adaptavel',
       name: 'Especialista Adaptável',
       description: 'Analisa camadas avançadas como aspectos constitucionais, direito internacional e interdisciplinaridades.',
@@ -52,6 +64,12 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       name: 'Redator Jurídico',
       description: 'Elabora documentos jurídicos baseados nas análises do caso.',
       icon: <FileText className="h-5 w-5" />
+    },
+    {
+      type: 'assistente-redacao',
+      name: 'Assistente de Redação',
+      description: 'Auxilia na estruturação e formatação de documentos jurídicos.',
+      icon: <PenTool className="h-5 w-5" />
     },
     {
       type: 'revisor-legal',
@@ -83,7 +101,7 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">Agentes de IA</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {agents.map((agent) => (
           <Card key={agent.type} className="relative overflow-hidden">
             {results[agent.type] && (

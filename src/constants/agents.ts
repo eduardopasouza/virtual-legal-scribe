@@ -38,6 +38,11 @@ export const agents = [
     description: 'Elabora rascunhos de peças, aplica modelos e formatação'
   },
   {
+    type: 'assistente-redacao',
+    name: 'Assistente de Redação',
+    description: 'Auxilia na estruturação e formatação de documentos jurídicos'
+  },
+  {
     type: 'especialista',
     name: 'Especialista Adaptável',
     description: 'Auto-capacita-se na área do direito requerida para casos específicos'
@@ -48,9 +53,14 @@ export const agents = [
     description: 'Verifica requisitos formais, citações, formatação e integridade'
   },
   {
-    type: 'revisor-texto',
+    type: 'revisor-integrador',
     name: 'Revisor & Integrador',
     description: 'Realiza revisão textual, gramática jurídica e formatação final'
+  },
+  {
+    type: 'revisor-texto',
+    name: 'Revisor de Texto',
+    description: 'Realiza revisão ortográfica e gramatical, melhoria da linguagem'
   },
   {
     type: 'comunicador',
