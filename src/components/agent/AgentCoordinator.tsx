@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
-import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
+import { Loader2, CheckCircle, AlertTriangle, ArrowRight, Info } from 'lucide-react';
 import { AgentType } from '@/hooks/agent/types';
 import { WorkflowStage } from '@/workflow';
 import { useWorkflow } from '@/hooks/useWorkflow';
+import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface AgentCoordinatorProps {
   caseId: string;
@@ -52,16 +53,26 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Coordenador de Agentes</span>
-          {currentStage && (
-            <Badge variant="outline" className="ml-2">
-              Etapa atual: {currentStage.stage_name}
-            </Badge>
-          )}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Coordenador de Agentes</CardTitle>
+          <TooltipProvider>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Info className="h-4 w-4" />
+                  <span className="sr-only">Sobre o Coordenador</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>O Coordenador de Agentes gerencia o fluxo de trabalho do caso, 
+                definindo as etapas necessárias e delegando tarefas aos agentes especializados 
+                conforme o progresso do caso.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <CardDescription>
-          Coordena o fluxo de trabalho e o acionamento de agentes em cada etapa
+          Monitora o progresso do caso e aciona os agentes especializados conforme necessário
         </CardDescription>
       </CardHeader>
       
@@ -74,7 +85,7 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
         ) : (
           <div className="space-y-4">
             <div className="p-3 border rounded-md bg-muted/20">
-              <h4 className="text-sm font-medium mb-1">Status do Workflow:</h4>
+              <h4 className="text-sm font-medium mb-1">Trilha do Processo:</h4>
               <div className="flex gap-2 flex-wrap">
                 {stages?.map((stage) => (
                   <Badge 
@@ -89,13 +100,21 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
                   </Badge>
                 ))}
               </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                O sistema está guiando o caso por uma sequência ordenada de etapas para atingir o objetivo.
+              </p>
             </div>
             
             <div className="p-3 border rounded-md bg-muted/20">
-              <h4 className="text-sm font-medium mb-1">Próximo agente recomendado:</h4>
+              <h4 className="text-sm font-medium mb-1">Próxima ação recomendada:</h4>
               {nextAgentToTrigger ? (
                 <div className="flex items-center justify-between">
-                  <Badge className="capitalize">{nextAgentToTrigger.replace('-', ' ')}</Badge>
+                  <div>
+                    <Badge className="capitalize">{nextAgentToTrigger.replace('-', ' ')}</Badge>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Este agente é especializado na etapa atual do processo
+                    </p>
+                  </div>
                   <Button 
                     size="sm" 
                     variant="outline"
@@ -118,7 +137,7 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Nenhum agente recomendado para a etapa atual
+                  Nenhuma ação recomendada para a etapa atual
                 </p>
               )}
             </div>

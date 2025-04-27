@@ -116,6 +116,7 @@ const CaseDetails = () => {
                 workflowStages={workflowStages}
                 alerts={alerts}
                 documents={documents}
+                objective={caseData.description} // Usando a descrição como objetivo do caso
               />
             </div>
           </div>

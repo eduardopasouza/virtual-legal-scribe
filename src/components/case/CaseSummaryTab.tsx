@@ -9,16 +9,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { WorkflowStage } from '@/types/workflow';
 import { mapWorkflowStatus } from '@/types/workflow';
 
 interface CaseSummaryTabProps {
   caseId: string;
   workflowStages: CaseWorkflowStage[];
   alerts: Alert[];
+  objective?: string;
 }
 
-export function CaseSummaryTab({ caseId, workflowStages, alerts }: CaseSummaryTabProps) {
+export function CaseSummaryTab({ 
+  caseId, 
+  workflowStages, 
+  alerts,
+  objective 
+}: CaseSummaryTabProps) {
   const queryClient = useQueryClient();
   const mappedWorkflowStages = workflowStages.map(stage => ({
     ...stage,
@@ -28,6 +33,17 @@ export function CaseSummaryTab({ caseId, workflowStages, alerts }: CaseSummaryTa
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 space-y-6">
+        {objective && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle>Objetivo do Caso</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">{objective}</p>
+            </CardContent>
+          </Card>
+        )}
+        
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Fluxo do Processo</CardTitle>
