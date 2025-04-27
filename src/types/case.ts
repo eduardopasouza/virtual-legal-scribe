@@ -31,3 +31,4 @@ export interface Deadline {
   status: 'pendente' | 'concluido' | 'atrasado';
   created_at: string;
 }
+
