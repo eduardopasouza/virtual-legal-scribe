@@ -23,7 +23,8 @@ export function CaseDrafts({ caseId }: CaseDraftsProps) {
     try {
       await recordFeedback({
         type: 'question',
-        content: feedbackContent
+        content: feedbackContent,
+        priority: 'normal' // Adding missing priority field
       });
       
       setFeedbackContent('');

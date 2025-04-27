@@ -7,6 +7,7 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from './components/ThemeProvider';
 import './index.css';
 
+// Create a query client instance
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -17,6 +18,7 @@ const queryClient = new QueryClient({
   },
 });
 
+// Make sure we're using React.StrictMode to help catch issues early
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
