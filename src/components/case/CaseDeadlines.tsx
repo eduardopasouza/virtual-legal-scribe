@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ptBR } from 'date-fns/locale';
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 export function CaseDeadlines({ caseId, caseName }: { caseId?: string, caseName?: string }) {
   const { deadlines, isLoading, createDeadline } = useDeadlines(caseId);
@@ -39,7 +40,6 @@ export function CaseDeadlines({ caseId, caseName }: { caseId?: string, caseName?
           date: new Date(),
         });
         toast({
-          title: "Prazo adicionado",
           description: "O prazo foi salvo com sucesso e adicionado ao calendário"
         });
       }
@@ -144,7 +144,7 @@ export function CaseDeadlines({ caseId, caseName }: { caseId?: string, caseName?
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <CalendarComponent
                     mode="single"
                     selected={newDeadline.date}
                     onSelect={(date) => setNewDeadline({...newDeadline, date: date || new Date()})}

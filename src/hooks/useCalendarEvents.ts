@@ -43,17 +43,21 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       
       // Convert date strings to Date objects
       const formattedEvents = data.map(event => ({
-        ...event,
         id: event.id,
         date: new Date(event.date),
+        title: event.title,
+        startTime: event.start_time,
+        endTime: event.end_time,
         type: event.type || 'reuniao',
-        notificationSettings: event.notification_settings || {
+        description: event.description,
+        relatedCase: event.related_case,
+        notificationSettings: {
           notifyBefore: 1,
           notified: false,
           priority: 'medium'
         },
         feedback: []
-      }));
+      })) as Event[];
       
       setEvents(formattedEvents);
     } catch (error) {
@@ -107,8 +111,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
         end_time: newEvent.endTime,
         type: newEvent.type,
         description: newEvent.description,
-        related_case: newEvent.relatedCase || null,
-        notification_settings: newEvent.notificationSettings
+        related_case: newEvent.relatedCase || null
       };
       
       const { data, error } = await supabase
@@ -119,7 +122,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       
       if (error) throw error;
       
-      const eventToAdd = {
+      const eventToAdd: Event = {
         ...newEvent,
         id: data.id,
         date: new Date(data.date),
@@ -156,14 +159,12 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       
       if (existingEvent) {
         const updatedEvent = {
-          notes: existingEvent.notes ? `${existingEvent.notes}\n${note}` : note,
           activitySummary: note,
         };
         
         const { error } = await supabase
           .from('events')
           .update({
-            notes: updatedEvent.notes,
             activity_summary: updatedEvent.activitySummary
           })
           .eq('id', existingEvent.id);
@@ -174,7 +175,6 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           if (e.id === existingEvent.id) {
             return {
               ...e,
-              notes: updatedEvent.notes,
               activitySummary: updatedEvent.activitySummary,
             };
           }
@@ -190,7 +190,6 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           end_time: '00:00',
           type: 'outro',
           description: 'Anotação diária',
-          notes: note,
           activity_summary: note
         };
         
@@ -210,7 +209,6 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           endTime: '00:00',
           type: 'outro',
           description: 'Anotação diária',
-          notes: note,
           activitySummary: note,
         };
         
@@ -242,10 +240,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       const { error } = await supabase
         .from('events')
         .update({
-          notification_settings: {
-            ...event.notificationSettings,
-            notified: true
-          }
+          // We'll store this in a custom column in the future if needed
         })
         .eq('id', eventId);
       
