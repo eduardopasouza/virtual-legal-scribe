@@ -1,38 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, FileText, MessageSquare, Calendar, Users, Bell, Loader2, Info, CheckCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { CaseHeader } from '@/components/case/CaseHeader';
 import { CaseInformation } from '@/components/case/CaseInformation';
-import { CaseDocuments } from '@/components/case/CaseDocuments';
-import { CaseActivities } from '@/components/case/CaseActivities';
-import { CaseDeadlines } from '@/components/case/CaseDeadlines';
-import { CasePeople } from '@/components/case/CasePeople';
-import { Button } from '@/components/ui/button';
+import { CaseContentTabs } from '@/components/case/CaseContentTabs';
+import { CaseActions } from '@/components/case/CaseActions';
 import { useCaseDetails } from '@/hooks/useCaseDetails';
-import { useToast } from '@/hooks/use-toast';
-import { DocumentUploader } from '@/components/DocumentUploader';
-import { CaseTimeline } from '@/components/case/CaseTimeline';
-import { CaseAlerts } from '@/components/case/CaseAlerts';
-import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/api/agentsApi';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AgentInteraction } from '@/components/AgentInteraction';
-import { NotificationSystem } from '@/components/notification/NotificationSystem';
-import { CaseDocumentsOrganizer } from '@/components/case/CaseDocumentsOrganizer';
-import { AgentChat } from '@/components/AgentChat';
-import { DocumentMetadata } from '@/hooks/useDocuments';
-import { Card, CardContent } from '@/components/ui/card';
 
 const CaseDetails = () => {
   const { caseId } = useParams<{ caseId: string }>();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('summary');
-  const [selectedDocument, setSelectedDocument] = useState<DocumentMetadata | null>(null);
-  
   const { 
     caseData, 
     documents, 
@@ -43,45 +22,6 @@ const CaseDetails = () => {
     isLoading, 
     error 
   } = useCaseDetails(caseId);
-
-  const chamarAnalistaMutation = useMutation({
-    mutationFn: async () => {
-      if (!caseData || !caseId) throw new Error("Caso não encontrado");
-      
-      // Chamar o analista e processar os resultados
-      const res = await chamarAnalistaRequisitos(documents, caseData);
-      await criarAnalise({ 
-        caso_id: caseId, 
-        agente: 'analista-requisitos', 
-        conteudo: JSON.stringify(res) 
-      });
-      await atualizarEtapa(caseId, 'reception', 'completed');
-      await atualizarEtapa(caseId, 'planning', 'in_progress');
-      return res;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Triagem concluída",
-        description: "O analista de requisitos processou os documentos com sucesso.",
-      });
-      
-      // Recarregar os dados
-      queryClient.invalidateQueries({ queryKey: ["case", caseId] });
-      queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
-      queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erro ao processar triagem",
-        description: `Ocorreu um erro: ${error.message}`,
-        variant: "destructive",
-      });
-    }
-  });
-  
-  const handleDocumentSelect = (doc: DocumentMetadata) => {
-    setSelectedDocument(doc);
-  };
   
   if (isLoading) {
     return (
@@ -135,30 +75,11 @@ const CaseDetails = () => {
                 createdAt={new Date(caseData.created_at)}
               />
               
-              <div className="flex gap-2 flex-wrap">
-                <Button 
-                  onClick={() => chamarAnalistaMutation.mutate()}
-                  disabled={chamarAnalistaMutation.isPending}
-                  variant="outline"
-                >
-                  {chamarAnalistaMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <Info className="mr-2 h-4 w-4" />
-                      Acionar Analista de Requisitos
-                    </>
-                  )}
-                </Button>
-                
-                <Button className="bg-evji-primary hover:bg-evji-primary/90">
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Avançar Etapa
-                </Button>
-              </div>
+              <CaseActions 
+                caseId={caseId}
+                documents={documents}
+                caseData={caseData}
+              />
             </div>
             
             <CaseInformation 
@@ -169,116 +90,14 @@ const CaseDetails = () => {
               description={caseData.description || "Sem descrição"}
             />
             
-            <Tabs 
-              defaultValue="summary" 
-              value={activeTab}
-              onValueChange={setActiveTab} 
-              className="mt-6"
-            >
-              <TabsList className="mb-4 overflow-auto flex-nowrap max-w-full max-md:justify-start">
-                <TabsTrigger value="summary" className="whitespace-nowrap">
-                  <Info className="h-4 w-4 mr-2" />
-                  Resumo
-                </TabsTrigger>
-                <TabsTrigger value="documents" className="whitespace-nowrap">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Documentos
-                </TabsTrigger>
-                <TabsTrigger value="timeline" className="whitespace-nowrap">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Linha do Tempo
-                </TabsTrigger>
-                <TabsTrigger value="alerts" className="whitespace-nowrap">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Alertas {alerts.length > 0 && <span className="ml-1 text-xs bg-red-500 text-white rounded-full w-5 h-5 inline-flex items-center justify-center">{alerts.length}</span>}
-                </TabsTrigger>
-                <TabsTrigger value="activities" className="whitespace-nowrap">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Atividades
-                </TabsTrigger>
-                <TabsTrigger value="deadlines" className="whitespace-nowrap">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Prazos
-                </TabsTrigger>
-                <TabsTrigger value="people" className="whitespace-nowrap">
-                  <Users className="h-4 w-4 mr-2" />
-                  Pessoas
-                </TabsTrigger>
-                <TabsTrigger value="agentchat" className="whitespace-nowrap">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Chat com Agentes
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="summary" className="mt-4">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div className="lg:col-span-8 space-y-6">
-                    <CaseTimeline stages={workflowStages} />
-                    <AgentInteraction caseId={caseId} />
-                    {alerts.length > 0 && <CaseAlerts alerts={alerts} />}
-                  </div>
-                  
-                  <div className="lg:col-span-4">
-                    <DocumentUploader caseId={caseId} onSuccess={() => {
-                      queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
-                    }} />
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="documents" className="mt-4">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div className="lg:col-span-4">
-                    <CaseDocumentsOrganizer 
-                      documents={documents} 
-                      onSelectDocument={handleDocumentSelect} 
-                    />
-                  </div>
-                  <div className="lg:col-span-8">
-                    {selectedDocument ? (
-                      <Card>
-                        <CardContent className="pt-6">
-                          <div className="text-center p-12">
-                            <h3 className="text-lg font-medium mb-2">{selectedDocument.name}</h3>
-                            <p className="text-muted-foreground">
-                              Selecione a opção de visualizar ou baixar este documento na seção de documentos.
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : (
-                      <CaseDocuments caseId={caseId} />
-                    )}
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="timeline" className="mt-4">
-                <CaseTimeline stages={workflowStages} />
-              </TabsContent>
-              
-              <TabsContent value="alerts" className="mt-4">
-                <CaseAlerts alerts={alerts} />
-              </TabsContent>
-              
-              <TabsContent value="activities" className="mt-4">
-                <CaseActivities activities={activities} />
-              </TabsContent>
-              
-              <TabsContent value="deadlines" className="mt-4">
-                <CaseDeadlines deadlines={deadlines} />
-              </TabsContent>
-              
-              <TabsContent value="people" className="mt-4">
-                <CasePeople />
-              </TabsContent>
-              
-              <TabsContent value="agentchat" className="mt-4">
-                <div className="h-[600px]">
-                  <AgentChat caseId={caseId} />
-                </div>
-              </TabsContent>
-            </Tabs>
+            <CaseContentTabs
+              caseId={caseId}
+              activities={activities}
+              deadlines={deadlines}
+              workflowStages={workflowStages}
+              alerts={alerts}
+              documents={documents}
+            />
           </div>
         </main>
       </div>
