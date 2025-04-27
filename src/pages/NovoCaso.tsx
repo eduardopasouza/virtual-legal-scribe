@@ -56,7 +56,7 @@ export default function NovoCaso() {
         created_by: user?.id
       });
 
-      // Upload all documents with user ID
+      // Only upload documents if files were selected
       if (files.length > 0 && newCase?.id) {
         await Promise.all(files.map(file => uploadDocument(file)));
       }
@@ -82,6 +82,8 @@ export default function NovoCaso() {
   const handleFileSelect = (selectedFiles: File[]) => {
     setFiles(prev => [...prev, ...selectedFiles]);
   };
+
+  const isFormValid = formData.title && formData.client && formData.area_direito;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -149,17 +151,17 @@ export default function NovoCaso() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Documentos</Label>
                   <DocumentUploader 
                     caseId={undefined}
                     onSuccess={handleFileSelect}
+                    optional={true}
                   />
                 </div>
               </div>
 
               <Button 
                 type="submit" 
-                disabled={isSubmitting}
+                disabled={!isFormValid || isSubmitting}
                 className="w-full"
               >
                 {isSubmitting ? 'Criando caso...' : 'Salvar e iniciar triagem'}

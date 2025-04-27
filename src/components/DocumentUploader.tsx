@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +12,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 interface DocumentUploaderProps {
   caseId?: string;
   onSuccess?: (selectedFiles: File[]) => void;
+  optional?: boolean;
 }
 
-export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
+export function DocumentUploader({ caseId, onSuccess, optional = false }: DocumentUploaderProps) {
   const { toast } = useToast();
   const { uploadDocument, isUploading } = useDocuments(caseId);
   const [isDragging, setIsDragging] = useState(false);
@@ -24,7 +24,6 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error' | 'loading'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
-  // Reset status after 3 seconds of success or error
   useEffect(() => {
     if (uploadStatus === 'success' || uploadStatus === 'error') {
       const timer = setTimeout(() => {
@@ -111,7 +110,12 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
     <Card>
       <CardHeader>
         <CardTitle>Upload de Documento</CardTitle>
-        <CardDescription>
+        <CardDescription className="space-y-2">
+          {optional && (
+            <p className="text-muted-foreground">
+              Você pode pular esta etapa e anexar documentos mais tarde.
+            </p>
+          )}
           Envie um documento jurídico para análise pelos agentes da EVJI.
         </CardDescription>
       </CardHeader>
@@ -219,12 +223,16 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
         </div>
       </CardContent>
       <CardFooter className="justify-between">
-        <Button variant="outline" onClick={clearSelectedFile} disabled={uploadStatus === 'loading' || !selectedFile}>
+        <Button 
+          variant="outline" 
+          onClick={clearSelectedFile} 
+          disabled={uploadStatus === 'loading' || !selectedFile}
+        >
           Cancelar
         </Button>
         <Button 
           onClick={handleSubmit} 
-          disabled={!selectedFile || uploadStatus === 'loading'}
+          disabled={uploadStatus === 'loading'}
         >
           {uploadStatus === 'loading' ? (
             <>
