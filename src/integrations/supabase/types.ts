@@ -127,6 +127,44 @@ export type Database = {
           },
         ]
       }
+      documents: {
+        Row: {
+          case_id: string | null
+          file_path: string | null
+          id: string
+          name: string
+          size: number
+          type: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          case_id?: string | null
+          file_path?: string | null
+          id?: string
+          name: string
+          size: number
+          type: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          case_id?: string | null
+          file_path?: string | null
+          id?: string
+          name?: string
+          size?: number
+          type?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string | null

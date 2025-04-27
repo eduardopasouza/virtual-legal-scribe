@@ -4,13 +4,14 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 
-interface DocumentMetadata {
+export interface DocumentMetadata {
   id?: string;
   name: string;
   size: number;
   type: string;
-  case_id?: string;
+  case_id?: string | null;
   uploaded_at?: Date;
+  file_path?: string;
 }
 
 export function useDocuments(caseId?: string) {
@@ -35,14 +36,15 @@ export function useDocuments(caseId?: string) {
 
       if (storageError) throw storageError;
 
-      // Optional: Store document metadata in database
+      // Store document metadata in database
       const documentMetadata: DocumentMetadata = {
         id: uuidv4(),
         name: file.name,
         size: file.size,
         type: file.type,
         case_id: caseId,
-        uploaded_at: new Date()
+        uploaded_at: new Date(),
+        file_path: filePath
       };
 
       const { error: dbError } = await supabase
@@ -79,19 +81,19 @@ export function useDocuments(caseId?: string) {
 
   const listDocuments = async (caseId?: string) => {
     try {
-      const query = supabase
+      let query = supabase
         .from('documents')
         .select('*')
         .order('uploaded_at', { ascending: false });
 
       if (caseId) {
-        query.eq('case_id', caseId);
+        query = query.eq('case_id', caseId);
       }
 
       const { data, error } = await query;
 
       if (error) throw error;
-      return data;
+      return data as DocumentMetadata[];
     } catch (error: any) {
       toast({
         title: "Erro ao buscar documentos",
