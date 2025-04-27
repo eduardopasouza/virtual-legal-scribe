@@ -4,6 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
 import { useGlobalState } from './useGlobalState';
 
+/**
+ * Hook para gerenciamento de casos jurídicos.
+ * Fornece acesso à lista de casos e estatísticas relacionadas.
+ * 
+ * @returns {Object} Objeto contendo dados dos casos e estatísticas
+ * @property {Case[]} cases - Lista de casos
+ * @property {Object} stats - Estatísticas dos casos (total, ativos, concluídos, arquivados)
+ * @property {boolean} isLoading - Indica se os dados estão sendo carregados
+ */
 export function useCases() {
   const { queryKeys, handleError } = useGlobalState();
 
@@ -23,6 +32,10 @@ export function useCases() {
     }
   });
 
+  /**
+   * Calcula estatísticas dos casos com base no status
+   * Usado para dashboard e relatórios
+   */
   const stats = {
     total: cases?.length ?? 0,
     active: cases?.filter(c => c.status === 'em_andamento').length ?? 0,

@@ -2,7 +2,14 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { handleError } from '@/utils/errorHandling';
 
-// Query keys constants for better maintainability
+/**
+ * Estrutura centralizada de query keys para cache e invalidação.
+ * Organizada hierarquicamente por domínio (casos, atividades, etc.)
+ * 
+ * Exemplo de uso:
+ * queryKeys.cases.byId('123') -> ['cases', 'detail', '123']
+ * queryKeys.activities.all('456') -> ['activities', '456']
+ */
 const queryKeys = {
   cases: {
     all: ['cases'],
@@ -29,6 +36,15 @@ const queryKeys = {
   }
 };
 
+/**
+ * Hook para gerenciamento de estado global da aplicação.
+ * Fornece acesso ao queryClient do React Query e funções utilitárias.
+ * 
+ * @returns {Object} Objeto com utilidades para gerenciamento de estado
+ * @property {QueryClient} queryClient - Cliente React Query para gerenciamento de cache
+ * @property {Object} queryKeys - Estrutura de chaves para queries
+ * @property {Function} handleError - Função para tratamento padronizado de erros
+ */
 export function useGlobalState() {
   const queryClient = useQueryClient();
   
