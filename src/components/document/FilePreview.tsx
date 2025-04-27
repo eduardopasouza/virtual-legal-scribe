@@ -2,6 +2,7 @@
 import React from 'react';
 import { File, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { formatFileSize } from '@/lib/utils';
 
 interface FilePreviewProps {
   file: File;
@@ -19,7 +20,7 @@ export function FilePreview({ file, onRemove, disabled = false }: FilePreviewPro
             {file.name}
           </p>
           <p className="text-xs text-muted-foreground">
-            {(file.size / (1024 * 1024)).toFixed(2)} MB
+            {formatFileSize(file.size)}
           </p>
         </div>
       </div>

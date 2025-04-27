@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FileText, FileArchive, FolderOpen, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -6,6 +5,7 @@ import { ptBR } from 'date-fns/locale';
 import { DocumentMetadata } from '@/hooks/useDocuments';
 import { Button } from '@/components/ui/button';
 import { DocumentPreview } from '@/components/DocumentPreview';
+import { formatFileSize } from '@/lib/utils';
 
 interface DocumentCardProps {
   doc: DocumentMetadata;
@@ -22,12 +22,6 @@ export function DocumentCard({
   onDelete,
   onAddTag,
 }: DocumentCardProps) {
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    else return (bytes / 1048576).toFixed(1) + ' MB';
-  };
-
   return (
     <div className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors">
       <div className="flex items-center gap-3">
