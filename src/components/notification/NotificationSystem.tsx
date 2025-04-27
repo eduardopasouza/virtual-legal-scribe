@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,22 @@ export function NotificationSystem() {
     clearAllNotifications,
     addNotification
   } = useNotificationSystem();
+
+  // Auto-open notifications when a high-priority one arrives
+  useEffect(() => {
+    const hasHighPriorityAlert = notifications.some(
+      n => n.type === 'alert' && !n.read
+    );
+    
+    if (hasHighPriorityAlert && !isOpen) {
+      // Auto-open for high priority alerts
+      setIsOpen(true);
+      
+      // Auto-close after 5 seconds
+      const timer = setTimeout(() => setIsOpen(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [notifications, isOpen]);
 
   return (
     <>

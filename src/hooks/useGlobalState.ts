@@ -1,24 +1,42 @@
 
-import { queryClient, queryKeys } from '@/lib/react-query/queryClient';
-import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { handleError } from '@/utils/errorHandling';
+
+// Query keys constants for better maintainability
+const queryKeys = {
+  cases: {
+    all: 'cases',
+    lists: () => [...queryKeys.cases.all, 'list'],
+    list: (filters: string) => [...queryKeys.cases.lists(), { filters }],
+    details: () => [...queryKeys.cases.all, 'detail'],
+    byId: (id: string) => [...queryKeys.cases.details(), id],
+  },
+  activities: {
+    all: (caseId: string) => ['activities', caseId],
+    byId: (caseId: string, activityId: string) => ['activities', caseId, activityId],
+  },
+  documents: {
+    all: 'documents',
+    byCaseId: (caseId: string) => ['documents', caseId],
+  },
+  workflow: {
+    all: 'workflow',
+    stages: (caseId: string) => ['workflow_stages', caseId],
+  },
+  alerts: {
+    all: 'alerts',
+    byCaseId: (caseId: string) => ['alerts', caseId],
+  }
+};
 
 export function useGlobalState() {
-  // Helper function to invalidate related queries
-  const invalidateRelatedQueries = (caseId: string) => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.cases.byId(caseId) });
-    queryClient.invalidateQueries({ queryKey: queryKeys.workflow.stages(caseId) });
-    queryClient.invalidateQueries({ queryKey: queryKeys.activities.all(caseId) });
-  };
-
-  // Helper function to show toast error - this will be used in the onError callbacks
-  const handleError = (error: Error) => {
-    toast.error(error.message || 'Ocorreu um erro inesperado');
-  };
-
+  const queryClient = useQueryClient();
+  
   return {
-    invalidateRelatedQueries,
-    handleError,
     queryClient,
     queryKeys,
+    handleError: (error: any, context?: string) => {
+      return handleError(error, undefined, { context: context || 'Operação' });
+    }
   };
 }

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDocuments, DocumentMetadata } from '@/hooks/useDocuments';
-import { useToast } from '@/hooks/use-toast';
+import { useErrorHandler } from '@/utils/errorHandling';
 
 export function useDocumentManager(caseId?: string) {
   const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: boolean }>({});
@@ -11,7 +11,7 @@ export function useDocumentManager(caseId?: string) {
   
   const { listDocuments, getDocumentUrl, deleteDocument, processDocument } = useDocuments(caseId);
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const { handleError } = useErrorHandler();
   
   const fetchDocuments = async () => {
     if (caseId) {
@@ -20,11 +20,8 @@ export function useDocumentManager(caseId?: string) {
         const docs = await listDocuments(caseId);
         return docs;
       } catch (error) {
-        console.error("Error fetching documents:", error);
-        toast({
-          title: "Erro ao carregar documentos",
-          description: "Não foi possível carregar os documentos do caso.",
-          variant: "destructive"
+        handleError(error, "Não foi possível carregar os documentos do caso.", {
+          context: "Gerenciamento de Documentos"
         });
         return [];
       } finally {
@@ -43,13 +40,12 @@ export function useDocumentManager(caseId?: string) {
       const url = await getDocumentUrl(doc.file_path);
       if (url) {
         window.open(url, '_blank');
+      } else {
+        throw new Error("URL do documento não gerada");
       }
     } catch (error) {
-      console.error('Error getting signed URL:', error);
-      toast({
-        title: "Erro ao baixar documento",
-        description: "Não foi possível gerar o link para download",
-        variant: "destructive"
+      handleError(error, "Não foi possível gerar o link para download", {
+        context: "Download de Documento"
       });
     } finally {
       setLoadingFiles(prev => ({ ...prev, [doc.id!]: false }));
@@ -65,29 +61,43 @@ export function useDocumentManager(caseId?: string) {
       const result = await processDocument(doc.id);
       
       if (result.text) {
-        toast({
-          title: "Documento processado",
-          description: `O conteúdo do documento foi extraído com sucesso (${result.text.length} caracteres)`
-        });
-        
-        // Refresh document list
-        await fetchDocuments();
-        
+        // Sucesso ao processar o documento
         return result.text;
       }
       
       if (result.error) {
         throw new Error(result.error);
       }
-    } catch (error: any) {
-      console.error('Error processing document:', error);
-      toast({
-        title: "Erro ao processar documento",
-        description: error.message || "Não foi possível extrair o conteúdo do documento",
-        variant: "destructive"
+      
+      return null;
+    } catch (error) {
+      handleError(error, "Não foi possível extrair o conteúdo do documento", {
+        context: "Processamento de Documento",
+        severity: "medium"
       });
+      return null;
     } finally {
       setProcessingFiles(prev => ({ ...prev, [doc.id!]: false }));
+    }
+  };
+
+  const handleDeleteDocument = async (doc: DocumentMetadata) => {
+    if (!doc.id || !doc.file_path) return false;
+    
+    try {
+      const success = await deleteDocument(doc.id, doc.file_path);
+      
+      if (success) {
+        // Atualizar a lista de documentos
+        queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
+      }
+      
+      return success;
+    } catch (error) {
+      handleError(error, "Não foi possível excluir o documento", {
+        context: "Exclusão de Documento"
+      });
+      return false;
     }
   };
 
@@ -105,6 +115,7 @@ export function useDocumentManager(caseId?: string) {
     fetchDocuments,
     handleDownload,
     handleProcessDocument,
+    handleDeleteDocument,
     handleUploadSuccess,
   };
 }

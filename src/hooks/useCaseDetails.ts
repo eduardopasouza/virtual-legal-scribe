@@ -5,6 +5,7 @@ import { Case, Activity, Deadline, WorkflowStage, Alert } from "@/types/case";
 import { DocumentMetadata, useDocuments } from "./useDocuments";
 import { useActivitiesList } from "./useActivities";
 import { useDeadlines } from "./useDeadlines";
+import { handleError } from "@/utils/errorHandling";
 
 interface CaseDetailedData {
   caseData: Case | null;
@@ -30,9 +31,14 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
         .from("cases")
         .select("*")
         .eq("id", caseId)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        handleError(error, `Erro ao carregar detalhes do caso ${caseId}`, {
+          context: 'Detalhes do Caso'
+        });
+        throw error;
+      }
       return data as Case;
     },
     enabled: !!caseId,
@@ -42,14 +48,22 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
     queryKey: ["workflow_stages", caseId],
     queryFn: async () => {
       if (!caseId) return [];
-      const { data, error } = await supabase
-        .from("workflow_stages")
-        .select("*")
-        .eq("case_id", caseId)
-        .order("stage_number", { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from("workflow_stages")
+          .select("*")
+          .eq("case_id", caseId)
+          .order("stage_number", { ascending: true });
 
-      if (error) throw error;
-      return data as WorkflowStage[];
+        if (error) throw error;
+        return data as WorkflowStage[];
+      } catch (error) {
+        handleError(error, "Não foi possível carregar as etapas do fluxo de trabalho", {
+          context: 'Fluxo de Trabalho',
+          severity: 'medium'
+        });
+        return [];
+      }
     },
     enabled: !!caseId,
   });
@@ -58,15 +72,23 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
     queryKey: ["alerts", caseId],
     queryFn: async () => {
       if (!caseId) return [];
-      const { data, error } = await supabase
-        .from("alerts")
-        .select("*")
-        .eq("case_id", caseId)
-        .eq("status", "pending")
-        .order("priority", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("alerts")
+          .select("*")
+          .eq("case_id", caseId)
+          .eq("status", "pending")
+          .order("priority", { ascending: false });
 
-      if (error) throw error;
-      return data as Alert[];
+        if (error) throw error;
+        return data as Alert[];
+      } catch (error) {
+        handleError(error, "Não foi possível carregar os alertas", {
+          context: 'Alertas do Caso',
+          severity: 'low'
+        });
+        return [];
+      }
     },
     enabled: !!caseId,
   });
@@ -75,7 +97,15 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
     queryKey: ["documents", caseId],
     queryFn: async () => {
       if (!caseId) return [];
-      return await listDocuments(caseId);
+      try {
+        return await listDocuments(caseId);
+      } catch (error) {
+        handleError(error, "Não foi possível carregar a lista de documentos", {
+          context: 'Documentos',
+          severity: 'medium'
+        });
+        return [];
+      }
     },
     enabled: !!caseId,
   });
