@@ -1,5 +1,4 @@
-
-import { AgentType } from '@/hooks/useAgentSimulation';
+import { AgentType } from '@/hooks/agent/types';
 
 export interface Message {
   id: string;

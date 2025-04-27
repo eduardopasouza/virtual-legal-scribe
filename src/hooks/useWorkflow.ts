@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { workflowService, WorkflowStage, WorkflowStageName, WorkflowStatus } from '@/workflow';
@@ -162,8 +163,11 @@ export function useWorkflow(caseId?: string) {
 
   // Get recommended agent for current stage
   const getRecommendedAgent = () => {
-    if (!currentStage) return null;
-    return workflowService.getRecommendedAgent(currentStage.stage_name);
+    if (!currentStage || !currentStage.stage_name) return null;
+    
+    // Ensure we're not passing an empty string to the service
+    const stageName = currentStage.stage_name as WorkflowStageName;
+    return workflowService.getRecommendedAgent(stageName);
   };
 
   return {

@@ -4,7 +4,7 @@ import { AgentInteraction } from '@/components/AgentInteraction';
 import { CaseTimeline } from './CaseTimeline';
 import { CaseAlerts } from './CaseAlerts';
 import { DocumentUploader } from '@/components/DocumentUploader';
-import { Alert } from '@/types/case';
+import { Alert, WorkflowStage as CaseWorkflowStage } from '@/types/case';
 import { useQueryClient } from '@tanstack/react-query';
 import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,7 @@ import { mapWorkflowStatus } from '@/types/workflow';
 
 interface CaseSummaryTabProps {
   caseId: string;
-  workflowStages: WorkflowStage[];
+  workflowStages: CaseWorkflowStage[];
   alerts: Alert[];
 }
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AgentType } from '@/hooks/useAgentSimulation';
+import { AgentType } from '@/hooks/agent/types';
 import { agents } from '@/constants/agents';
 import { 
   DropdownMenu, 

@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { Message } from '@/types/agent-chat';
-import { AgentType, useAgentSimulation } from './useAgentSimulation';
+import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
+import { AgentType } from '@/hooks/agent/types';
 import { useToast } from '@/hooks/use-toast';
 import { agents } from '@/constants/agents';
 

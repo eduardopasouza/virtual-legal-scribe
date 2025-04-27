@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
-import { useAgentSimulation } from '@/hooks/useAgentSimulation';
+import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
+import { AgentType } from '@/hooks/agent/types';
 import { WorkflowStage } from '@/workflow';
 import { useWorkflow } from '@/hooks/useWorkflow';
 

@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAgentSimulation, AgentType } from '@/hooks/useAgentSimulation';
+import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
+import { AgentType } from '@/hooks/agent/types';
 import { Loader2, CheckCircle, AlertCircle, Info } from "lucide-react";
 
 interface AgentInteractionProps {
