@@ -1,20 +1,26 @@
 
 import React from 'react';
-import { Header } from '@/components/Header';
-import { Sidebar } from '@/components/Sidebar';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export function CaseDetailsError() {
+  const navigate = useNavigate();
+  
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 flex">
-        <Sidebar />
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="text-center p-12">
-            <p className="text-red-500">Erro ao carregar detalhes do caso.</p>
-          </div>
-        </main>
+    <DashboardLayout>
+      <div className="text-center py-12">
+        <h2 className="text-xl font-semibold mb-4">Erro ao carregar detalhes do caso</h2>
+        <p className="text-muted-foreground mb-6">Não foi possível acessar as informações deste caso.</p>
+        <div className="flex gap-4 justify-center">
+          <Button onClick={() => navigate('/cases/list')}>
+            Ver todos os casos
+          </Button>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </Button>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

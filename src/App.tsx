@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -66,6 +67,10 @@ function App() {
                         <CaseDetails />
                       </ProtectedRoute>
                     } 
+                  />
+                  <Route 
+                    path="/casos/:caseId" 
+                    element={<Navigate to={location => `/cases/${location.pathname.split('/').pop()}`} />} 
                   />
                   <Route 
                     path="/cases/list" 

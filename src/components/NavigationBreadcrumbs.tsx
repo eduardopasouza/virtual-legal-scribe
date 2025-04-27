@@ -25,6 +25,7 @@ export function NavigationBreadcrumbs() {
   // Map of routes to their human-readable labels
   const routeMap: RouteMap = {
     'cases': { label: 'Casos', parent: '/' },
+    'casos': { label: 'Casos', parent: '/' }, // Handle legacy path
     'novo-caso': { label: 'Novo Caso', parent: '/' },
     'clients': { label: 'Clientes', parent: '/' },
     'stats': { label: 'Estatísticas', parent: '/' },
@@ -36,10 +37,13 @@ export function NavigationBreadcrumbs() {
     'list': { label: 'Lista', parent: '/cases' },
   };
 
-  // Handle case IDs - they would be nested under 'cases'
-  if (pathSegments[0] === 'cases' && pathSegments.length > 1 && pathSegments[1] !== 'list') {
+  // Handle case IDs - they would be nested under 'cases' or 'casos'
+  if ((pathSegments[0] === 'cases' || pathSegments[0] === 'casos') && 
+      pathSegments.length > 1 && 
+      pathSegments[1] !== 'list') {
     const caseId = pathSegments[1];
-    routeMap[caseId] = { label: `Caso ${caseId.slice(0, 8)}`, parent: '/cases/list' };
+    const parentPath = pathSegments[0] === 'casos' ? '/cases/list' : '/cases/list';
+    routeMap[caseId] = { label: `Caso ${caseId.slice(0, 8)}`, parent: parentPath };
   }
 
   // Build breadcrumb items
@@ -64,10 +68,15 @@ export function NavigationBreadcrumbs() {
 
   // Add remaining path segments
   pathSegments.forEach((segment, index) => {
+    // Handle the legacy 'casos' path
+    if (segment === 'casos' && index === 0) {
+      segment = 'cases';
+    }
+    
     currentPath += `/${segment}`;
     
     // Skip 'list' in URLs like /cases/list as it's redundant
-    if (segment === 'list' && index > 0 && pathSegments[index - 1] === 'cases') {
+    if (segment === 'list' && index > 0 && (pathSegments[index - 1] === 'cases' || pathSegments[index - 1] === 'casos')) {
       return;
     }
 
@@ -96,7 +105,9 @@ export function NavigationBreadcrumbs() {
     }
 
     // For case IDs and other dynamic segments
-    else if (pathSegments[0] === 'cases' && index === 1) {
+    else if ((pathSegments[0] === 'cases' || pathSegments[0] === 'casos') && index === 1) {
+      const correctPath = `/cases/${segment}`;
+      
       if (isLast) {
         breadcrumbItems.push(
           <BreadcrumbItem key={segment}>
@@ -107,7 +118,7 @@ export function NavigationBreadcrumbs() {
         breadcrumbItems.push(
           <BreadcrumbItem key={segment}>
             <BreadcrumbLink asChild>
-              <Link to={currentPath}>Caso {segment.slice(0, 8)}</Link>
+              <Link to={correctPath}>Caso {segment.slice(0, 8)}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
         );
