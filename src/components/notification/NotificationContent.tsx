@@ -1,14 +1,13 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Notification } from '@/types/notification';
-import { NotificationItem } from './NotificationItem';
+import { NotificationHeader } from './NotificationHeader';
+import { NotificationTabs } from './NotificationTabs';
+import { NotificationList } from './NotificationList';
 import { 
   Tabs, 
   TabsContent, 
-  TabsList, 
-  TabsTrigger 
 } from "@/components/ui/tabs";
 
 interface NotificationContentProps {
@@ -38,58 +37,21 @@ export function NotificationContent({
 
   return (
     <>
-      <div className="flex items-center justify-between p-4 border-b">
-        <h3 className="font-medium">Notificações</h3>
-        <div className="flex gap-2">
-          {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs h-8"
-              onClick={onMarkAllAsRead}
-            >
-              Ler tudo
-            </Button>
-          )}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-xs h-8"
-            onClick={onClearAll}
-          >
-            Limpar
-          </Button>
-        </div>
-      </div>
+      <NotificationHeader
+        unreadCount={unreadCount}
+        onMarkAllAsRead={onMarkAllAsRead}
+        onClearAll={onClearAll}
+      />
       
       <Tabs value={activeTab} onValueChange={onTabChange}>
-        <TabsList className="w-full justify-start px-4 py-2 bg-muted/30">
-          <TabsTrigger value="all" className="text-xs">Todos</TabsTrigger>
-          <TabsTrigger value="case" className="text-xs">Casos</TabsTrigger>
-          <TabsTrigger value="document" className="text-xs">Documentos</TabsTrigger>
-          <TabsTrigger value="deadline" className="text-xs">Prazos</TabsTrigger>
-          <TabsTrigger value="system" className="text-xs">Sistema</TabsTrigger>
-        </TabsList>
+        <NotificationTabs activeTab={activeTab} />
         
         <TabsContent value={activeTab} className="mt-0">
-          <ScrollArea className="h-[300px]">
-            {filteredNotifications.length > 0 ? (
-              <div className="divide-y">
-                {filteredNotifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onMarkAsRead={onMarkAsRead}
-                    onRemove={onRemove}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 text-center text-muted-foreground">
-                Nenhuma notificação
-              </div>
-            )}
-          </ScrollArea>
+          <NotificationList
+            notifications={filteredNotifications}
+            onMarkAsRead={onMarkAsRead}
+            onRemove={onRemove}
+          />
         </TabsContent>
       </Tabs>
       
