@@ -36,7 +36,7 @@ export function useSearchFilters() {
     setFilters(prev => ({
       ...prev,
       [type]: {
-        ...prev[type],
+        ...(prev[type] as Record<string, boolean>),
         [key]: value
       }
     }));

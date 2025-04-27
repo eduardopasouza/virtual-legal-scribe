@@ -1,84 +1,42 @@
 
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  FileText, 
-  Users, 
-  BarChart2, 
-  Calendar as CalendarIcon, 
-  Settings, 
-  Search, 
-  Clock
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { NavLink } from "react-router-dom";
+import { Home, User, Users, Calendar, FileText, Settings, BookText, Search, FolderArchive } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-interface SidebarNavProps {
-  isCollapsed?: boolean;
-}
-
-export function SidebarNav({ isCollapsed = false }: SidebarNavProps) {
-  const location = useLocation();
-  
-  const navItems = [
-    { icon: Home, label: 'Dashboard', path: '/' },
-    { icon: FileText, label: 'Casos', path: '/cases/list' },
-    { icon: Users, label: 'Clientes', path: '/clients' },
-    { icon: BarChart2, label: 'Estatísticas', path: '/stats' },
-    { icon: CalendarIcon, label: 'Calendário', path: '/calendar' },
-    { icon: Clock, label: 'Histórico', path: '/history' },
-    { icon: Search, label: 'Busca', path: '/search' },
-    { icon: Settings, label: 'Configurações', path: '/settings' },
+const SidebarNav = () => {
+  const navigationItems = [
+    { to: "/", icon: <Home className="mr-2 h-4 w-4" />, label: "Home" },
+    { to: "/cases", icon: <FileText className="mr-2 h-4 w-4" />, label: "Casos" },
+    { to: "/clients", icon: <Users className="mr-2 h-4 w-4" />, label: "Clientes" },
+    { to: "/calendar", icon: <Calendar className="mr-2 h-4 w-4" />, label: "Calendário" },
+    { to: "/documents", icon: <FolderArchive className="mr-2 h-4 w-4" />, label: "Documentos" },
+    { to: "/search", icon: <Search className="mr-2 h-4 w-4" />, label: "Busca" },
+    { to: "/stats", icon: <BookText className="mr-2 h-4 w-4" />, label: "Estatísticas" },
+    { to: "/settings", icon: <Settings className="mr-2 h-4 w-4" />, label: "Configurações" },
   ];
 
   return (
-    <div className="space-y-2 w-full py-4">
-      {navItems.map((item) => {
-        const isActive = location.pathname === item.path || 
-                         (item.path === '/cases/list' && location.pathname.includes('/cases/'));
-        
-        const buttonContent = (
-          <Button
-            key={item.path}
-            asChild
-            variant={isActive ? 'secondary' : 'ghost'}
-            size="sm"
-            className={cn(
-              'w-full flex items-center h-10 transition-all duration-200',
-              isCollapsed ? 'justify-center px-0' : 'justify-start gap-3 px-3',
-              isActive 
-                ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm scale-[1.02]' 
-                : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-[1.01]'
-            )}
-          >
-            <NavLink to={item.path} className="flex items-center w-full">
-              <item.icon className={cn(
-                "h-5 w-5 transition-transform", 
-                !isCollapsed && 'mr-2',
-                isActive && 'scale-110'
-              )} />
-              {!isCollapsed && (
-                <span className="font-medium truncate">{item.label}</span>
-              )}
-            </NavLink>
-          </Button>
-        );
-        
-        return isCollapsed ? (
-          <TooltipProvider key={item.path} delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                {buttonContent}
-              </TooltipTrigger>
-              <TooltipContent side="right" className="bg-sidebar-accent text-sidebar-accent-foreground">
-                <p>{item.label}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : buttonContent;
-      })}
-    </div>
+    <nav className="grid items-start px-4 text-sm font-medium">
+      {navigationItems.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50",
+              isActive
+                ? "bg-evji-primary-light text-primary-foreground"
+                : "transparent"
+            )
+          }
+          end
+        >
+          {item.icon}
+          {item.label}
+        </NavLink>
+      ))}
+    </nav>
   );
-}
+};
+
+export default SidebarNav;

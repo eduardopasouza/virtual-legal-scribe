@@ -92,6 +92,27 @@ export const agents = [
     description: 'Interface de feedback, gera apresentações e registra comunicações',
     avatar: '/placeholder.svg',
     role: 'Comunicador com Cliente'
+  },
+  {
+    type: 'arquivista',
+    name: 'Arquivista Digital',
+    description: 'Classifica, organiza e gerencia documentos no sistema',
+    avatar: '/placeholder.svg',
+    role: 'Arquivista Digital'
+  },
+  {
+    type: 'extrator-dados',
+    name: 'Extrator de Dados Processuais',
+    description: 'Extrai e indexa dados relevantes de documentos jurídicos',
+    avatar: '/placeholder.svg',
+    role: 'Extrator de Dados Processuais'
+  },
+  {
+    type: 'secretaria',
+    name: 'Secretária Virtual',
+    description: 'Gerencia calendário, compromissos e comunicações',
+    avatar: '/placeholder.svg',
+    role: 'Secretária Virtual'
   }
 ];
 
@@ -178,5 +199,26 @@ export const suggestionsByAgent: Record<AgentType, string[]> = {
     'Verificar formatação do documento',
     'Adaptar linguagem jurídica',
     'Preparar minuta inicial'
+  ],
+  'arquivista': [
+    'Classificar tipos de documentos',
+    'Sugerir estrutura de organização',
+    'Identificar duplicidades documentais',
+    'Como deve ser a nomenclatura padronizada?',
+    'Quais documentos estão faltando neste caso?'
+  ],
+  'extrator-dados': [
+    'Extrair movimentações processuais',
+    'Identificar eventos-chave',
+    'Mapear números de folhas importantes',
+    'Extrair prazos do documento',
+    'Listar partes envolvidas no processo'
+  ],
+  'secretaria': [
+    'Agendar compromissos da próxima semana',
+    'Resumir emails não respondidos',
+    'Identificar conflitos de agenda',
+    'Preparar relatório de atividades diárias',
+    'Sugerir horários disponíveis para reunião'
   ]
 };
