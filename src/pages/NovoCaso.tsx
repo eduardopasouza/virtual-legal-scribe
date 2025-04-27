@@ -1,9 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useCaseOperations } from '@/hooks/useCaseOperations';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { CaseDetailsForm } from '@/components/case/CaseDetailsForm';
@@ -12,10 +12,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NavigationBreadcrumbs } from '@/components/NavigationBreadcrumbs';
 import { Steps, Step } from '@/components/ui/steps';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function NovoCaso() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { createCase } = useCaseOperations();
   const { user } = useAuth();
   const [step, setStep] = useState(1);
@@ -43,46 +44,71 @@ export default function NovoCaso() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-
+    
     try {
+      // Show toast at the beginning to give immediate feedback
+      toast.loading("Criando caso...", { id: "creating-case" });
+
       const newCase = await createCase.mutateAsync({
         ...formData,
         status: 'em_andamento',
         created_by: user?.id
       });
 
-      toast({
-        title: "Caso criado com sucesso",
-        description: "Você será redirecionado para a página do caso.",
+      toast.success("Caso criado com sucesso", {
+        id: "creating-case",
+        description: "Você será redirecionado para a página do caso."
       });
 
       navigate(`/cases/${newCase.id}`);
     } catch (error: any) {
       console.error("Erro ao criar caso:", error);
-      toast({
-        title: "Erro ao criar caso",
-        description: error.message || "Ocorreu um erro ao criar o caso. Tente novamente.",
-        variant: "destructive",
+      toast.error("Erro ao criar caso", {
+        id: "creating-case",
+        description: error.message || "Ocorreu um erro ao criar o caso. Tente novamente."
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleBack = () => {
+    navigate('/cases');
+  };
+
+  // Add page transition effect
+  useEffect(() => {
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      mainContent.classList.add('animate-fade-in');
+      return () => {
+        mainContent.classList.remove('animate-fade-in');
+      };
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="flex-1 flex">
         <Sidebar />
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="mb-4">
+        <main className="flex-1 p-6 overflow-auto animate-fade-in">
+          <div className="mb-6">
             <NavigationBreadcrumbs />
           </div>
           
           <div className="max-w-3xl mx-auto space-y-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3 mb-6">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleBack}
+                className="rounded-full hover:bg-muted transition-colors"
+              >
+                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+              </Button>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight text-evji-primary">Novo Caso</h1>
+                <h1 className="text-2xl font-serif font-bold tracking-tight text-evji-primary">Novo Caso</h1>
                 <p className="text-muted-foreground mt-1">
                   Preencha as informações necessárias para criar um novo caso.
                 </p>
@@ -90,29 +116,34 @@ export default function NovoCaso() {
             </div>
 
             {/* Progress indicator */}
-            <Card className="border-muted/40">
-              <CardContent className="py-4">
+            <Card className="border-muted/40 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="py-5">
                 <Steps currentStep={step} className="mb-0">
-                  <Step title="Informações básicas" />
-                  <Step title="Documentos" />
+                  <Step title="Informações básicas" description="Detalhes do caso" />
+                  <Step title="Documentos" description="Anexar arquivos" />
                 </Steps>
               </CardContent>
             </Card>
 
-            {step === 1 ? (
-              <CaseDetailsForm
-                formData={formData}
-                onChange={handleChange}
-                onNext={() => setStep(2)}
-              />
-            ) : (
-              <CaseDocumentsStep
-                onBack={() => setStep(1)}
-                onFinish={handleSubmit}
-                onFileSelect={handleFileSelect}
-                isSubmitting={isSubmitting}
-              />
-            )}
+            <div className="transition-all duration-300 animate-fade-in">
+              {step === 1 ? (
+                <CaseDetailsForm
+                  formData={formData}
+                  onChange={handleChange}
+                  onNext={() => {
+                    setStep(2);
+                    toast.info("Próximo passo", { description: "Complete o cadastro anexando os documentos" });
+                  }}
+                />
+              ) : (
+                <CaseDocumentsStep
+                  onBack={() => setStep(1)}
+                  onFinish={handleSubmit}
+                  onFileSelect={handleFileSelect}
+                  isSubmitting={isSubmitting}
+                />
+              )}
+            </div>
           </div>
         </main>
       </div>

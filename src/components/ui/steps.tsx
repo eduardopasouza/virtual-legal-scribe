@@ -50,12 +50,12 @@ export function Step({
   isLast,
 }: StepProps) {
   return (
-    <div className="flex flex-1 items-center">
+    <div className="flex flex-1 items-center group">
       <div className="flex flex-col items-center">
         <div
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-semibold",
-            isActive && "border-primary bg-primary text-primary-foreground",
+            "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all duration-200",
+            isActive && "border-primary bg-primary text-primary-foreground scale-110",
             isCompleted && "border-primary bg-primary text-primary-foreground",
             !isActive && !isCompleted && "border-muted-foreground/40 text-muted-foreground"
           )}
@@ -71,7 +71,7 @@ export function Step({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4"
+              className="h-4 w-4 animate-fade-in-fast"
             >
               <polyline points="20 6 9 17 4 12" />
             </svg>
@@ -79,10 +79,10 @@ export function Step({
             stepNumber
           )}
         </div>
-        <div className="text-center mt-2 px-2">
+        <div className="text-center mt-2 px-3">
           <div
             className={cn(
-              "text-xs font-medium",
+              "text-sm font-medium transition-colors duration-200",
               (isActive || isCompleted) ? "text-primary" : "text-muted-foreground"
             )}
           >
@@ -94,10 +94,10 @@ export function Step({
         </div>
       </div>
       {!isLast && (
-        <div className="w-full flex-1 mx-2">
+        <div className="w-full flex-1 mx-1 md:mx-3">
           <div
             className={cn(
-              "h-0.5",
+              "h-0.5 transition-all duration-300",
               isCompleted ? "bg-primary" : "bg-muted-foreground/20"
             )}
           />

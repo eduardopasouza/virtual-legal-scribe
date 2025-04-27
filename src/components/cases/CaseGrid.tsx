@@ -7,6 +7,7 @@ import { CaseCard } from './CaseCard';
 import { Case } from "@/types/case";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 interface CaseGridProps {
   cases: Case[];
@@ -14,6 +15,9 @@ interface CaseGridProps {
   statusFilter: string;
   areaFilter: string;
 }
+
+const MotionCard = motion(Card);
+const MotionLink = motion(Link);
 
 export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGridProps) {
   const filteredCases = cases?.filter(caseItem => {
@@ -64,28 +68,48 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
   }, [searchTerm, statusFilter, areaFilter]);
 
   const handleNewCase = () => {
-    toast.success("Criando novo caso", {
+    toast.info("Criando novo caso", {
       description: "Redirecionando para o formulário de criação"
     });
   };
 
+  const formatAreaName = (area: string) => {
+    if (area === 'civil') return 'Direito Civil';
+    if (area === 'penal') return 'Direito Penal';
+    if (area === 'trabalhista') return 'Direito Trabalhista';
+    if (area === 'administrativo') return 'Direito Administrativo';
+    if (area === 'tributario') return 'Direito Tributário';
+    if (area === 'empresarial') return 'Direito Empresarial';
+    if (area === 'consumidor') return 'Direito do Consumidor';
+    if (area === 'ambiental') return 'Direito Ambiental';
+    return area;
+  };
+
   if (filteredCases?.length === 0) {
     return (
-      <div className="text-center p-12">
-        <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-medium">Nenhum caso encontrado</h3>
-        <p className="text-muted-foreground">
+      <motion.div 
+        className="text-center p-12 bg-muted/20 rounded-lg border border-dashed border-muted"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <FileText className="mx-auto h-16 w-16 text-muted-foreground/60" />
+        <h3 className="mt-4 text-xl font-medium">Nenhum caso encontrado</h3>
+        <p className="text-muted-foreground mt-2 max-w-md mx-auto">
           {searchTerm || statusFilter !== 'all' || areaFilter !== 'all' 
-            ? "Nenhum caso corresponde aos filtros aplicados." 
-            : "Você ainda não tem casos cadastrados."}
+            ? "Nenhum caso corresponde aos filtros aplicados. Tente ajustar seus critérios de busca." 
+            : "Você ainda não tem casos cadastrados. Crie seu primeiro caso agora mesmo."}
         </p>
-        <Link to="/novo-caso" className="mt-4 inline-block">
-          <Button onClick={handleNewCase}>
+        <MotionLink to="/novo-caso" className="mt-6 inline-block"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button onClick={handleNewCase} className="shadow-sm">
             <Plus className="mr-2 h-4 w-4" />
             Criar novo caso
           </Button>
-        </Link>
-      </div>
+        </MotionLink>
+      </motion.div>
     );
   }
 
@@ -93,19 +117,17 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
     // Show cases grouped by area
     return (
       <div className="space-y-8">
-        {Object.entries(casesByArea).map(([area, areaCases]) => (
-          <Card key={area} className="border-muted/30">
+        {Object.entries(casesByArea).map(([area, areaCases], index) => (
+          <MotionCard 
+            key={area} 
+            className="border-muted/30 shadow-sm hover:shadow-md transition-shadow"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg">
-                {area === 'civil' ? 'Direito Civil' :
-                area === 'penal' ? 'Direito Penal' :
-                area === 'trabalhista' ? 'Direito Trabalhista' :
-                area === 'administrativo' ? 'Direito Administrativo' :
-                area === 'tributario' ? 'Direito Tributário' :
-                area === 'empresarial' ? 'Direito Empresarial' :
-                area === 'consumidor' ? 'Direito do Consumidor' :
-                area === 'ambiental' ? 'Direito Ambiental' :
-                area}
+              <CardTitle className="text-lg font-serif text-evji-primary">
+                {formatAreaName(area)}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -115,7 +137,7 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
                 ))}
               </div>
             </CardContent>
-          </Card>
+          </MotionCard>
         ))}
       </div>
     );
@@ -123,10 +145,22 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
 
   // Default grid view (no grouping)
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      {filteredCases?.map((caseItem) => (
-        <CaseCard key={caseItem.id} caseItem={caseItem} />
+    <motion.div 
+      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {filteredCases?.map((caseItem, index) => (
+        <motion.div
+          key={caseItem.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.05 }}
+        >
+          <CaseCard caseItem={caseItem} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
