@@ -12,7 +12,7 @@ import { OngoingActivities } from '@/components/dashboard/OngoingActivities';
 import { SystemGuide } from '@/components/dashboard/SystemGuide';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { Footer } from '@/components/Footer';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,32 +22,29 @@ const Index = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
       <Header />
       <div className="flex-1 flex flex-col lg:flex-row">
         <div className="lg:hidden">
-          <button
-            type="button"
-            className="p-4 hover:bg-muted/50 transition-colors"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-2 m-2 hover:bg-accent"
             onClick={() => document.querySelector('.sidebar')?.classList.toggle('hidden')}
             aria-label="Toggle menu"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
+            <FileText className="h-5 w-5" />
+          </Button>
         </div>
-        <div className="sidebar hidden lg:block">
+        <div className="sidebar hidden lg:block lg:w-64 flex-shrink-0 border-r border-border">
           <Sidebar />
         </div>
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+        <main className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-accent scrollbar-track-background p-4 lg:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sticky top-0 bg-background/95 backdrop-blur-sm p-2 -mx-2 z-10">
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-evji-primary">Dashboard</h2>
               <Button 
-                className="w-full sm:w-auto bg-evji-primary hover:bg-evji-primary/90 flex items-center gap-2" 
+                className="w-full sm:w-auto bg-evji-primary hover:bg-evji-primary/90 flex items-center gap-2 shadow-sm" 
                 onClick={goToNewCase}
               >
                 <FileText className="h-4 w-4" />

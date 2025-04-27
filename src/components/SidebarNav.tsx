@@ -34,7 +34,7 @@ export function SidebarNav({ isCollapsed = false }: SidebarNavProps) {
   ];
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-2 w-full py-4">
       {navItems.map((item) => {
         const isActive = location.pathname === item.path || 
                          (item.path === '/cases/list' && location.pathname.includes('/cases/'));
@@ -46,27 +46,33 @@ export function SidebarNav({ isCollapsed = false }: SidebarNavProps) {
             variant={isActive ? 'secondary' : 'ghost'}
             size="sm"
             className={cn(
-              'w-full flex items-center h-10',
+              'w-full flex items-center h-10 transition-all duration-200',
               isCollapsed ? 'justify-center px-0' : 'justify-start gap-3 px-3',
               isActive 
-                ? 'bg-sidebar-accent text-sidebar-accent-foreground' 
-                : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+                ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm scale-[1.02]' 
+                : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:scale-[1.01]'
             )}
           >
             <NavLink to={item.path} className="flex items-center w-full">
-              <item.icon className={cn("h-5 w-5", !isCollapsed && 'mr-2')} />
-              {!isCollapsed && <span>{item.label}</span>}
+              <item.icon className={cn(
+                "h-5 w-5 transition-transform", 
+                !isCollapsed && 'mr-2',
+                isActive && 'scale-110'
+              )} />
+              {!isCollapsed && (
+                <span className="font-medium truncate">{item.label}</span>
+              )}
             </NavLink>
           </Button>
         );
         
         return isCollapsed ? (
-          <TooltipProvider key={item.path}>
+          <TooltipProvider key={item.path} delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
                 {buttonContent}
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent side="right" className="bg-sidebar-accent text-sidebar-accent-foreground">
                 <p>{item.label}</p>
               </TooltipContent>
             </Tooltip>
