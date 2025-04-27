@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ptBR } from 'date-fns/locale';
@@ -17,6 +18,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 export function CaseDeadlines({ caseId, caseName }: { caseId?: string, caseName?: string }) {
   const { deadlines, isLoading, createDeadline } = useDeadlines(caseId);
+  const { toast } = useToast();
   const [showDialog, setShowDialog] = useState(false);
   const [newDeadline, setNewDeadline] = useState({
     description: '',

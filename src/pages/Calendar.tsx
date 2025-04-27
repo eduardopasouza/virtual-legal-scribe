@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { CalendarGrid } from '@/components/calendar/CalendarGrid';
@@ -99,7 +98,6 @@ export default function Calendar() {
           onSubmit={handleAddEvent}
         />
         
-        {/* Invisible component to handle notifications */}
         <CalendarNotifications events={events} />
       </div>
     </DashboardLayout>

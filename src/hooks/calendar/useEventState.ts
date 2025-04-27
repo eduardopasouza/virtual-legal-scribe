@@ -42,6 +42,28 @@ export function useEventState(initialEvents: Event[] = []) {
     setNewEvent(prev => ({ ...prev, date }));
   }, []);
 
+  const handleDismissNotification = useCallback((eventId: string) => {
+    setEvents(prevEvents => 
+      prevEvents.map(event => 
+        event.id === eventId 
+          ? {
+              ...event,
+              notificationSettings: {
+                ...event.notificationSettings!,
+                notified: true
+              }
+            }
+          : event
+      )
+    );
+    
+    setNotifiedEvents(prev => {
+      const updated = new Set(prev);
+      updated.add(eventId);
+      return updated;
+    });
+  }, []);
+
   return {
     currentMonth,
     selectedDate,
@@ -60,6 +82,7 @@ export function useEventState(initialEvents: Event[] = []) {
     handlePreviousMonth,
     handleNextMonth,
     handleTodayClick,
-    handleDateClick
+    handleDateClick,
+    handleDismissNotification
   };
 }
