@@ -3,26 +3,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Shield, ShieldAlert, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ArgumentsAnalysisData } from './types';
 
-interface Argument {
-  argument: string;
-  strength: 'weak' | 'medium' | 'strong';
-  supportingEvidence?: string[];
-  counterEvidence?: string[];
-}
-
-interface ArgumentsAnalysisData {
-  plaintiffArguments: Argument[];
-  defendantArguments: Argument[];
-  keyDisputes: string[];
-}
-
-interface CaseArgumentsAnalysisProps {
+export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: {
   analysisData?: ArgumentsAnalysisData;
   isLoading?: boolean;
-}
-
-export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: CaseArgumentsAnalysisProps) {
+}) {
   if (isLoading) {
     return (
       <Card>
@@ -58,7 +44,7 @@ export function CaseArgumentsAnalysis({ analysisData, isLoading = false }: CaseA
     );
   }
 
-  const getStrengthBadge = (strength: string) => {
+  const getStrengthBadge = (strength: 'strong' | 'medium' | 'weak') => {
     switch (strength) {
       case 'strong':
         return <Badge className="bg-green-100 text-green-800">Forte</Badge>;

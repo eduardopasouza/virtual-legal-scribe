@@ -3,14 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpCircle, AlertTriangle, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-interface LegalIssue {
-  id: number;
-  issue: string;
-  description: string;
-  priority: 'low' | 'medium' | 'high';
-  relatedFacts: string[];
-}
+import { LegalIssue } from './types';
 
 interface CaseLegalIssuesProps {
   issuesData?: LegalIssue[];

@@ -26,16 +26,20 @@ export function ChatHeader({
   // Find the active agent details
   const agent = agents.find(a => a.type === activeAgent) || agents[0];
   
+  // Default avatar and role if they don't exist in the agent object
+  const avatarUrl = agent.avatar || '/placeholder.svg';
+  const agentRole = agent.role || agent.description || 'Assistente';
+  
   return (
     <CardHeader className="p-4 border-b flex flex-row items-center justify-between">
       <div className="flex items-center gap-3">
         <Avatar className="h-9 w-9">
-          <AvatarImage src={agent.avatar} alt={agent.name} />
+          <AvatarImage src={avatarUrl} alt={agent.name} />
           <AvatarFallback>{agent.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-medium">{agent.name}</p>
-          <p className="text-xs text-muted-foreground">{agent.role}</p>
+          <p className="text-xs text-muted-foreground">{agentRole}</p>
         </div>
       </div>
       
@@ -58,7 +62,7 @@ export function ChatHeader({
                 <SelectItem key={a.type} value={a.type}>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-5 w-5">
-                      <AvatarImage src={a.avatar} alt={a.name} />
+                      <AvatarImage src={a.avatar || '/placeholder.svg'} alt={a.name} />
                       <AvatarFallback>{a.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <span>{a.name}</span>

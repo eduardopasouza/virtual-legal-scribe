@@ -13,6 +13,7 @@ import { CaseRules } from './CaseRules';
 import { CaseLegalIssues } from './CaseLegalIssues';
 import { CaseArgumentsAnalysis } from './CaseArgumentsAnalysis';
 import { useFactsAnalysis } from '@/hooks/workflow';
+import { LegalIssue, ArgumentsAnalysisData, StrategyData, RulesData } from './types';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -35,7 +36,7 @@ export function CaseSummaryTab({
   }));
 
   // Mock strategy data for demonstration (in a real app, this would come from the API)
-  const mockStrategyData = {
+  const mockStrategyData: StrategyData = {
     mainThesis: 'Abordagem baseada na violação contratual com foco em restituição econômica',
     objectives: [
       'Demonstrar descumprimento dos termos contratuais',
@@ -49,11 +50,11 @@ export function CaseSummaryTab({
       'Priorizar argumentos de boa-fé contratual',
       'Focar em jurisprudência favorável identificada na pesquisa'
     ],
-    currentPhase: 'intermediate' as 'initial' | 'intermediate' | 'final'
+    currentPhase: 'intermediate'
   };
 
   // Mock data for rules section (in a real app, this would come from the API)
-  const mockRulesData = {
+  const mockRulesData: RulesData = {
     relevantLegislation: [
       {
         name: 'Código Civil',
@@ -75,7 +76,7 @@ export function CaseSummaryTab({
   };
 
   // Mock data for legal issues (in a real app, this would come from the API)
-  const mockLegalIssuesData = [
+  const mockLegalIssuesData: LegalIssue[] = [
     {
       id: 1,
       issue: 'Possível nulidade de cláusulas contratuais abusivas',
@@ -100,7 +101,7 @@ export function CaseSummaryTab({
   ];
 
   // Mock data for arguments analysis (in a real app, this would come from the API)
-  const mockArgumentsAnalysisData = {
+  const mockArgumentsAnalysisData: ArgumentsAnalysisData = {
     plaintiffArguments: [
       {
         argument: 'Violação contratual por entrega de produto diferente do especificado',
