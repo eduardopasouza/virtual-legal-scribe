@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from "sonner";
 
@@ -34,7 +33,6 @@ export function useSearch() {
   });
   const [isFiltering, setIsFiltering] = useState(false);
   
-  // These would be replaced with real data fetching in a production app
   const [documents, setDocuments] = useState([
     { 
       id: '1', 
@@ -144,11 +142,11 @@ export function useSearch() {
     }
   }, [searchTerm]);
 
-  const handleFilterChange = useCallback((type: string, key: string, value: boolean) => {
+  const handleFilterChange = useCallback((type: keyof SearchFilters, key: string, value: boolean) => {
     setFilters(prev => ({
       ...prev,
       [type]: {
-        ...prev[type as keyof typeof prev],
+        ...prev[type],
         [key]: value
       }
     }));
@@ -188,7 +186,6 @@ export function useSearch() {
     setTimeout(() => setIsFiltering(false), 500);
   }, []);
 
-  // Apply filters
   const filteredDocuments = documents.filter(doc => 
     doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     doc.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
