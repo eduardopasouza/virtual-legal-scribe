@@ -11,6 +11,8 @@ export interface Case {
   created_at: string;
   updated_at: string;
   area_direito?: string;
+  priority?: 'baixa' | 'media' | 'alta' | 'urgente';
+  complexity?: 'simples' | 'media' | 'complexa' | 'muito_complexa';
 }
 
 export interface Activity {
