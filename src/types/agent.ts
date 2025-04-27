@@ -1,3 +1,4 @@
+
 export interface AgentResult {
   success: boolean;
   message: string;
@@ -28,6 +29,7 @@ export type AgentType =
   | 'redator'
   | 'assistente-redacao'
   | 'especialista'
+  | 'especialista-adaptavel'
   | 'revisor-legal'
   | 'revisor-texto'
   | 'comunicador';

@@ -4,12 +4,14 @@ import { AnalistaRequisitosAgent } from './AnalistaRequisitosAgent';
 import { RedatorAgent } from './RedatorAgent';
 import { EstrategistaAgent } from './EstrategistaAgent';
 import { AnalistaFatosAgent } from './AnalistaFatosAgent';
+import { EspecialistaAdaptavelAgent } from './EspecialistaAdaptavelAgent';
 
 const agents: Agent[] = [
   new AnalistaRequisitosAgent(),
   new RedatorAgent(),
   new EstrategistaAgent(),
-  new AnalistaFatosAgent()
+  new AnalistaFatosAgent(),
+  new EspecialistaAdaptavelAgent()
 ];
 
 export const getAgent = (type: string): Agent | undefined => {

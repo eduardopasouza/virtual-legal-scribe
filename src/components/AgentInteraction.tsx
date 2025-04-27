@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { AgentType } from '@/hooks/agent/types';
-import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen } from "lucide-react";
 
 interface AgentInteractionProps {
   caseId?: string;
@@ -42,6 +42,12 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       icon: <FileText className="h-5 w-5" />
     },
     {
+      type: 'especialista-adaptavel',
+      name: 'Especialista Adaptável',
+      description: 'Analisa camadas avançadas como aspectos constitucionais, direito internacional e interdisciplinaridades.',
+      icon: <BookOpen className="h-5 w-5" />
+    },
+    {
       type: 'revisor-legal',
       name: 'Revisor Legal',
       description: 'Revisa documentos para garantir conformidade legal e acurácia.',
@@ -51,12 +57,6 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       type: 'assistente-redacao',
       name: 'Assistente de Redação',
       description: 'Auxilia na redação de documentos jurídicos baseados no caso.',
-      icon: <Info className="h-5 w-5" />
-    },
-    {
-      type: 'pesquisador',
-      name: 'Pesquisador Jurídico',
-      description: 'Realiza pesquisas de jurisprudência e doutrina relevantes ao caso.',
       icon: <Info className="h-5 w-5" />
     }
   ];

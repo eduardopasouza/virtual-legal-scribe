@@ -14,6 +14,7 @@ import { CaseStrategy } from './CaseStrategy';
 import { CaseFacts } from './CaseFacts';
 import { useFactsAnalysis } from '@/hooks/workflow';
 import { CaseDrafts } from './CaseDrafts';
+import { CaseAdvancedAnalysis } from './CaseAdvancedAnalysis';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -75,6 +76,9 @@ export function CaseSummaryTab({
         />
         
         <CaseStrategy strategyData={mockStrategyData} />
+        
+        {/* Advanced Layers Analysis Section */}
+        <CaseAdvancedAnalysis caseId={caseId} />
         
         {/* Document Drafting Section */}
         <CaseDrafts caseId={caseId} />

@@ -8,4 +8,4 @@ export * from './useWorkflow';
 export * from './useWorkflowStrategy';
 export * from './useFactsAnalysis';  // Export our facts analysis hook
 export * from './useDocumentDrafting';  // Export our document drafting hook
-
+export * from './useAdvancedLayersAnalysis';  // Export our advanced layers analysis hook

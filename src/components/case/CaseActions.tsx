@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Loader2, Info, CheckCircle, BarChart2 } from 'lucide-react';
+import { Loader2, Info, CheckCircle, BarChart2, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
-import { useWorkflow } from '@/hooks/workflow';
+import { useWorkflow, useAdvancedLayersAnalysis } from '@/hooks/workflow';
 
 interface CaseActionsProps {
   caseId: string;
@@ -26,6 +27,13 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     isStrategicStage,
     executeCurrentStrategicPhase
   } = useWorkflow(caseId);
+  
+  const {
+    executeAdvancedAnalysis,
+    isAnalyzing: isAnalyzingAdvancedLayers,
+    selectedSpecialty,
+    setSelectedSpecialty
+  } = useAdvancedLayersAnalysis(caseId);
 
   const hasWorkflow = stages && stages.length > 0;
 
@@ -112,6 +120,28 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     }
   };
 
+  const handleExecuteAdvancedAnalysis = async () => {
+    try {
+      await executeAdvancedAnalysis.mutateAsync({ specialtyType: selectedSpecialty });
+      
+      toast({
+        title: "Análise especializada concluída",
+        description: "O especialista adaptável concluiu a análise com sucesso.",
+      });
+      
+      // Invalidate queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ["case", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
+      queryClient.invalidateQueries({ queryKey: ["advanced-analyses", caseId] });
+    } catch (error: any) {
+      toast({
+        title: "Erro na análise especializada",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const isCurrentStageStrategic = isStrategicStage();
 
   return (
@@ -154,6 +184,25 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
           )}
         </Button>
       )}
+      
+      <Button 
+        onClick={handleExecuteAdvancedAnalysis}
+        disabled={isAnalyzingAdvancedLayers}
+        variant="outline"
+        className="bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-200"
+      >
+        {isAnalyzingAdvancedLayers ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Analisando...
+          </>
+        ) : (
+          <>
+            <BookOpen className="mr-2 h-4 w-4" />
+            Análise Especializada
+          </>
+        )}
+      </Button>
       
       <Button 
         className="bg-evji-primary hover:bg-evji-primary/90"

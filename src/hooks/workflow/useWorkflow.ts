@@ -8,6 +8,8 @@ import { useWorkflowAlerts } from './useWorkflowAlerts';
 import { useWorkflowStatus } from './useWorkflowStatus';
 import { useWorkflowStrategy } from './useWorkflowStrategy';
 import { useFactsAnalysis } from './useFactsAnalysis';
+import { useAdvancedLayersAnalysis } from './useAdvancedLayersAnalysis';
+import { useDocumentDrafting } from './useDocumentDrafting';
 
 export function useWorkflow(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,6 +30,15 @@ export function useWorkflow(caseId?: string) {
     factsAnalysis,
     isAnalyzing: isAnalyzingFacts
   } = useFactsAnalysis(caseId);
+  const {
+    executeAdvancedAnalysis,
+    isAnalyzing: isAnalyzingAdvanced,
+    advancedAnalyses
+  } = useAdvancedLayersAnalysis(caseId);
+  const {
+    draftDocument,
+    isDrafting
+  } = useDocumentDrafting(caseId);
 
   // Get recommended agent for current stage
   const getRecommendedAgent = () => {
@@ -55,6 +66,12 @@ export function useWorkflow(caseId?: string) {
   const isFactsAnalysisStage = () => {
     if (!currentStage?.stage_name) return false;
     return currentStage.stage_name === 'facts-analysis';
+  };
+  
+  // Determinar se estamos em uma fase que requer análise avançada
+  const isAdvancedAnalysisStage = () => {
+    if (!currentStage?.stage_name) return false;
+    return ['research', 'constitutional-review', 'international-law'].includes(currentStage.stage_name);
   };
 
   // Identificar qual fase estratégica estamos
@@ -104,6 +121,14 @@ export function useWorkflow(caseId?: string) {
       return await executeFactsAnalysis.mutateAsync();
     }
     
+    if (isAdvancedAnalysisStage()) {
+      // Determine which type of advanced analysis to execute based on the stage
+      const specialtyType = currentStage.stage_name === 'constitutional-review' ? 'constitutional' : 
+                          currentStage.stage_name === 'international-law' ? 'international' : 'interdisciplinary';
+      
+      return await executeAdvancedAnalysis.mutateAsync({ specialtyType });
+    }
+    
     return null;
   };
 
@@ -111,7 +136,7 @@ export function useWorkflow(caseId?: string) {
     stages,
     currentStage,
     isLoading,
-    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts,
+    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || isAnalyzingAdvanced || isDrafting,
     error,
     initializeWorkflow,
     advanceWorkflow,
@@ -132,6 +157,12 @@ export function useWorkflow(caseId?: string) {
     isFactsAnalysisStage,
     executeFactsAnalysis,
     factsAnalysis,
+    // Advanced analysis methods
+    isAdvancedAnalysisStage,
+    executeAdvancedAnalysis,
+    advancedAnalyses,
+    // Document drafting
+    draftDocument,
     // Execute current stage based on type
     executeCurrentStage
   };
