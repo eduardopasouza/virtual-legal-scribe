@@ -1,4 +1,3 @@
-
 import { AgentType } from '@/hooks/useAgentSimulation';
 
 export const agents = [
@@ -121,5 +120,12 @@ export const suggestionsByAgent: Record<AgentType, string[]> = {
     'Prepare uma apresentação para o cliente',
     'Como explicar este caso de forma simplificada?',
     'Registre as comunicações com o cliente'
+  ],
+  'assistente-redacao': [
+    'Gerar rascunho do documento',
+    'Aplicar modelo padrão de petição',
+    'Verificar formatação do documento',
+    'Adaptar linguagem jurídica',
+    'Preparar minuta inicial'
   ]
 };
