@@ -1,4 +1,3 @@
-
 import { AgentType } from '@/types/agent';
 
 export type WorkflowStatus = 'pending' | 'in_progress' | 'completed' | 'failed';
@@ -27,7 +26,8 @@ export type WorkflowStageName =
   | 'review'
   | 'delivery'
   | 'constitutional-review'  // Added for advanced analysis
-  | 'international-law';     // Added for advanced analysis
+  | 'international-law'     // Added for advanced analysis
+  | 'final-revision';       // Added for the revisor-integrador stage
 
 export interface WorkflowStageConfig {
   name: WorkflowStageName;

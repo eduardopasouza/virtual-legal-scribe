@@ -19,3 +19,12 @@ export interface DocumentToVerify {
   title?: string;
   content: string;
 }
+
+export interface RevisionResult {
+  originalContent: string;
+  revisedContent: string;
+  changesMade: string[];
+  improvementsDescription: string;
+  readabilityScore: number;
+  technicalAccuracyPreserved: boolean;
+}

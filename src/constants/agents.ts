@@ -118,6 +118,12 @@ export const suggestionsByAgent: Record<AgentType, string[]> = {
     'Verifique as citações e referências',
     'O que precisa ser ajustado formalmente?'
   ],
+  'revisor-integrador': [
+    'Revise a fluidez e coesão do texto',
+    'Unifique a terminologia jurídica',
+    'Elimine redundâncias no documento',
+    'Aplique melhorias de estilo ao texto'
+  ],
   'revisor-texto': [
     'Revise a gramática e o estilo deste texto',
     'Como integrar todas as partes do documento?',
