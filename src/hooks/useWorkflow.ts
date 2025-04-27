@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { workflowService, WorkflowStage, WorkflowStageName, WorkflowStatus } from '@/workflow';
@@ -140,7 +139,7 @@ export function useWorkflow(caseId?: string) {
       stageName: WorkflowStageName, 
       status: WorkflowStatus 
     }) => {
-      if (!caseId) throw new Error("Case ID is required");
+      if (!caseId || !stageName) throw new Error("Case ID and stage name are required");
       return await workflowService.updateStageStatus(caseId, stageName, status);
     },
     onSuccess: () => {

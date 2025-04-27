@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/components/notification/NotificationSystem';
 import { getAgent } from '@/agents';
 import { AgentType, AgentResult, AgentSimulationState, AgentSimulationHook } from '@/types/agent';
 
-export { AgentType };
+export type { AgentType };
 
 export function useAgentSimulation(caseId?: string): AgentSimulationHook {
   const [isProcessing, setIsProcessing] = useState<AgentSimulationState>({});

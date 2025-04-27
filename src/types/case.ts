@@ -1,4 +1,3 @@
-
 export interface Case {
   id: string;
   title: string;
@@ -33,12 +32,14 @@ export interface Deadline {
   created_at: string;
 }
 
+import { WorkflowStageName, WorkflowStatus } from '@/workflow/types';
+
 export interface WorkflowStage {
   id: string;
   case_id: string;
   stage_number: number;
-  stage_name: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  stage_name: WorkflowStageName;
+  status: WorkflowStatus;
   started_at?: string;
   completed_at?: string;
   created_at?: string;
