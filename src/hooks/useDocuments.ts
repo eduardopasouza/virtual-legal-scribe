@@ -11,7 +11,7 @@ export interface DocumentMetadata {
   size: number;
   type: string;
   case_id?: string | null;
-  uploaded_at?: string;  // Changed from Date to string to match Supabase's format
+  uploaded_at?: string;
   file_path?: string;
   created_by?: string;
 }
@@ -22,15 +22,25 @@ export function useDocuments(caseId?: string) {
   const { user } = useAuth();
 
   const uploadDocument = async (file: File) => {
+    if (!user) {
+      toast({
+        title: "Erro de autenticação",
+        description: "Você precisa estar logado para fazer upload de documentos.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       setIsUploading(true);
       
       // Generate a unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
+      // Include user ID in the path for RLS
       const filePath = caseId 
-        ? `case-${caseId}/${fileName}` 
-        : `general/${fileName}`;
+        ? `${user.id}/case-${caseId}/${fileName}`
+        : `${user.id}/general/${fileName}`;
 
       // Upload to Supabase storage
       const { error: storageError } = await supabase.storage
@@ -39,16 +49,16 @@ export function useDocuments(caseId?: string) {
 
       if (storageError) throw storageError;
 
-      // Store document metadata in database with user ID
+      // Store document metadata in database
       const documentMetadata = {
         id: uuidv4(),
         name: file.name,
         size: file.size,
         type: file.type,
         case_id: caseId || null,
-        uploaded_at: new Date().toISOString(),  // Store as ISO string
+        uploaded_at: new Date().toISOString(),
         file_path: filePath,
-        created_by: user?.id  // Adiciona o ID do usuário autenticado
+        created_by: user.id
       };
 
       const { error: dbError } = await supabase
@@ -76,14 +86,26 @@ export function useDocuments(caseId?: string) {
     }
   };
 
-  const getDocumentUrl = (filePath: string) => {
-    return supabase.storage
+  const getDocumentUrl = async (filePath: string) => {
+    // Create a signed URL that expires in 1 hour
+    const { data, error } = await supabase.storage
       .from('documents')
-      .getPublicUrl(filePath)
-      .data.publicUrl;
+      .createSignedUrl(filePath, 3600);
+
+    if (error) {
+      console.error('Error creating signed URL:', error);
+      return null;
+    }
+
+    return data.signedUrl;
   };
 
   const listDocuments = async (caseId?: string) => {
+    if (!user) {
+      console.error('User must be authenticated to list documents');
+      return [];
+    }
+
     try {
       let query = supabase
         .from('documents')
@@ -94,15 +116,12 @@ export function useDocuments(caseId?: string) {
         query = query.eq('case_id', caseId);
       }
 
-      // Aplica filtro de usuário se autenticado
-      if (user) {
-        query = query.eq('created_by', user.id);
-      }
+      // Apply user filter
+      query = query.eq('created_by', user.id);
 
       const { data, error } = await query;
 
       if (error) throw error;
-      // The returned data will match our DocumentMetadata interface
       return data as DocumentMetadata[];
     } catch (error: any) {
       toast({

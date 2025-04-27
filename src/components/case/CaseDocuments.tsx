@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Paperclip, Upload } from "lucide-react";
+import { FileText, Paperclip } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useDocuments, DocumentMetadata } from '@/hooks/useDocuments';
@@ -14,6 +14,7 @@ interface CaseDocumentsProps {
 export function CaseDocuments({ caseId }: CaseDocumentsProps) {
   const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
   const { listDocuments, getDocumentUrl } = useDocuments(caseId);
+  const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -30,6 +31,23 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     else return (bytes / 1048576).toFixed(1) + ' MB';
+  };
+
+  const handleDownload = async (doc: DocumentMetadata) => {
+    if (!doc.file_path) return;
+    
+    setLoadingFiles(prev => ({ ...prev, [doc.id!]: true }));
+    
+    try {
+      const url = await getDocumentUrl(doc.file_path);
+      if (url) {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error getting signed URL:', error);
+    } finally {
+      setLoadingFiles(prev => ({ ...prev, [doc.id!]: false }));
+    }
   };
 
   return (
@@ -65,15 +83,11 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onClick={() => {
-                    if (doc.file_path) {
-                      window.open(getDocumentUrl(doc.file_path), '_blank');
-                    }
-                  }}
-                  disabled={!doc.file_path}
+                  onClick={() => handleDownload(doc)}
+                  disabled={loadingFiles[doc.id!] || !doc.file_path}
                 >
                   <Paperclip className="h-4 w-4 mr-2" />
-                  Baixar
+                  {loadingFiles[doc.id!] ? 'Carregando...' : 'Baixar'}
                 </Button>
               </div>
             ))
