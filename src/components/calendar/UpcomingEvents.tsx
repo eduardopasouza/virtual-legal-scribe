@@ -18,38 +18,43 @@ export function UpcomingEvents({ events }: UpcomingEventsProps) {
     .slice(0, 5);
 
   return (
-    <div className="space-y-4">
-      {upcomingEvents.map(event => (
-        <div key={event.id} className="flex items-start gap-4 p-3 border rounded-md hover:bg-muted/50 transition-colors">
-          <div className={`w-1 self-stretch rounded-full ${getTypeColor(event.type)}`} />
-          <div className="flex-1 min-w-0">
-            <div className="font-medium">{event.title}</div>
-            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-              <div className="flex items-center">
-                <CalendarIcon className="h-4 w-4 mr-1" />
-                {format(event.date, 'dd/MM/yyyy')}
-              </div>
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 mr-1" />
-                {event.startTime} - {event.endTime}
-              </div>
-            </div>
-            {event.relatedCase && (
-              <div className="flex items-center gap-1 mt-1 text-xs">
-                <FileText className="h-3 w-3" />
-                {event.relatedCase}
-              </div>
-            )}
-          </div>
-          <Badge className={cn(
-            'text-xs',
-            getTypeColor(event.type).replace('bg-', 'bg-opacity-20 text-').replace('-500', '-700')
-          )}>
-            {getTypeLabel(event.type)}
-          </Badge>
+    <div className="space-y-2">
+      {upcomingEvents.length === 0 ? (
+        <div className="text-sm text-muted-foreground italic">
+          Não há eventos próximos.
         </div>
-      ))}
+      ) : (
+        upcomingEvents.map(event => (
+          <div key={event.id} className="flex items-start gap-3 p-2 border rounded-md hover:bg-muted/50 transition-colors">
+            <div className={`w-1 self-stretch rounded-full ${getTypeColor(event.type)}`} />
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-sm">{event.title}</div>
+              <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
+                <div className="flex items-center">
+                  <CalendarIcon className="h-3.5 w-3.5 mr-1" />
+                  {format(event.date, 'dd/MM/yyyy')}
+                </div>
+                <div className="flex items-center">
+                  <Clock className="h-3.5 w-3.5 mr-1" />
+                  {event.startTime} - {event.endTime}
+                </div>
+              </div>
+              {event.relatedCase && (
+                <div className="flex items-center gap-1 mt-1 text-xs">
+                  <FileText className="h-3 w-3" />
+                  {event.relatedCase}
+                </div>
+              )}
+            </div>
+            <Badge className={cn(
+              'text-xs',
+              getTypeColor(event.type).replace('bg-', 'bg-opacity-20 text-').replace('-500', '-700')
+            )}>
+              {getTypeLabel(event.type)}
+            </Badge>
+          </div>
+        ))
+      )}
     </div>
   );
 }
-
