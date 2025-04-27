@@ -30,6 +30,7 @@ export function DocumentActions({
       <Button 
         onClick={onSubmit} 
         disabled={disabled}
+        className="min-w-[120px]"
       >
         {uploadStatus === 'loading' ? (
           <>

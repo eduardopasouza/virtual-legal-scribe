@@ -8,6 +8,7 @@ import { DocumentTypeSelect } from './document/DocumentTypeSelect';
 import { DocumentActions } from './document/DocumentActions';
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface DocumentUploaderProps {
   caseId?: string;
@@ -102,7 +103,10 @@ export function DocumentUploader({
           {uploadStatus === 'processing' && (
             <div className="space-y-2 py-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm">Processando documento...</span>
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <span className="text-sm">Processando documento...</span>
+                </div>
                 <span className="text-sm font-medium">{processingProgress}%</span>
               </div>
               <Progress value={processingProgress} className="h-2" />
