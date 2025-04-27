@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, FileText, MessageSquare, Calendar, Users, Bell, Info } from 'lucide-react';
@@ -11,6 +10,7 @@ import { CasePeople } from './CasePeople';
 import { AgentChat } from '@/components/AgentChat';
 import { DocumentMetadata } from '@/hooks/useDocuments';
 import { Alert, Activity, Deadline, WorkflowStage } from '@/types/case';
+import { CaseSummaryTab } from './CaseSummaryTab';
 
 interface CaseContentTabsProps {
   caseId: string;
