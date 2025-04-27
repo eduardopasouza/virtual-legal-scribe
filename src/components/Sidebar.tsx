@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SidebarNav } from '@/components/SidebarNav';
 import { Separator } from "@/components/ui/separator";
 import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
@@ -9,18 +9,44 @@ import { cn } from '@/lib/utils';
 
 export function Sidebar() {
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isPinned, setIsPinned] = useState(false);
   
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+  // Função para expandir a sidebar ao colocar o mouse
+  const handleMouseEnter = () => {
+    if (!isPinned) {
+      setIsCollapsed(false);
+    }
   };
+  
+  // Função para recolher a sidebar ao retirar o mouse
+  const handleMouseLeave = () => {
+    if (!isPinned) {
+      setIsCollapsed(true);
+    }
+  };
+  
+  // Função para fixar/desfixar a sidebar
+  const togglePin = () => {
+    setIsPinned(!isPinned);
+  };
+  
+  // Efeito para recolher a sidebar ao carregar a página
+  useEffect(() => {
+    setIsCollapsed(true);
+    setIsPinned(false);
+  }, []);
   
   return (
     <div className="relative h-full flex">
-      <aside className={cn(
-        "h-full border-r border-border bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
-      )}>
+      <aside 
+        className={cn(
+          "h-full border-r border-border bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300",
+          isCollapsed ? "w-16" : "w-64"
+        )}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <div className={cn("p-6 flex items-center", isCollapsed && "justify-center p-3")}>
           <Link to="/" className="font-serif text-xl font-bold flex items-center hover:text-evji-accent transition-colors">
             {isCollapsed ? (
@@ -61,12 +87,15 @@ export function Sidebar() {
       <Button 
         variant="ghost" 
         size="sm"
-        className="absolute -right-3 top-20 h-6 w-6 p-0 rounded-full border shadow-md bg-background z-10"
-        onClick={toggleSidebar}
+        className={cn(
+          "absolute -right-3 top-20 h-6 w-6 p-0 rounded-full border shadow-md bg-background z-10",
+          isPinned && "bg-evji-accent/20"
+        )}
+        onClick={togglePin}
       >
         {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         <span className="sr-only">
-          {isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+          {isPinned ? 'Desafixar menu' : 'Fixar menu'}
         </span>
       </Button>
     </div>
