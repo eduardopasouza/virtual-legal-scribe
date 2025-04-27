@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Case, Activity, Deadline, WorkflowStage, Alert } from "@/types/case";
 import { DocumentMetadata, useDocuments } from "./useDocuments";
-import { useActivities } from "./useActivities";
+import { useActivitiesList } from "./useActivities";
 import { useDeadlines } from "./useDeadlines";
 
 interface CaseDetailedData {
@@ -19,7 +19,7 @@ interface CaseDetailedData {
 
 export function useCaseDetails(caseId?: string): CaseDetailedData {
   const { listDocuments } = useDocuments();
-  const { activities, isLoading: isActivitiesLoading } = useActivities(caseId);
+  const { activities, isLoading: isActivitiesLoading } = useActivitiesList(caseId);
   const { deadlines, isLoading: isDeadlinesLoading } = useDeadlines(caseId);
 
   const { data: caseData, isLoading: isCaseLoading, error: caseError } = useQuery({

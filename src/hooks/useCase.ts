@@ -1,5 +1,4 @@
 
-// Renamed from useCase to useSingleCase for clarity and consistency
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
