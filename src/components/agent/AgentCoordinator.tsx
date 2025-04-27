@@ -33,7 +33,7 @@ export function AgentCoordinator({ caseId, workflowStages }: AgentCoordinatorPro
         .order("stage_number", { ascending: true });
         
       if (error) throw error;
-      return data;
+      return data as WorkflowStage[];
     },
     enabled: !!caseId,
     initialData: workflowStages

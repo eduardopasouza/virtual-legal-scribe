@@ -1,3 +1,4 @@
+
 export interface Case {
   id: string;
   title: string;
@@ -41,6 +42,7 @@ export interface WorkflowStage {
   started_at?: string;
   completed_at?: string;
   created_at?: string;
+  created_by?: string;
 }
 
 export interface Alert {

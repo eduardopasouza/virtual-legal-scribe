@@ -111,10 +111,10 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
             <CardFooter>
               <Button 
                 onClick={() => handleAgentAction(agent.type)} 
-                disabled={isProcessing?.[agent.type]} 
+                disabled={isProcessing[agent.type]} 
                 className="w-full"
               >
-                {isProcessing?.[agent.type] ? (
+                {isProcessing[agent.type] ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Processando...

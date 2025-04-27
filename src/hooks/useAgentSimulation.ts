@@ -11,6 +11,7 @@ export type AgentType =
   | 'pesquisador'
   | 'analista-argumentacao'
   | 'redator'
+  | 'assistente-redacao'
   | 'especialista'
   | 'revisor-legal'
   | 'revisor-texto'
@@ -132,6 +133,7 @@ export function useAgentSimulation(caseId?: string) {
           break;
 
         case 'redator':
+        case 'assistente-redacao':
           result = {
             success: true,
             message: 'Documento redigido com sucesso',
