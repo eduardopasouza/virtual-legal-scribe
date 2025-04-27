@@ -19,13 +19,15 @@ export type WorkflowStageName =
   | 'reception'
   | 'planning'
   | 'analysis'
-  | 'facts-analysis'  // New stage for facts analysis
+  | 'facts-analysis'
   | 'research'
   | 'strategy-review'
   | 'drafting'
   | 'strategic-validation'
   | 'review'
-  | 'delivery';
+  | 'delivery'
+  | 'constitutional-review'  // Added for advanced analysis
+  | 'international-law';     // Added for advanced analysis
 
 export interface WorkflowStageConfig {
   name: WorkflowStageName;

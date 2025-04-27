@@ -1,3 +1,4 @@
+
 import { AgentType } from '@/hooks/agent/types';
 
 export const agents = [
@@ -105,6 +106,12 @@ export const suggestionsByAgent: Record<AgentType, string[]> = {
     'Explique os conceitos específicos desta área',
     'Quais são as particularidades deste tipo de caso?',
     'Forneça conhecimento especializado sobre este tema'
+  ],
+  'especialista-adaptavel': [
+    'Analise os aspectos constitucionais deste caso',
+    'Quais implicações de direito internacional existem?',
+    'Avalie os aspectos interdisciplinares relevantes',
+    'Analise os documentos técnicos deste caso'
   ],
   'revisor-legal': [
     'Este documento está em conformidade?',
