@@ -1,4 +1,3 @@
-
 export interface Message {
   id: string;
   text: string;
@@ -18,4 +17,10 @@ export interface Message {
     nextSteps?: string[];
     [key: string]: any;
   }
+}
+
+export interface AgentChatProps {
+  caseId?: string;
+  onMessageSent?: (message: Message) => void;
+  onAgentChange?: (agentType: string) => void;
 }
