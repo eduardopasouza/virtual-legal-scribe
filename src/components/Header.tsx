@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,15 +15,34 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import { NavigationBreadcrumbs } from '@/components/NavigationBreadcrumbs';
+import { toast } from "sonner";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toggleSidebar } = useMobileContext();
 
   const handleNewCase = () => {
     navigate('/novo-caso');
+    toast.success("Criando novo caso", {
+      description: "Redirecionando para o formulário de criação"
+    });
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const searchTerm = formData.get('search') as string;
+    
+    if (searchTerm && searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      toast.info("Busca iniciada", {
+        description: `Buscando por "${searchTerm}"`
+      });
+    }
   };
 
   return (
@@ -45,12 +64,13 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-4 flex-1 px-6">
-          <form className="flex-1 max-w-md">
+          <form className="flex-1 max-w-md" onSubmit={handleSearch}>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
+                name="search"
                 type="search"
-                placeholder="Buscar casos, documentos, clientes..."
+                placeholder="Buscar casos, documentos, clientes... (Enter para busca avançada)"
                 className="w-full pl-8"
               />
             </div>
@@ -106,6 +126,12 @@ export function Header() {
           </DropdownMenu>
         </div>
       </div>
+      
+      {location.pathname !== '/' && (
+        <div className="px-4 py-2 border-b">
+          <NavigationBreadcrumbs />
+        </div>
+      )}
     </header>
   );
 }

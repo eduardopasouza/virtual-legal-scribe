@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, FileText, MessageSquare, Calendar, Users, Bell, Info } from 'lucide-react';
 import { CaseDocuments } from './CaseDocuments';
@@ -11,6 +12,8 @@ import { AgentChat } from '@/components/AgentChat';
 import { DocumentMetadata } from '@/hooks/useDocuments';
 import { Alert, Activity, Deadline, WorkflowStage } from '@/types/case';
 import { CaseSummaryTab } from './CaseSummaryTab';
+import { toast } from "sonner";
+import { useLocation } from 'react-router-dom';
 
 interface CaseContentTabsProps {
   caseId: string;
@@ -30,12 +33,52 @@ export function CaseContentTabs({
   documents
 }: CaseContentTabsProps) {
   const [activeTab, setActiveTab] = React.useState('summary');
+  const location = useLocation();
+  
+  // Extract tab from URL hash if present
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash && ['summary', 'documents', 'timeline', 'alerts', 'activities', 'deadlines', 'people', 'agentchat'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, [location.hash]);
+
+  // Update URL hash when tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    window.history.replaceState(null, '', `${location.pathname}#${value}`);
+    
+    // Provide feedback based on tab
+    const tabFeedback: Record<string, { title: string, description: string }> = {
+      alerts: { 
+        title: "Alertas", 
+        description: alerts.length > 0 ? `${alerts.length} alertas pendentes` : "Nenhum alerta pendente" 
+      },
+      documents: { 
+        title: "Documentos", 
+        description: `${documents.length} documentos disponíveis` 
+      },
+      activities: { 
+        title: "Atividades", 
+        description: `${activities.length} atividades registradas` 
+      },
+      deadlines: { 
+        title: "Prazos", 
+        description: `${deadlines.length} prazos cadastrados` 
+      }
+    };
+    
+    if (tabFeedback[value]) {
+      toast.info(tabFeedback[value].title, {
+        description: tabFeedback[value].description
+      });
+    }
+  };
 
   return (
     <Tabs 
-      defaultValue="summary" 
       value={activeTab}
-      onValueChange={setActiveTab} 
+      onValueChange={handleTabChange} 
       className="mt-6"
     >
       <TabsList className="mb-4 overflow-auto flex-nowrap max-w-full max-md:justify-start">

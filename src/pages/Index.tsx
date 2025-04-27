@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { DashboardStats } from '@/components/DashboardStats';
@@ -13,20 +13,41 @@ import { Button } from "@/components/ui/button";
 import { Plus, ArrowLeft, Folder } from "lucide-react";
 import { ChatbotAssistant } from '@/components/ChatbotAssistant';
 import { SidebarNav } from '@/components/SidebarNav';
+import { toast } from "sonner";
 
 const Index = () => {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'dashboard' | 'new-case'>('dashboard');
+  const [activeTab, setActiveTab] = useState('overview');
   
   // Handler for creating a new case
   const handleNewCase = () => {
     setCurrentView('new-case');
+    toast.info("Novo caso", { 
+      description: "Preparando formulário para criação de caso" 
+    });
   };
   
   // Handler for going back to dashboard
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
     setSelectedAgent(null);
+    toast.info("Voltando ao dashboard", { 
+      description: "Visualizando resumo do sistema" 
+    });
+  };
+
+  // Handler for tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
+  // Handler for agent selection
+  const handleAgentSelect = (agentId: string) => {
+    setSelectedAgent(agentId);
+    toast.info("Agente selecionado", { 
+      description: `Visualizando detalhes do agente ${agentId}` 
+    });
   };
 
   // Content for the new case view
@@ -63,7 +84,7 @@ const Index = () => {
       <DashboardStats />
       
       {/* Tabs para facilitar navegação entre visões */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="agents">Agentes de IA</TabsTrigger>
@@ -74,7 +95,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left column */}
             <div className="lg:col-span-2 space-y-6">
-              <AgentsList onAgentSelect={(agentId) => setSelectedAgent(agentId)} />
+              <AgentsList onAgentSelect={handleAgentSelect} />
             </div>
             
             {/* Right column */}
@@ -88,7 +109,7 @@ const Index = () => {
           {selectedAgent ? (
             <AgentDetails agentId={selectedAgent} onBack={() => setSelectedAgent(null)} />
           ) : (
-            <AgentsList expanded onAgentSelect={(agentId) => setSelectedAgent(agentId)} />
+            <AgentsList expanded onAgentSelect={handleAgentSelect} />
           )}
         </TabsContent>
         

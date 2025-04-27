@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { CaseCard } from './CaseCard';
 import { Case } from "@/types/case";
+import { toast } from "sonner";
 
 interface CaseGridProps {
   cases: Case[];
@@ -27,6 +28,29 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
     return matchesSearch && matchesStatus && matchesArea;
   });
 
+  const handleFilterFeedback = () => {
+    if (filteredCases?.length === 0 && (searchTerm || statusFilter !== 'all' || areaFilter !== 'all')) {
+      const filters = [];
+      if (searchTerm) filters.push(`termo "${searchTerm}"`);
+      if (statusFilter !== 'all') filters.push(`status "${statusFilter}"`);
+      if (areaFilter !== 'all') filters.push(`área "${areaFilter}"`);
+      
+      toast.info("Filtros aplicados", { 
+        description: `Nenhum caso corresponde aos filtros: ${filters.join(', ')}` 
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    handleFilterFeedback();
+  }, [searchTerm, statusFilter, areaFilter]);
+
+  const handleNewCase = () => {
+    toast.success("Criando novo caso", {
+      description: "Redirecionando para o formulário de criação"
+    });
+  };
+
   if (filteredCases?.length === 0) {
     return (
       <div className="text-center p-12">
@@ -38,7 +62,7 @@ export function CaseGrid({ cases, searchTerm, statusFilter, areaFilter }: CaseGr
             : "Você ainda não tem casos cadastrados."}
         </p>
         <Link to="/novo-caso" className="mt-4 inline-block">
-          <Button>
+          <Button onClick={handleNewCase}>
             <Plus className="mr-2 h-4 w-4" />
             Criar novo caso
           </Button>
