@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +24,7 @@ import { useAgentSimulation, AgentType } from '@/hooks/useAgentSimulation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCaseOperations } from '@/hooks/useCaseOperations';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { Message } from '@/types/agent-chat';
 
 interface WebChatProps {
   fullScreen?: boolean;
@@ -32,16 +32,6 @@ interface WebChatProps {
   onClientIdentified?: (clientData: any) => void;
   onWorkflowSelected?: (workflow: string) => void;
   onAgentAssigned?: (agent: AgentType) => void;
-}
-
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'agent';
-  timestamp: Date;
-  agentType?: AgentType;
-  action?: 'info' | 'request' | 'confirmation';
-  metadata?: any;
 }
 
 export function WebChat({ 
@@ -119,7 +109,7 @@ export function WebChat({
   // Adiciona mensagem de boas-vindas do agente quando o componente é montado
   useEffect(() => {
     if (messages.length === 0) {
-      const welcomeMessage = {
+      const welcomeMessage: Message = {
         id: `welcome-${Date.now()}`,
         text: `Olá! Sou a assistente de IA do EVJI. Como posso ajudar você hoje? Gostaria de discutir um caso existente ou criar um novo?`,
         sender: 'agent',
@@ -132,7 +122,7 @@ export function WebChat({
       // Se não tiver caseId, inicia fluxo de identificação do cliente
       if (!caseId) {
         setTimeout(() => {
-          const followUpMessage = {
+          const followUpMessage: Message = {
             id: `request-info-${Date.now()}`,
             text: `Para começarmos, poderia por favor me informar o nome do cliente para quem estamos prestando serviços? Se for um novo cliente, informe o nome completo.`,
             sender: 'agent',
