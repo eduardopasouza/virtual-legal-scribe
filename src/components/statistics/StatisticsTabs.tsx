@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileBarChart } from 'lucide-react';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { CasesOverTimeChart } from './CasesOverTimeChart';
 import { PerformanceMetricsChart } from './PerformanceMetricsChart';
 import { AreaDistributionChart } from './AreaDistributionChart';
-import { DocumentAnalyticsCard } from './DocumentAnalyticsCard';
+import { DocumentMetricsCard } from './documents/DocumentMetricsCard';
 import { AgentPerformanceChart } from './AgentPerformanceChart';
 import { AgentAccuracyChart } from './AgentAccuracyChart';
 import { WorkflowAnalysisChart } from './WorkflowAnalysisChart';
@@ -57,7 +56,7 @@ export const StatisticsTabs = ({
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <AreaDistributionChart data={areaMetrics} isLoading={isLoading} />
-          <DocumentAnalyticsCard data={documentMetrics} isLoading={isLoading} />
+          <DocumentMetricsCard data={documentMetrics} isLoading={isLoading} />
         </div>
         
         <div className="grid grid-cols-1 gap-4">
@@ -76,7 +75,7 @@ export const StatisticsTabs = ({
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <AreaDistributionChart data={areaMetrics} isLoading={isLoading} />
-              <DocumentAnalyticsCard data={documentMetrics} isLoading={isLoading} />
+              <DocumentMetricsCard data={documentMetrics} isLoading={isLoading} />
             </div>
           </CardContent>
         </Card>
