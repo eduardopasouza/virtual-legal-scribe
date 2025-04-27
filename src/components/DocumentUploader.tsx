@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFileUpload } from "@/hooks/useFileUpload";
@@ -40,10 +39,8 @@ export function DocumentUploader({
   
   const handleSubmit = async () => {
     if (!selectedFile) {
-      toast({
-        title: "Nenhum arquivo selecionado",
+      toast("Nenhum arquivo selecionado", {
         description: "Por favor, selecione um arquivo para enviar.",
-        variant: "destructive",
       });
       return;
     }
