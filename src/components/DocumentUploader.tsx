@@ -11,7 +11,7 @@ import { useDocuments } from "@/hooks/useDocuments";
 
 interface DocumentUploaderProps {
   caseId?: string;
-  onSuccess?: () => void;
+  onSuccess?: (selectedFiles: File[]) => void;
 }
 
 export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
@@ -78,7 +78,7 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
       setSelectedFile(null);
       setDocumentType("petition");
       if (onSuccess) {
-        onSuccess();
+        onSuccess([selectedFile]);
       }
     } catch (error) {
       // Error is handled inside uploadDocument function
