@@ -10,6 +10,7 @@ import { ChatUploader } from '@/components/chat/ChatUploader';
 import { useWebChat } from '@/hooks/useWebChat';
 import { useDocuments } from '@/hooks/useDocuments';
 import { toast } from 'sonner';
+import { WorkflowStage } from '@/workflow/types';
 
 interface WebChatProps {
   fullScreen?: boolean;
@@ -40,6 +41,7 @@ export function WebChat({
     activeAgent,
     isProcessing,
     clientInfo,
+    workflowSelected,
     handleSendMessage
   } = useWebChat(caseId);
 
@@ -94,7 +96,7 @@ export function WebChat({
           action: 'document_analysis'
         };
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading document:', error);
       toast.error('Falha ao enviar documento', {
         description: 'Ocorreu um erro ao enviar o documento.'

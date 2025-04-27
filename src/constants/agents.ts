@@ -5,67 +5,93 @@ export const agents = [
   {
     type: 'coordenador',
     name: 'Coordenador Geral',
-    description: 'Orquestra o pipeline, distribui tarefas, monitora prazos e alertas'
+    description: 'Orquestra o pipeline, distribui tarefas, monitora prazos e alertas',
+    avatar: '/placeholder.svg',
+    role: 'Coordenador Geral'
   },
   {
     type: 'analista-requisitos',
     name: 'Analista de Requisitos',
-    description: 'Especialista em triagem inicial, classifica casos e gera briefing'
+    description: 'Especialista em triagem inicial, classifica casos e gera briefing',
+    avatar: '/placeholder.svg',
+    role: 'Analista de Requisitos'
   },
   {
     type: 'estrategista',
     name: 'Estrategista Jurídico',
-    description: 'Avalia viabilidade, mapeia riscos e define objetivos estratégicos'
+    description: 'Avalia viabilidade, mapeia riscos e define objetivos estratégicos',
+    avatar: '/placeholder.svg',
+    role: 'Estrategista Jurídico'
   },
   {
     type: 'analista-fatos',
     name: 'Analista de Fatos',
-    description: 'Extrai cronologia, mapeia fatos e formula questões jurídicas relevantes'
+    description: 'Extrai cronologia, mapeia fatos e formula questões jurídicas relevantes',
+    avatar: '/placeholder.svg',
+    role: 'Analista de Fatos'
   },
   {
     type: 'pesquisador',
     name: 'Pesquisador Jurídico',
-    description: 'Pesquisa legislação, jurisprudência e doutrina aplicáveis'
+    description: 'Pesquisa legislação, jurisprudência e doutrina aplicáveis',
+    avatar: '/placeholder.svg',
+    role: 'Pesquisador Jurídico'
   },
   {
     type: 'analista-argumentacao',
     name: 'Analista de Argumentação',
-    description: 'Estrutura argumentos e contra-argumentos, avalia premissas'
+    description: 'Estrutura argumentos e contra-argumentos, avalia premissas',
+    avatar: '/placeholder.svg',
+    role: 'Analista de Argumentação'
   },
   {
     type: 'redator',
     name: 'Redator Jurídico',
-    description: 'Elabora rascunhos de peças, aplica modelos e formatação'
+    description: 'Elabora rascunhos de peças, aplica modelos e formatação',
+    avatar: '/placeholder.svg',
+    role: 'Redator Jurídico'
   },
   {
     type: 'assistente-redacao',
     name: 'Assistente de Redação',
-    description: 'Auxilia na estruturação e formatação de documentos jurídicos'
+    description: 'Auxilia na estruturação e formatação de documentos jurídicos',
+    avatar: '/placeholder.svg',
+    role: 'Assistente de Redação'
   },
   {
     type: 'especialista',
     name: 'Especialista Adaptável',
-    description: 'Auto-capacita-se na área do direito requerida para casos específicos'
+    description: 'Auto-capacita-se na área do direito requerida para casos específicos',
+    avatar: '/placeholder.svg',
+    role: 'Especialista Adaptável'
   },
   {
     type: 'revisor-legal',
     name: 'Verificador de Conformidade',
-    description: 'Verifica requisitos formais, citações, formatação e integridade'
+    description: 'Verifica requisitos formais, citações, formatação e integridade',
+    avatar: '/placeholder.svg',
+    role: 'Verificador de Conformidade'
   },
   {
     type: 'revisor-integrador',
     name: 'Revisor & Integrador',
-    description: 'Realiza revisão textual, gramática jurídica e formatação final'
+    description: 'Realiza revisão textual, gramática jurídica e formatação final',
+    avatar: '/placeholder.svg',
+    role: 'Revisor & Integrador'
   },
   {
     type: 'revisor-texto',
     name: 'Revisor de Texto',
-    description: 'Realiza revisão ortográfica e gramatical, melhoria da linguagem'
+    description: 'Realiza revisão ortográfica e gramatical, melhoria da linguagem',
+    avatar: '/placeholder.svg',
+    role: 'Revisor de Texto'
   },
   {
     type: 'comunicador',
     name: 'Comunicador com Cliente',
-    description: 'Interface de feedback, gera apresentações e registra comunicações'
+    description: 'Interface de feedback, gera apresentações e registra comunicações',
+    avatar: '/placeholder.svg',
+    role: 'Comunicador com Cliente'
   }
 ];
 
