@@ -1,6 +1,14 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { WorkflowDefinition, WorkflowStage, WorkflowStageName, WorkflowStatus } from './types';
+import { 
+  WorkflowDefinition, 
+  WorkflowStage, 
+  WorkflowStageName, 
+  WorkflowStatus,
+  WorkflowAlert,
+  WorkflowVerificationResult,
+  WorkflowContext
+} from './types';
 import { defaultWorkflow } from './configurations/defaultWorkflow';
 import { AgentType } from '@/types/agent';
 
@@ -9,6 +17,7 @@ import { AgentType } from '@/types/agent';
  */
 export class WorkflowService {
   private workflow: WorkflowDefinition;
+  private contextCache: Map<string, WorkflowContext> = new Map();
   
   constructor(workflowDefinition: WorkflowDefinition = defaultWorkflow) {
     this.workflow = workflowDefinition;
@@ -38,6 +47,12 @@ export class WorkflowService {
       
     if (error) throw error;
     
+    // Initialize workflow context
+    this.initializeContext(caseId);
+    
+    // Log workflow initiation
+    this.logProgress(caseId, 'Workflow initialized', { createdBy });
+    
     return data as WorkflowStage[];
   }
   
@@ -58,6 +73,13 @@ export class WorkflowService {
         return null;
       }
       throw error;
+    }
+    
+    // Update context with current stage
+    const context = this.getContext(caseId);
+    if (context) {
+      context.currentStageName = data.stage_name;
+      this.contextCache.set(caseId, context);
     }
     
     return data as WorkflowStage;
@@ -100,6 +122,22 @@ export class WorkflowService {
       throw new Error('Current stage not found in workflow');
     }
     
+    // Verify stage completeness before advancing
+    const verification = await this.verifyStageCompleteness(caseId, currentStage.stage_name);
+    if (!verification.complete) {
+      // Create alert for missing items
+      await this.createAlert(caseId, {
+        title: 'Etapa incompleta',
+        description: `Não é possível avançar: ${verification.missingItems.join(', ')}`,
+        severity: 'medium',
+        type: 'quality',
+        relatedStage: currentStage.stage_name,
+        suggestedAction: 'Verifique os itens faltantes antes de avançar'
+      });
+      
+      throw new Error(`Etapa incompleta: ${verification.missingItems.join(', ')}`);
+    }
+    
     // Check if this is the last stage
     if (currentIndex >= allStages.length - 1) {
       // Complete the final stage but don't advance further
@@ -110,6 +148,9 @@ export class WorkflowService {
           completed_at: new Date().toISOString()
         })
         .eq('id', currentStage.id);
+        
+      // Log completion of workflow
+      this.logProgress(caseId, 'Workflow completed', { finalStage: currentStage.stage_name });
         
       return { previousStage: currentStage, currentStage: null };
     }
@@ -150,6 +191,13 @@ export class WorkflowService {
       
     if (error) throw error;
     
+    // Update context
+    const context = this.getContext(caseId);
+    if (context) {
+      context.currentStageName = updatedNextStage.stage_name;
+      this.logToContext(caseId, `Advanced from ${currentStage.stage_name} to ${updatedNextStage.stage_name}`);
+    }
+    
     return {
       previousStage: currentStage,
       currentStage: updatedNextStage as WorkflowStage
@@ -177,7 +225,94 @@ export class WorkflowService {
       .single();
       
     if (error) throw error;
+    
+    // Log status update
+    this.logProgress(caseId, `Stage ${stageName} status updated to ${status}`);
+    
     return data as WorkflowStage;
+  }
+  
+  /**
+   * Verify if a stage has all requirements met to be completed
+   */
+  async verifyStageCompleteness(caseId: string, stageName: WorkflowStageName): Promise<WorkflowVerificationResult> {
+    const stageConfig = this.getStageConfig(stageName);
+    if (!stageConfig) {
+      return {
+        complete: false,
+        missingItems: ['Configuração de etapa não encontrada']
+      };
+    }
+    
+    const missingItems: string[] = [];
+    
+    // Check for required documents if specified
+    if (stageConfig.requiredDocuments && stageConfig.requiredDocuments.length > 0) {
+      // Get case documents
+      const { data: documents } = await supabase
+        .from('documents')
+        .select('type, name')
+        .eq('case_id', caseId);
+      
+      const documentTypes = documents?.map(doc => doc.type) || [];
+      const missingDocs = stageConfig.requiredDocuments.filter(
+        docType => !documentTypes.includes(docType)
+      );
+      
+      if (missingDocs.length > 0) {
+        missingItems.push(`Documentos necessários: ${missingDocs.join(', ')}`);
+      }
+    }
+    
+    // Check for completion criteria
+    if (stageConfig.completionCriteria && stageConfig.completionCriteria.length > 0) {
+      // This would need to be implemented based on specific criteria
+      // For now, just log that we're checking
+      this.logProgress(caseId, `Checking completion criteria for ${stageName}`);
+    }
+    
+    // Check context for stage results
+    const context = this.getContext(caseId);
+    if (context && !context.stageResults[stageName]) {
+      missingItems.push('Resultados da etapa não registrados');
+    }
+    
+    return {
+      complete: missingItems.length === 0,
+      missingItems,
+      recommendations: missingItems.length > 0 
+        ? ['Resolva os itens faltantes antes de avançar'] 
+        : undefined
+    };
+  }
+  
+  /**
+   * Create an alert for workflow issues
+   */
+  async createAlert(caseId: string, alert: WorkflowAlert) {
+    const { data, error } = await supabase
+      .from('alerts')
+      .insert({
+        case_id: caseId,
+        title: alert.title,
+        description: alert.description || '',
+        type: alert.type,
+        priority: alert.severity,
+        status: 'pending'
+      })
+      .select()
+      .single();
+      
+    if (error) throw error;
+    
+    // Add to context
+    const context = this.getContext(caseId);
+    if (context) {
+      context.alerts.push(alert);
+      this.contextCache.set(caseId, context);
+    }
+    
+    return data;
   }
   
   /**
@@ -210,6 +345,77 @@ export class WorkflowService {
         primaryAgent: stage.primaryAgent
       }))
     };
+  }
+  
+  /**
+   * Log workflow progress
+   */
+  async logProgress(caseId: string, message: string, details?: any) {
+    // Log to database
+    const { error } = await supabase
+      .from('activities')
+      .insert({
+        case_id: caseId,
+        agent: 'coordenador',
+        action: 'Log de progresso',
+        result: message,
+        details: details ? JSON.stringify(details) : null
+      });
+    
+    if (error) console.error('Failed to log workflow progress:', error);
+    
+    // Log to context
+    this.logToContext(caseId, message, details);
+    
+    return !error;
+  }
+  
+  /**
+   * Initialize workflow context
+   */
+  private initializeContext(caseId: string) {
+    const newContext: WorkflowContext = {
+      caseId,
+      stageResults: {} as Record<WorkflowStageName, any>,
+      currentStageName: null,
+      alerts: [],
+      logs: [{
+        timestamp: new Date().toISOString(),
+        message: 'Workflow context initialized'
+      }]
+    };
+    
+    this.contextCache.set(caseId, newContext);
+  }
+  
+  /**
+   * Get workflow context
+   */
+  private getContext(caseId: string) {
+    let context = this.contextCache.get(caseId);
+    
+    if (!context) {
+      this.initializeContext(caseId);
+      context = this.contextCache.get(caseId);
+    }
+    
+    return context;
+  }
+  
+  /**
+   * Log message to context
+   */
+  private logToContext(caseId: string, message: string, details?: any) {
+    const context = this.getContext(caseId);
+    if (context) {
+      context.logs.push({
+        timestamp: new Date().toISOString(),
+        message,
+        details
+      });
+      
+      this.contextCache.set(caseId, context);
+    }
   }
 }
 

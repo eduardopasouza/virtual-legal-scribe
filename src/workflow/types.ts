@@ -33,6 +33,7 @@ export interface WorkflowStageConfig {
   requiredDocuments?: string[];
   nextStage?: WorkflowStageName;
   previousStage?: WorkflowStageName;
+  completionCriteria?: string[];
 }
 
 export interface WorkflowTransition {
@@ -49,4 +50,31 @@ export interface WorkflowDefinition {
   stages: WorkflowStageConfig[];
   transitions: WorkflowTransition[];
   initialStage: WorkflowStageName;
+}
+
+export interface WorkflowAlert {
+  title: string;
+  description?: string;
+  severity: 'low' | 'medium' | 'high';
+  type: 'missing_document' | 'conflict' | 'deadline' | 'quality' | 'other';
+  relatedStage?: WorkflowStageName;
+  suggestedAction?: string;
+}
+
+export interface WorkflowVerificationResult {
+  complete: boolean;
+  missingItems: string[];
+  recommendations?: string[];
+}
+
+export interface WorkflowContext {
+  caseId: string;
+  stageResults: Record<WorkflowStageName, any>;
+  currentStageName: WorkflowStageName | null;
+  alerts: WorkflowAlert[];
+  logs: Array<{
+    timestamp: string;
+    message: string;
+    details?: any;
+  }>;
 }

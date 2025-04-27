@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { workflowService, WorkflowStage, WorkflowStageName, WorkflowStatus } from '@/workflow';
+import { workflowService, WorkflowStage, WorkflowStageName, WorkflowStatus, WorkflowAlert } from '@/workflow';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/components/notification/NotificationSystem';
 import { supabase } from '@/integrations/supabase/client';
@@ -91,6 +91,7 @@ export function useWorkflow(caseId?: string) {
       queryClient.invalidateQueries({ queryKey: ['current_stage', caseId] });
       
       const previousStageName = result.previousStage?.stage_name || '';
+      // Using type assertion to ensure we pass a valid WorkflowStageName
       const stageConfig = workflowService.getStageConfig(previousStageName as WorkflowStageName);
       
       if (result.currentStage) {
@@ -166,9 +167,45 @@ export function useWorkflow(caseId?: string) {
     if (!currentStage || !currentStage.stage_name) return null;
     
     // Type guards to ensure we're passing a valid WorkflowStageName
-    if (currentStage.stage_name === "") return null;
+    if (!currentStage.stage_name) return null;
     
     return workflowService.getRecommendedAgent(currentStage.stage_name as WorkflowStageName);
+  };
+
+  // Create an alert for workflow issues
+  const createWorkflowAlert = useMutation({
+    mutationFn: async (alert: WorkflowAlert) => {
+      if (!caseId) throw new Error("Case ID is required");
+      return await workflowService.createAlert(caseId, alert);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['alerts', caseId] });
+      
+      toast({
+        title: 'Alerta criado',
+        description: `Um novo alerta foi registrado: ${data.title}`,
+        variant: 'warning'
+      });
+      
+      addNotification(
+        'warning',
+        'Alerta de fluxo',
+        `${data.title}: ${data.description || 'Intercorrência detectada no fluxo'}`,
+        'case'
+      );
+    }
+  });
+
+  // Verify stage completeness and requirements
+  const verifyStageCompleteness = async (stageName: WorkflowStageName) => {
+    if (!caseId) return { complete: false, missingItems: ['ID do caso não informado'] };
+    return await workflowService.verifyStageCompleteness(caseId, stageName);
+  };
+
+  // Log workflow progress
+  const logWorkflowProgress = async (message: string, details?: any) => {
+    if (!caseId) return;
+    return await workflowService.logProgress(caseId, message, details);
   };
 
   return {
@@ -181,6 +218,9 @@ export function useWorkflow(caseId?: string) {
     advanceWorkflow,
     updateStageStatus,
     getRecommendedAgent,
+    createWorkflowAlert,
+    verifyStageCompleteness,
+    logWorkflowProgress,
     workflowMetadata: workflowService.getWorkflowMetadata()
   };
 }
