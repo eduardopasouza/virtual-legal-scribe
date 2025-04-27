@@ -221,33 +221,80 @@ export type Database = {
           },
         ]
       }
+      document_content: {
+        Row: {
+          content: string | null
+          document_id: string | null
+          extracted_at: string | null
+          id: string
+          metadata: Json | null
+          pages: number | null
+        }
+        Insert: {
+          content?: string | null
+          document_id?: string | null
+          extracted_at?: string | null
+          id?: string
+          metadata?: Json | null
+          pages?: number | null
+        }
+        Update: {
+          content?: string | null
+          document_id?: string | null
+          extracted_at?: string | null
+          id?: string
+          metadata?: Json | null
+          pages?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_content_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           case_id: string | null
+          content_size: number | null
           created_by: string | null
+          document_type: string | null
           file_path: string | null
+          has_extracted_text: boolean | null
           id: string
           name: string
+          processed_status: string | null
           size: number
           type: string
           uploaded_at: string | null
         }
         Insert: {
           case_id?: string | null
+          content_size?: number | null
           created_by?: string | null
+          document_type?: string | null
           file_path?: string | null
+          has_extracted_text?: boolean | null
           id?: string
           name: string
+          processed_status?: string | null
           size: number
           type: string
           uploaded_at?: string | null
         }
         Update: {
           case_id?: string | null
+          content_size?: number | null
           created_by?: string | null
+          document_type?: string | null
           file_path?: string | null
+          has_extracted_text?: boolean | null
           id?: string
           name?: string
+          processed_status?: string | null
           size?: number
           type?: string
           uploaded_at?: string | null
