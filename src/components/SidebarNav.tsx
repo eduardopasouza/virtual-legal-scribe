@@ -10,7 +10,8 @@ import {
   Settings, 
   Search, 
   Clock, 
-  MessageSquare 
+  MessageSquare,
+  ArrowLeft
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -27,21 +28,21 @@ export function SidebarNav() {
     { icon: CalendarIcon, label: 'Calendário', path: '/calendar' },
     { icon: Clock, label: 'Histórico', path: '/history' },
     { icon: Search, label: 'Busca', path: '/search' },
-    { icon: MessageSquare, label: 'Assistente', path: '/chatbot' },
     { icon: Settings, label: 'Configurações', path: '/settings' },
   ];
 
   return (
     <div className="space-y-2 w-full">
       {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
+        const isActive = location.pathname === item.path || 
+                         (item.path === '/cases/list' && location.pathname.startsWith('/cases/'));
         return (
           <Tooltip key={item.path}>
             <TooltipTrigger asChild>
               <Button
                 asChild
                 variant={isActive ? 'secondary' : 'ghost'}
-                size="icon"
+                size="sm"
                 className={cn(
                   'w-full flex justify-start gap-3 h-10 px-3',
                   isActive 
@@ -51,7 +52,7 @@ export function SidebarNav() {
               >
                 <Link to={item.path} className="flex items-center">
                   <item.icon className="h-5 w-5" />
-                  <span className="ml-2 hidden md:inline-flex">{item.label}</span>
+                  <span className="ml-2">{item.label}</span>
                 </Link>
               </Button>
             </TooltipTrigger>

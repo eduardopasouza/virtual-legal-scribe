@@ -41,6 +41,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<Index />} />
                 <Route path="/cases/:caseId" element={<CaseDetails />} />
+                <Route path="/cases/list" element={<Index />} />
                 <Route path="/clients" element={<ClientsList />} />
                 <Route path="/stats" element={<AdvancedStats />} />
                 <Route path="/calendar" element={<Calendar />} />

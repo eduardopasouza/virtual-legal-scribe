@@ -1,19 +1,14 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
+import { SidebarNav } from '@/components/SidebarNav';
 import { Separator } from "@/components/ui/separator";
-import {
-  LayoutDashboard,
-  FileText,
-  Clock,
-  Users,
-  FolderOpen,
-  Settings,
-  HelpCircle,
-  LogOut
-} from "lucide-react";
+import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 
 export function Sidebar() {
+  const navigate = useNavigate();
+  
   return (
     <aside className="h-full w-64 border-r border-border bg-sidebar text-sidebar-foreground flex flex-col">
       <div className="p-6">
@@ -26,42 +21,17 @@ export function Sidebar() {
       <Separator className="bg-sidebar-border" />
       
       <nav className="flex-1 p-4">
-        <div className="space-y-1">
-          <Button variant="ghost" className="w-full justify-start gap-3 bg-sidebar-accent text-sidebar-accent-foreground">
-            <LayoutDashboard className="h-5 w-5" />
-            Dashboard
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <FileText className="h-5 w-5" />
-            Documentos
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <Clock className="h-5 w-5" />
-            Histórico
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <Users className="h-5 w-5" />
-            Agentes
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <FolderOpen className="h-5 w-5" />
-            Repositório
-          </Button>
-        </div>
+        <SidebarNav />
       </nav>
       
       <div className="p-4 mt-auto">
         <Separator className="bg-sidebar-border mb-4" />
         <div className="space-y-1">
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <Settings className="h-5 w-5" />
-            Configurações
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
-            <HelpCircle className="h-5 w-5" />
-            Ajuda
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 text-evji-accent/90">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3 text-evji-accent/90"
+            onClick={() => navigate('/login')}
+          >
             <LogOut className="h-5 w-5" />
             Sair
           </Button>

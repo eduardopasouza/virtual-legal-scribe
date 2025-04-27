@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { ChevronRight, Bell, Shield, UserCog, Laptop, LogOut } from "lucide-react";
+import { ChevronRight, Bell, Shield, UserCog, Laptop, LogOut, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from 'react-router-dom';
 
 const Settings = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleSaveProfile = () => {
     toast({
@@ -36,6 +38,10 @@ const Settings = () => {
       description: "Sua senha foi atualizada com sucesso."
     });
   };
+
+  const handleBackToDashboard = () => {
+    navigate('/');
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -44,7 +50,12 @@ const Settings = () => {
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
           <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-evji-primary">Configurações</h1>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={handleBackToDashboard}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h1 className="text-2xl font-bold text-evji-primary">Configurações</h1>
+            </div>
             
             <Tabs defaultValue="profile">
               <div className="flex">
