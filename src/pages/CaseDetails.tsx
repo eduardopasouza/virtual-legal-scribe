@@ -67,24 +67,40 @@ const CaseDetails = () => {
       <div className="flex-1 flex">
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left column with case information and tabs */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex justify-between items-center flex-wrap gap-4">
-                <CaseHeader 
-                  title={caseData.title}
-                  type={caseData.type || ""}
-                  status={caseData.status || "em_andamento"}
-                  createdAt={new Date(caseData.created_at)}
-                />
-                
-                <CaseActions 
-                  caseId={caseId}
-                  documents={documents}
-                  caseData={caseData}
-                />
-              </div>
-              
+          <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
+            <CaseHeader 
+              title={caseData.title}
+              type={caseData.type || ""}
+              status={caseData.status || "em_andamento"}
+              createdAt={new Date(caseData.created_at)}
+            />
+            <CaseActions 
+              caseId={caseId}
+              documents={documents}
+              caseData={caseData}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* Left column - WebChat as main focal point */}
+            <div className="space-y-6">
+              <WebChat 
+                caseId={caseId} 
+                fullScreen={true}
+                onClientIdentified={(clientData) => {
+                  console.log('Cliente identificado:', clientData);
+                }}
+                onWorkflowSelected={(workflow) => {
+                  console.log('Workflow selecionado:', workflow);
+                }}
+                onAgentAssigned={(agent) => {
+                  console.log('Agente designado:', agent);
+                }}
+              />
+            </div>
+
+            {/* Right column - Case information and tabs */}
+            <div className="space-y-6">
               <CaseInformation 
                 number={caseData.number || "Não informado"}
                 court={caseData.court || "Não informado"}
@@ -101,13 +117,6 @@ const CaseDetails = () => {
                 alerts={alerts}
                 documents={documents}
               />
-            </div>
-
-            {/* Right column with WebChat */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-6">
-                <WebChat caseId={caseId} />
-              </div>
             </div>
           </div>
         </main>
