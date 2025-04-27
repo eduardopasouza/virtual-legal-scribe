@@ -3,9 +3,13 @@ import { BaseAgent } from './base/BaseAgent';
 import { AgentResult, AgentTask } from '@/types/agent';
 
 export class AnalistaFatosAgent extends BaseAgent {
-  type = 'analista-fatos' as const;
-  name = 'Analista de Fatos';
-  description = 'Analisa e extrai fatos relevantes dos documentos do caso, identificando cronologia e distinguindo fatos controversos e incontroversos';
+  constructor() {
+    super(
+      'analista-fatos',
+      'Analista de Fatos',
+      'Analisa e extrai fatos relevantes dos documentos do caso, identificando cronologia e distinguindo fatos controversos e incontroversos'
+    );
+  }
 
   async execute({ caseId, input, metadata }: AgentTask): Promise<AgentResult> {
     try {
