@@ -51,4 +51,3 @@ export const CaseDetailsContent = React.memo(({
 });
 
 CaseDetailsContent.displayName = 'CaseDetailsContent';
-
