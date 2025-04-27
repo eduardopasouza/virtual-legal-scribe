@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -30,6 +31,7 @@ export default function NovoCaso() {
   const { createCase } = useCaseOperations();
   const { uploadDocument } = useDocuments();
   const { user } = useAuth();
+  const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
@@ -44,19 +46,16 @@ export default function NovoCaso() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsSubmitting(true);
 
     try {
-      // Create the case first with user ID
       const newCase = await createCase.mutateAsync({
         ...formData,
         status: 'em_andamento',
         created_by: user?.id
       });
 
-      // Only upload documents if files were selected
       if (files.length > 0 && newCase?.id) {
         await Promise.all(files.map(file => uploadDocument(file)));
       }
@@ -83,6 +82,14 @@ export default function NovoCaso() {
     setFiles(prev => [...prev, ...selectedFiles]);
   };
 
+  const handleNext = () => {
+    setStep(2);
+  };
+
+  const handleBack = () => {
+    setStep(1);
+  };
+
   const isFormValid = formData.title && formData.client && formData.area_direito;
 
   return (
@@ -95,78 +102,100 @@ export default function NovoCaso() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Novo Caso</h1>
               <p className="text-muted-foreground">
-                Preencha os dados básicos do caso e faça upload dos documentos iniciais.
+                {step === 1 
+                  ? 'Preencha os dados básicos do caso.'
+                  : 'Faça upload dos documentos iniciais (opcional).'}
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="space-y-4">
-                <div className="grid w-full gap-1.5">
-                  <Label htmlFor="title">Título do Caso</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => handleChange('title', e.target.value)}
-                    required
-                  />
-                </div>
+            <div className="space-y-8">
+              {step === 1 ? (
+                <div className="space-y-4">
+                  <div className="grid w-full gap-1.5">
+                    <Label htmlFor="title">Título do Caso</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => handleChange('title', e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="grid w-full gap-1.5">
-                  <Label htmlFor="client">Cliente</Label>
-                  <Input
-                    id="client"
-                    value={formData.client}
-                    onChange={(e) => handleChange('client', e.target.value)}
-                    required
-                  />
-                </div>
+                  <div className="grid w-full gap-1.5">
+                    <Label htmlFor="client">Cliente</Label>
+                    <Input
+                      id="client"
+                      value={formData.client}
+                      onChange={(e) => handleChange('client', e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="grid w-full gap-1.5">
-                  <Label htmlFor="area">Área do Direito</Label>
-                  <Select 
-                    value={formData.area_direito}
-                    onValueChange={(value) => handleChange('area_direito', value)}
+                  <div className="grid w-full gap-1.5">
+                    <Label htmlFor="area">Área do Direito</Label>
+                    <Select 
+                      value={formData.area_direito}
+                      onValueChange={(value) => handleChange('area_direito', value)}
+                    >
+                      <SelectTrigger id="area">
+                        <SelectValue placeholder="Selecione a área" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {AREAS_DIREITO.map((area) => (
+                          <SelectItem key={area} value={area.toLowerCase()}>
+                            {area}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid w-full gap-1.5">
+                    <Label htmlFor="description">Descrição</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleChange('description', e.target.value)}
+                      className="min-h-[120px]"
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleNext}
+                    disabled={!isFormValid}
+                    className="w-full"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a área" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AREAS_DIREITO.map((area) => (
-                        <SelectItem key={area} value={area.toLowerCase()}>
-                          {area}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    Próximo
+                  </Button>
                 </div>
-
-                <div className="grid w-full gap-1.5">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleChange('description', e.target.value)}
-                    className="min-h-[120px]"
-                  />
-                </div>
-
-                <div className="space-y-2">
+              ) : (
+                <div className="space-y-4">
                   <DocumentUploader 
                     caseId={undefined}
                     onSuccess={handleFileSelect}
                     optional={true}
                   />
+                  
+                  <div className="flex gap-4 pt-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleBack}
+                      disabled={isSubmitting}
+                      className="flex-1"
+                    >
+                      Voltar
+                    </Button>
+                    <Button 
+                      onClick={handleSubmit}
+                      disabled={isSubmitting}
+                      className="flex-1"
+                    >
+                      {isSubmitting ? 'Criando caso...' : 'Finalizar'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-
-              <Button 
-                type="submit" 
-                disabled={!isFormValid || isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? 'Criando caso...' : 'Salvar e iniciar triagem'}
-              </Button>
-            </form>
+              )}
+            </div>
           </div>
         </main>
       </div>
