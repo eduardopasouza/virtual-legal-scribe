@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Menu, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { useMobile } from '@/hooks/use-mobile';
+import { useMobileContext } from '@/hooks/use-mobile'; // Fixed import
 import { NotificationSystem } from '@/components/NotificationSystem';
 import {
   DropdownMenu,
@@ -20,7 +20,7 @@ import {
 export function Header() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toggleSidebar } = useMobile();
+  const { toggleSidebar } = useMobileContext(); // Using the correct function from the hook
 
   const handleNewCase = () => {
     navigate('/novo-caso');
