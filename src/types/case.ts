@@ -10,6 +10,7 @@ export interface Case {
   main_agent: string;
   created_at: string;
   updated_at: string;
+  area_direito?: string;
 }
 
 export interface Activity {
