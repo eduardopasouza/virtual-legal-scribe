@@ -17,7 +17,11 @@ export function useClientCommunication(caseId?: string) {
     mutationFn: async () => {
       if (!caseId) throw new Error("ID do caso não fornecido");
 
-      const result = await simulateAgent('comunicador');
+      const result = await simulateAgent('comunicador', {
+        metadata: {
+          action: 'generate-communication'
+        }
+      });
       
       if (!result.success || !result.details?.communication) {
         throw new Error(result.message || "Falha ao gerar comunicação");
@@ -118,3 +122,4 @@ export function useClientCommunication(caseId?: string) {
     checkForUpdates
   };
 }
+
