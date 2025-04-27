@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { useNotifications } from '@/components/notification/NotificationSystem';
 
 interface CaseFilters {
   status?: string;
@@ -24,6 +25,7 @@ interface CreateCaseInput {
 export function useCaseOperations() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { addNotification } = useNotifications();
 
   const { data: cases, isLoading } = useQuery({
     queryKey: ['cases'],
@@ -40,7 +42,6 @@ export function useCaseOperations() {
 
   const createCase = useMutation({
     mutationFn: async (newCase: CreateCaseInput) => {
-      // Garante que o caso seja criado com o ID do usuário atual
       const caseWithUser = {
         ...newCase,
         created_by: user?.id
@@ -53,6 +54,14 @@ export function useCaseOperations() {
         .single();
 
       if (error) throw error;
+      
+      addNotification(
+        'success',
+        'Caso criado com sucesso',
+        `O caso "${newCase.title}" foi criado.`,
+        'case'
+      );
+      
       return data;
     },
     onSuccess: () => {
@@ -63,7 +72,6 @@ export function useCaseOperations() {
   const listCasesWithFilters = async ({ status, area }: CaseFilters = {}) => {
     let query = supabase.from('cases').select('*');
     
-    // Se o usuário estiver autenticado, aplique o filtro de usuário
     if (user) {
       query = query.eq('created_by', user.id);
     }

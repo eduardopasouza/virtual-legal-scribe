@@ -1,9 +1,12 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Deadline } from '@/types/case';
+import { useNotifications } from '@/components/notification/NotificationSystem';
 
 export function useDeadlines(caseId?: string) {
   const queryClient = useQueryClient();
+  const { addNotification } = useNotifications();
 
   const { data: deadlines, isLoading } = useQuery({
     queryKey: ['deadlines', caseId],
@@ -30,6 +33,14 @@ export function useDeadlines(caseId?: string) {
         .single();
 
       if (error) throw error;
+
+      addNotification(
+        'warning',
+        'Novo prazo adicionado',
+        `Um novo prazo foi adicionado para ${new Date(newDeadline.date).toLocaleDateString()}`,
+        'deadline'
+      );
+
       return data;
     },
     onSuccess: () => {

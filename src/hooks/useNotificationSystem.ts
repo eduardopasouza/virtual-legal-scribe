@@ -35,7 +35,7 @@ export function useNotificationSystem() {
     
     setNotifications(prev => [newNotification, ...prev]);
     
-    // Only use Sonner for toast notifications
+    // Show toast using Sonner
     toast[type === 'alert' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'](
       title,
       {

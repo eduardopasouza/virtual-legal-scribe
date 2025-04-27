@@ -1,9 +1,12 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Activity } from '@/types/case';
+import { useNotifications } from '@/components/notification/NotificationSystem';
 
 export function useActivities(caseId?: string) {
   const queryClient = useQueryClient();
+  const { addNotification } = useNotifications();
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ['activities', caseId],
@@ -13,7 +16,7 @@ export function useActivities(caseId?: string) {
         .from('activities')
         .select('*')
         .eq('case_id', caseId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as Activity[];
@@ -30,6 +33,13 @@ export function useActivities(caseId?: string) {
         .single();
 
       if (error) throw error;
+
+      addNotification(
+        'info',
+        'Nova atividade registrada',
+        `A atividade "${newActivity.action}" foi registrada.`
+      );
+
       return data;
     },
     onSuccess: () => {

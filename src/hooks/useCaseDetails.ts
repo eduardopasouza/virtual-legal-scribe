@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Case, Activity, Deadline, WorkflowStage, Alert } from "@/types/case";
 import { DocumentMetadata, useDocuments } from "./useDocuments";
+import { useActivities } from "./useActivities";
+import { useDeadlines } from "./useDeadlines";
 
 interface CaseDetailedData {
   caseData: Case | null;
@@ -17,6 +19,8 @@ interface CaseDetailedData {
 
 export function useCaseDetails(caseId?: string): CaseDetailedData {
   const { listDocuments } = useDocuments();
+  const { activities, isLoading: isActivitiesLoading } = useActivities(caseId);
+  const { deadlines, isLoading: isDeadlinesLoading } = useDeadlines(caseId);
 
   const { data: caseData, isLoading: isCaseLoading, error: caseError } = useQuery({
     queryKey: ["case", caseId],
@@ -30,38 +34,6 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
 
       if (error) throw error;
       return data as Case;
-    },
-    enabled: !!caseId,
-  });
-
-  const { data: activities = [], isLoading: isActivitiesLoading } = useQuery({
-    queryKey: ["activities", caseId],
-    queryFn: async () => {
-      if (!caseId) return [];
-      const { data, error } = await supabase
-        .from("activities")
-        .select("*")
-        .eq("case_id", caseId)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data as Activity[];
-    },
-    enabled: !!caseId,
-  });
-
-  const { data: deadlines = [], isLoading: isDeadlinesLoading } = useQuery({
-    queryKey: ["deadlines", caseId],
-    queryFn: async () => {
-      if (!caseId) return [];
-      const { data, error } = await supabase
-        .from("deadlines")
-        .select("*")
-        .eq("case_id", caseId)
-        .order("date", { ascending: true });
-
-      if (error) throw error;
-      return data as Deadline[];
     },
     enabled: !!caseId,
   });
