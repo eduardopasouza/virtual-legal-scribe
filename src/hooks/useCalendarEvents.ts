@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { addMonths, subMonths, format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import type { Event } from '@/types/calendar';
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 export function useCalendarEvents(initialEvents: Event[] = []) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -22,8 +21,9 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       priority: 'medium'
     }
   });
+  const [notifiedEvents, setNotifiedEvents] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
-  // Get all days in current month
   const getDaysInMonth = () => {
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
@@ -102,7 +102,21 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
     });
   };
 
-  // Update newEvent.date when selectedDate changes
+  const handleDismissNotification = (eventId: string) => {
+    setNotifiedEvents(prev => new Set([...prev, eventId]));
+    const event = events.find(e => e.id === eventId);
+    if (event) {
+      setEvents(prev => prev.map(e => 
+        e.id === eventId 
+          ? { ...e, notificationSettings: { ...e.notificationSettings, notified: true } }
+          : e
+      ));
+      toast({
+        description: `Notificação descartada: ${event.title}`,
+      });
+    }
+  };
+
   useEffect(() => {
     setNewEvent(prev => ({ ...prev, date: selectedDate }));
   }, [selectedDate]);
@@ -122,5 +136,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
     handleAddNote,
     setShowEventForm,
     setNewEvent,
+    notifiedEvents,
+    handleDismissNotification,
   };
 }
