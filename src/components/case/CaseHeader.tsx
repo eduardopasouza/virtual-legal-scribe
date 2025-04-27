@@ -9,12 +9,17 @@ import { ptBR } from "date-fns/locale";
 
 interface CaseHeaderProps {
   title: string;
-  type: string; // We handle this at the CaseDetailsContent level
+  type: string;
   status: string;
   createdAt: Date;
 }
 
-export function CaseHeader({ title, type, status, createdAt }: CaseHeaderProps) {
+export const CaseHeader = React.memo(({ 
+  title, 
+  type, 
+  status, 
+  createdAt 
+}: CaseHeaderProps) => {
   const { toast } = useToast();
   
   const handleShareCase = () => {
@@ -51,4 +56,7 @@ export function CaseHeader({ title, type, status, createdAt }: CaseHeaderProps) 
       <Separator className="my-4" />
     </div>
   );
-}
+});
+
+CaseHeader.displayName = 'CaseHeader';
+

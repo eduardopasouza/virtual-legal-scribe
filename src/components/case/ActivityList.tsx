@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Activity } from '@/types/case';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from 'date-fns';
@@ -10,7 +10,19 @@ interface ActivityListProps {
   isLoading: boolean;
 }
 
-export function ActivityList({ activities, isLoading }: ActivityListProps) {
+export const ActivityList = React.memo(({ activities, isLoading }: ActivityListProps) => {
+  const formattedActivities = useMemo(() => 
+    activities.map(activity => ({
+      ...activity,
+      formattedDate: format(
+        new Date(activity.created_at), 
+        "dd/MM/yyyy 'às' HH:mm", 
+        { locale: ptBR }
+      )
+    })),
+    [activities]
+  );
+
   if (isLoading) {
     return (
       <Card>
@@ -49,7 +61,7 @@ export function ActivityList({ activities, isLoading }: ActivityListProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {activities.map((activity) => (
+          {formattedActivities.map((activity) => (
             <div key={activity.id} className="relative pl-6 pb-8 last:pb-0">
               <div className="absolute left-0 top-2 w-3 h-3 rounded-full bg-primary"></div>
               <div className="absolute left-[5px] top-5 bottom-0 w-0.5 bg-border"></div>
@@ -57,7 +69,7 @@ export function ActivityList({ activities, isLoading }: ActivityListProps) {
                 <div className="font-medium">{activity.agent}</div>
                 <p className="text-sm">{activity.action}</p>
                 <p className="text-xs text-muted-foreground">
-                  {format(new Date(activity.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  {activity.formattedDate}
                 </p>
               </div>
             </div>
@@ -66,4 +78,7 @@ export function ActivityList({ activities, isLoading }: ActivityListProps) {
       </CardContent>
     </Card>
   );
-}
+});
+
+ActivityList.displayName = 'ActivityList';
+

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Activity } from '@/types/case';
 import { UploadContainer } from '@/components/upload/UploadContainer';
 import { ActivityList } from './ActivityList';
@@ -11,7 +11,7 @@ interface CaseDetailsContentProps {
   caseId: string;
   caseData: {
     title: string;
-    type?: string; // Make type optional to match Case type
+    type?: string;
     status: string;
     created_at: string;
   };
@@ -19,20 +19,23 @@ interface CaseDetailsContentProps {
   isLoadingActivities: boolean;
 }
 
-export function CaseDetailsContent({ 
+export const CaseDetailsContent = React.memo(({ 
   caseId, 
   caseData, 
   activities, 
   isLoadingActivities 
-}: CaseDetailsContentProps) {
+}: CaseDetailsContentProps) => {
+  // Memoize the header data to prevent unnecessary recalculations
+  const headerData = useMemo(() => ({
+    title: caseData.title,
+    type: caseData.type || 'Unknown',
+    status: caseData.status,
+    createdAt: new Date(caseData.created_at)
+  }), [caseData]);
+
   return (
     <div className="space-y-6">
-      <CaseHeader 
-        title={caseData.title}
-        type={caseData.type || 'Unknown'} // Provide a default value when type is undefined
-        status={caseData.status}
-        createdAt={new Date(caseData.created_at)}
-      />
+      <CaseHeader {...headerData} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <UploadContainer caseId={caseId} />
@@ -45,4 +48,7 @@ export function CaseDetailsContent({
       </div>
     </div>
   );
-}
+});
+
+CaseDetailsContent.displayName = 'CaseDetailsContent';
+
