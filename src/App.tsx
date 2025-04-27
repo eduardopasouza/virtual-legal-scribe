@@ -100,7 +100,7 @@ function App() {
                     path="/stats" 
                     element={
                       <ProtectedRoute>
-                        <AdvancedStats />
+                        <Statistics />
                       </ProtectedRoute>
                     } 
                   />
