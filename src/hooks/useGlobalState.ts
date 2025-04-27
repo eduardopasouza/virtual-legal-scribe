@@ -5,7 +5,7 @@ import { handleError } from '@/utils/errorHandling';
 // Query keys constants for better maintainability
 const queryKeys = {
   cases: {
-    all: 'cases',
+    all: ['cases'],
     lists: () => [...queryKeys.cases.all, 'list'],
     list: (filters: string) => [...queryKeys.cases.lists(), { filters }],
     details: () => [...queryKeys.cases.all, 'detail'],
@@ -16,15 +16,15 @@ const queryKeys = {
     byId: (caseId: string, activityId: string) => ['activities', caseId, activityId],
   },
   documents: {
-    all: 'documents',
+    all: ['documents'],
     byCaseId: (caseId: string) => ['documents', caseId],
   },
   workflow: {
-    all: 'workflow',
+    all: ['workflow'],
     stages: (caseId: string) => ['workflow_stages', caseId],
   },
   alerts: {
-    all: 'alerts',
+    all: ['alerts'],
     byCaseId: (caseId: string) => ['alerts', caseId],
   }
 };

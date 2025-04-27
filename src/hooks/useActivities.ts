@@ -1,5 +1,4 @@
 
-// Renamed to be consistent with collection naming
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Activity } from '@/types/case';
@@ -23,7 +22,7 @@ export function useActivitiesList(caseId?: string) {
     },
     enabled: !!caseId,
     meta: {
-      onError: handleError
+      onError: (error) => handleError(error, 'Falha ao carregar atividades')
     }
   });
 
@@ -43,7 +42,7 @@ export function useActivitiesList(caseId?: string) {
         queryClient.invalidateQueries({ queryKey: queryKeys.activities.all(caseId) });
       }
     },
-    onError: handleError
+    onError: (error) => handleError(error, 'Falha ao registrar atividade')
   });
 
   return { activities, isLoading, createActivity };

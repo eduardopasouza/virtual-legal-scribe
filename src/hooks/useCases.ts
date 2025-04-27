@@ -19,7 +19,7 @@ export function useCases() {
       return data as Case[];
     },
     meta: {
-      onError: handleError
+      onError: (error) => handleError(error, 'Falha ao carregar casos')
     }
   });
 

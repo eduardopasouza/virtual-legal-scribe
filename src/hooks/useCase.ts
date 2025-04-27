@@ -22,7 +22,7 @@ export function useSingleCase(id?: string) {
     },
     enabled: !!id,
     meta: {
-      onError: handleError
+      onError: (error) => handleError(error, 'Falha ao carregar detalhes do caso')
     }
   });
 
@@ -40,7 +40,7 @@ export function useSingleCase(id?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cases.all });
     },
-    onError: handleError
+    onError: (error) => handleError(error, 'Falha ao criar caso')
   });
 
   return { caseData, isLoading, createCase };
