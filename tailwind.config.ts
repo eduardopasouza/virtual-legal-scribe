@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Cores específicas do EVJI
+				// EVJI specific colors
 				evji: {
 					primary: '#1a365d',
 					secondary: '#f5f7fa',

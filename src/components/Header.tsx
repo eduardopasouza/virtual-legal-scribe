@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Menu, Plus } from 'lucide-react';
+import { Search, Menu, Plus, Folder } from 'lucide-react';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useMobileContext } from '@/hooks/use-mobile';
 import { NotificationSystem } from '@/components/notification/NotificationSystem';
@@ -63,7 +64,8 @@ export function Header() {
             className="hidden md:flex"
             onClick={handleNewCase}
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Folder className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Novo Caso
           </Button>
 
