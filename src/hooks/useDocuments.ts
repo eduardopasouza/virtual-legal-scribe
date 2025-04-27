@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 export interface DocumentMetadata {
   id?: string;
@@ -12,11 +13,13 @@ export interface DocumentMetadata {
   case_id?: string | null;
   uploaded_at?: string;  // Changed from Date to string to match Supabase's format
   file_path?: string;
+  created_by?: string;
 }
 
 export function useDocuments(caseId?: string) {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const uploadDocument = async (file: File) => {
     try {
@@ -36,7 +39,7 @@ export function useDocuments(caseId?: string) {
 
       if (storageError) throw storageError;
 
-      // Store document metadata in database
+      // Store document metadata in database with user ID
       const documentMetadata = {
         id: uuidv4(),
         name: file.name,
@@ -44,7 +47,8 @@ export function useDocuments(caseId?: string) {
         type: file.type,
         case_id: caseId || null,
         uploaded_at: new Date().toISOString(),  // Store as ISO string
-        file_path: filePath
+        file_path: filePath,
+        created_by: user?.id  // Adiciona o ID do usuário autenticado
       };
 
       const { error: dbError } = await supabase
@@ -88,6 +92,11 @@ export function useDocuments(caseId?: string) {
 
       if (caseId) {
         query = query.eq('case_id', caseId);
+      }
+
+      // Aplica filtro de usuário se autenticado
+      if (user) {
+        query = query.eq('created_by', user.id);
       }
 
       const { data, error } = await query;

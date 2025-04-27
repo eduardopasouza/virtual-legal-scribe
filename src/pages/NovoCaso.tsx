@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -12,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useCaseOperations } from '@/hooks/useCaseOperations';
 import { useDocuments } from '@/hooks/useDocuments';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 const AREAS_DIREITO = [
   'Civil',
@@ -29,6 +29,7 @@ export default function NovoCaso() {
   const { toast } = useToast();
   const { createCase } = useCaseOperations();
   const { uploadDocument } = useDocuments();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
 
@@ -48,14 +49,15 @@ export default function NovoCaso() {
     setIsSubmitting(true);
 
     try {
-      // Create the case first
+      // Create the case first with user ID
       const newCase = await createCase.mutateAsync({
         ...formData,
-        status: 'em_andamento'
+        status: 'em_andamento',
+        created_by: user?.id
       });
 
-      // Upload all documents
-      if (files.length > 0) {
+      // Upload all documents with user ID
+      if (files.length > 0 && newCase?.id) {
         await Promise.all(files.map(file => uploadDocument(file)));
       }
 
@@ -65,10 +67,11 @@ export default function NovoCaso() {
       });
 
       navigate(`/cases/${newCase.id}`);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Erro ao criar caso:", error);
       toast({
         title: "Erro ao criar caso",
-        description: "Ocorreu um erro ao criar o caso. Tente novamente.",
+        description: error.message || "Ocorreu um erro ao criar o caso. Tente novamente.",
         variant: "destructive",
       });
     } finally {
