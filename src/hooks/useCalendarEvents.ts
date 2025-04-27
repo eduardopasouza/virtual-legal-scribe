@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { addMonths, subMonths, format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import type { Event } from '@/types/calendar';
@@ -57,7 +58,8 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
     
     setEvents(prevEvents => [...prevEvents, eventToAdd]);
     setShowEventForm(false);
-    toast.success("Evento adicionado com sucesso", {
+    toast({
+      title: "Evento adicionado com sucesso",
       description: `${newEvent.title} em ${format(newEvent.date, 'dd/MM/yyyy')}`
     });
   };
@@ -97,7 +99,8 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
       setEvents(prev => [...prev, newEvent]);
     }
     
-    toast.success("Anotação adicionada", {
+    toast({
+      title: "Anotação adicionada",
       description: "Sua anotação foi salva e será analisada pelo sistema"
     });
   };

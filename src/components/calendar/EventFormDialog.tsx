@@ -10,22 +10,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { Event } from '@/types/calendar';
 
 interface EventFormDialogProps {
-  showEventForm: boolean;
-  setShowEventForm: (show: boolean) => void;
-  newEvent: Omit<Event, 'id'>;
-  setNewEvent: React.Dispatch<React.SetStateAction<Omit<Event, 'id'>>>;
+  isOpen: boolean;
+  onClose: () => void;
+  event: Omit<Event, 'id'>;
+  onEventChange: React.Dispatch<React.SetStateAction<Omit<Event, 'id'>>>;
   onSubmit: () => void;
 }
 
 export function EventFormDialog({ 
-  showEventForm, 
-  setShowEventForm, 
-  newEvent, 
-  setNewEvent, 
+  isOpen, 
+  onClose, 
+  event, 
+  onEventChange, 
   onSubmit 
 }: EventFormDialogProps) {
   return (
-    <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Novo Evento</DialogTitle>
@@ -39,8 +39,8 @@ export function EventFormDialog({
             <Label htmlFor="title">Título</Label>
             <Input 
               id="title" 
-              value={newEvent.title} 
-              onChange={e => setNewEvent({...newEvent, title: e.target.value})}
+              value={event.title} 
+              onChange={e => onEventChange({...event, title: e.target.value})}
               placeholder="Título do evento"
             />
           </div>
@@ -49,15 +49,15 @@ export function EventFormDialog({
             <div className="space-y-2">
               <Label>Data</Label>
               <div className="flex items-center h-10 rounded-md border border-input px-3 py-2">
-                {newEvent.date.toLocaleDateString()}
+                {event.date.toLocaleDateString()}
               </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="type">Tipo</Label>
               <Select 
-                value={newEvent.type}
-                onValueChange={value => setNewEvent({...newEvent, type: value as Event['type']})}
+                value={event.type}
+                onValueChange={value => onEventChange({...event, type: value as Event['type']})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo" />
@@ -78,8 +78,8 @@ export function EventFormDialog({
               <Input 
                 id="startTime" 
                 type="time" 
-                value={newEvent.startTime}
-                onChange={e => setNewEvent({...newEvent, startTime: e.target.value})}
+                value={event.startTime}
+                onChange={e => onEventChange({...event, startTime: e.target.value})}
               />
             </div>
             
@@ -88,8 +88,8 @@ export function EventFormDialog({
               <Input 
                 id="endTime" 
                 type="time" 
-                value={newEvent.endTime}
-                onChange={e => setNewEvent({...newEvent, endTime: e.target.value})}
+                value={event.endTime}
+                onChange={e => onEventChange({...event, endTime: e.target.value})}
               />
             </div>
           </div>
@@ -98,8 +98,8 @@ export function EventFormDialog({
             <Label htmlFor="relatedCase">Processo Relacionado (opcional)</Label>
             <Input 
               id="relatedCase" 
-              value={newEvent.relatedCase || ''}
-              onChange={e => setNewEvent({...newEvent, relatedCase: e.target.value})}
+              value={event.relatedCase || ''}
+              onChange={e => onEventChange({...event, relatedCase: e.target.value})}
               placeholder="Número do processo ou nome do caso"
             />
           </div>
@@ -108,8 +108,8 @@ export function EventFormDialog({
             <Label htmlFor="description">Descrição</Label>
             <Textarea 
               id="description" 
-              value={newEvent.description}
-              onChange={e => setNewEvent({...newEvent, description: e.target.value})}
+              value={event.description}
+              onChange={e => onEventChange({...event, description: e.target.value})}
               placeholder="Detalhes adicionais sobre o evento"
               rows={3}
             />
@@ -122,11 +122,11 @@ export function EventFormDialog({
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox 
                 id="enableNotification"
-                checked={!!newEvent.notificationSettings}
+                checked={!!event.notificationSettings}
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setNewEvent({
-                      ...newEvent, 
+                    onEventChange({
+                      ...event, 
                       notificationSettings: { 
                         notifyBefore: 1, 
                         notified: false, 
@@ -134,8 +134,8 @@ export function EventFormDialog({
                       }
                     });
                   } else {
-                    const { notificationSettings, ...rest } = newEvent;
-                    setNewEvent(rest);
+                    const { notificationSettings, ...rest } = event;
+                    onEventChange(rest as Omit<Event, 'id'>);
                   }
                 }}
               />
@@ -144,7 +144,7 @@ export function EventFormDialog({
               </Label>
             </div>
             
-            {newEvent.notificationSettings && (
+            {event.notificationSettings && (
               <div className="grid grid-cols-2 gap-4 mt-2">
                 <div className="space-y-2">
                   <Label htmlFor="notifyBefore">Notificar com Antecedência (dias)</Label>
@@ -153,11 +153,11 @@ export function EventFormDialog({
                     type="number"
                     min={0}
                     max={30}
-                    value={newEvent.notificationSettings.notifyBefore}
-                    onChange={e => setNewEvent({
-                      ...newEvent, 
+                    value={event.notificationSettings.notifyBefore}
+                    onChange={e => onEventChange({
+                      ...event, 
                       notificationSettings: {
-                        ...newEvent.notificationSettings!,
+                        ...event.notificationSettings!,
                         notifyBefore: parseInt(e.target.value) || 0
                       }
                     })}
@@ -167,11 +167,11 @@ export function EventFormDialog({
                 <div className="space-y-2">
                   <Label htmlFor="priority">Prioridade</Label>
                   <Select 
-                    value={newEvent.notificationSettings.priority}
-                    onValueChange={value => setNewEvent({
-                      ...newEvent,
+                    value={event.notificationSettings.priority}
+                    onValueChange={value => onEventChange({
+                      ...event,
                       notificationSettings: {
-                        ...newEvent.notificationSettings!,
+                        ...event.notificationSettings!,
                         priority: value as 'high' | 'medium' | 'low'
                       }
                     })}
@@ -195,7 +195,7 @@ export function EventFormDialog({
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button onClick={onSubmit} disabled={!newEvent.title}>Salvar</Button>
+          <Button onClick={onSubmit} disabled={!event.title}>Salvar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

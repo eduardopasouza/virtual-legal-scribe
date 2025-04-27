@@ -12,26 +12,37 @@ import { useToast } from '@/hooks/use-toast';
 
 interface CalendarGridProps {
   currentMonth: Date;
-  days: Date[];
-  today: Date;
+  selectedDate: Date;
   events: Event[];
+  onPreviousMonth: () => void;
+  onNextMonth: () => void;
+  onTodayClick: () => void;
   onDateClick: (date: Date) => void;
-  onNavigate: (direction: 'prev' | 'next' | 'today') => void;
   onAddNote?: (date: Date, note: string) => void;
 }
 
 export function CalendarGrid({ 
   currentMonth, 
-  days, 
-  today, 
+  selectedDate,
   events, 
+  onPreviousMonth,
+  onNextMonth,
+  onTodayClick,
   onDateClick,
-  onNavigate,
   onAddNote
 }: CalendarGridProps) {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [noteText, setNoteText] = useState('');
   const { toast } = useToast();
+  const today = new Date();
+  const days = (() => {
+    const start = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const end = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    const daysArray = [];
+    for (let day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
+      daysArray.push(new Date(day));
+    }
+    return daysArray;
+  })();
 
   const getEventsForDay = (date: Date) => {
     return events.filter(event => 
@@ -49,7 +60,6 @@ export function CalendarGrid({
   };
   
   const handleDayClick = (date: Date) => {
-    setSelectedDate(date.getTime() === selectedDate?.getTime() ? null : date);
     onDateClick(date);
   };
   
@@ -74,13 +84,13 @@ export function CalendarGrid({
           {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" onClick={() => onNavigate('prev')}>
+          <Button variant="ghost" size="icon" onClick={onPreviousMonth}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => onNavigate('today')}>
+          <Button variant="outline" size="sm" onClick={onTodayClick}>
             Hoje
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => onNavigate('next')}>
+          <Button variant="ghost" size="icon" onClick={onNextMonth}>
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
