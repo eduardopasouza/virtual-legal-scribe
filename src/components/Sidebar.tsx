@@ -4,7 +4,7 @@ import { SidebarNav } from '@/components/SidebarNav';
 import { Separator } from "@/components/ui/separator";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -12,10 +12,10 @@ export function Sidebar() {
   return (
     <aside className="h-full w-64 border-r border-border bg-sidebar text-sidebar-foreground flex flex-col">
       <div className="p-6">
-        <h2 className="font-serif text-xl font-bold flex items-center">
+        <Link to="/" className="font-serif text-xl font-bold flex items-center hover:text-evji-accent transition-colors">
           <span className="text-evji-accent">EVJI</span>
           <span className="text-xs ml-2 bg-evji-accent/20 text-evji-accent px-2 py-0.5 rounded">v1.0</span>
-        </h2>
+        </Link>
       </div>
       
       <Separator className="bg-sidebar-border" />

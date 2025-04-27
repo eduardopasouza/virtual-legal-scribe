@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Home, 
   FileText, 
@@ -9,9 +9,7 @@ import {
   Calendar as CalendarIcon, 
   Settings, 
   Search, 
-  Clock, 
-  MessageSquare,
-  ArrowLeft
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -50,10 +48,10 @@ export function SidebarNav() {
                     : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
                 )}
               >
-                <Link to={item.path} className="flex items-center">
+                <NavLink to={item.path} className="flex items-center w-full">
                   <item.icon className="h-5 w-5" />
                   <span className="ml-2">{item.label}</span>
-                </Link>
+                </NavLink>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
