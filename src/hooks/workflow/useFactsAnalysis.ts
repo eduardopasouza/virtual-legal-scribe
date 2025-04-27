@@ -15,7 +15,7 @@ export function useFactsAnalysis(caseId?: string) {
     
     const { data, error } = await supabase
       .from('activities')
-      .select('details')
+      .select('result') // Changed from 'details' to 'result' to match schema
       .eq('case_id', caseId)
       .eq('agent', 'analista-fatos')
       .eq('action', 'Análise de fatos')
@@ -25,7 +25,7 @@ export function useFactsAnalysis(caseId?: string) {
       
     if (error && error.code !== 'PGRST116') throw error;
     
-    return data?.details || null;
+    return data?.result ? JSON.parse(data.result) : null;
   };
 
   // Query to get facts analysis
@@ -62,17 +62,15 @@ export function useFactsAnalysis(caseId?: string) {
         if (!result.success) {
           throw new Error(result.message);
         }
-        
-        // Store the result in the database
+
+        // Store the result in the database as a JSON string
         const { error } = await supabase
           .from('activities')
           .insert({
             case_id: caseId,
             agent: 'analista-fatos',
             action: 'Análise de fatos',
-            result: 'Análise completa',
-            status: 'concluido',
-            details: result.details
+            result: JSON.stringify(result.details)
           });
           
         if (error) throw error;

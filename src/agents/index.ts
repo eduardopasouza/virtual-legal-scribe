@@ -9,7 +9,7 @@ const agents: Agent[] = [
   new AnalistaRequisitosAgent(),
   new RedatorAgent(),
   new EstrategistaAgent(),
-  new AnalistaFatosAgent(),
+  new AnalistaFatosAgent()
 ];
 
 export const getAgent = (type: string): Agent | undefined => {
