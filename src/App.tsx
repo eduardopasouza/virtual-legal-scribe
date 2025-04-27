@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { queryClient } from "./lib/react-query/queryClient";
+import { MobileProvider } from "./hooks/use-mobile";
 
 // Pages
 import Index from "./pages/Index";
@@ -28,28 +29,30 @@ import "./App.css";
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="evji-theme">
+    <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <Toaster richColors closeButton position="top-right" />
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/cases" element={<Cases />} />
-            <Route path="/case/:caseId" element={<CaseDetails />} />
-            <Route path="/novo-caso" element={<NovoCaso />} />
-            <Route path="/webchat" element={<WebChatPage />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/clients" element={<ClientsList />} />
-            <Route path="/stats" element={<Statistics />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/activity-history" element={<ActivityHistory />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
+        <MobileProvider>
+          <Toaster richColors closeButton position="top-right" />
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/cases" element={<Cases />} />
+              <Route path="/case/:caseId" element={<CaseDetails />} />
+              <Route path="/novo-caso" element={<NovoCaso />} />
+              <Route path="/webchat" element={<WebChatPage />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/clients" element={<ClientsList />} />
+              <Route path="/stats" element={<Statistics />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/activity-history" element={<ActivityHistory />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/documents" element={<DocumentsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </MobileProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
