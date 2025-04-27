@@ -7,6 +7,8 @@ import { FilePreview } from './document/FilePreview';
 import { UploadStatus } from './document/UploadStatus';
 import { DocumentTypeSelect } from './document/DocumentTypeSelect';
 import { DocumentActions } from './document/DocumentActions';
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 interface DocumentUploaderProps {
   caseId?: string;

@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { CardFooter } from "@/components/ui/card";
 
 interface DocumentActionsProps {
   onCancel: () => void;
