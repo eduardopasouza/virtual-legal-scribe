@@ -1,23 +1,28 @@
 
 import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
+import { Menu } from "lucide-react";
+import { useMobileContext } from "@/hooks/use-mobile";
 
 interface DashboardMobileMenuProps {
   onToggle: () => void;
 }
 
-export const DashboardMobileMenu = ({ onToggle }: DashboardMobileMenuProps) => {
+export function DashboardMobileMenu({ onToggle }: DashboardMobileMenuProps) {
+  const { isMobile, sidebarOpen } = useMobileContext();
+  
+  if (!isMobile) return null;
+  
   return (
-    <div className="lg:hidden">
-      <Button
-        variant="ghost"
-        size="sm"
-        className="p-2 m-2 hover:bg-accent"
+    <div className="fixed bottom-4 left-4 z-40">
+      <Button 
+        size="sm" 
+        variant="default" 
         onClick={onToggle}
-        aria-label="Toggle menu"
+        className="rounded-full shadow-md"
+        aria-label={sidebarOpen ? "Fechar menu lateral" : "Abrir menu lateral"}
       >
-        <FileText className="h-5 w-5" />
+        <Menu className="h-4 w-4" />
       </Button>
     </div>
   );
-};
+}

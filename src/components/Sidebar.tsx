@@ -6,50 +6,54 @@ import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useMobileContext } from '@/hooks/use-mobile';
 
 export function Sidebar() {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isPinned, setIsPinned] = useState(false);
+  const { isMobile } = useMobileContext();
   
-  // Função para expandir a sidebar ao colocar o mouse
+  // Function to expand the sidebar on hover
   const handleMouseEnter = () => {
-    if (!isPinned) {
+    if (!isPinned && !isMobile) {
       setIsCollapsed(false);
     }
   };
   
-  // Função para recolher a sidebar ao retirar o mouse
+  // Function to collapse the sidebar when mouse leaves
   const handleMouseLeave = () => {
-    if (!isPinned) {
+    if (!isPinned && !isMobile) {
       setIsCollapsed(true);
     }
   };
   
-  // Função para fixar/desfixar a sidebar
+  // Function to toggle pin/unpin of the sidebar
   const togglePin = () => {
     setIsPinned(!isPinned);
+    setIsCollapsed(isPinned); // If unpinning, collapse; if pinning, keep current state
   };
   
-  // Efeito para recolher a sidebar ao carregar a página
+  // Effect to set initial state on page load or window resize
   useEffect(() => {
-    setIsCollapsed(true);
-    setIsPinned(false);
-  }, []);
+    if (!isPinned) {
+      setIsCollapsed(true);
+    }
+  }, [isPinned]);
   
   return (
     <div className="relative h-full flex">
       <aside 
         className={cn(
           "h-full border-r border-border bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300",
-          isCollapsed ? "w-16" : "w-64"
+          isCollapsed && !isMobile ? "w-16" : "w-64"
         )}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className={cn("p-6 flex items-center", isCollapsed && "justify-center p-3")}>
+        <div className={cn("p-6 flex items-center", isCollapsed && !isMobile && "justify-center p-3")}>
           <Link to="/" className="font-serif text-xl font-bold flex items-center hover:text-evji-accent transition-colors">
-            {isCollapsed ? (
+            {isCollapsed && !isMobile ? (
               <span className="text-evji-accent">E</span>
             ) : (
               <>
@@ -63,7 +67,7 @@ export function Sidebar() {
         <Separator className="bg-sidebar-border" />
         
         <nav className="flex-1 p-4 overflow-y-auto">
-          <SidebarNav isCollapsed={isCollapsed} />
+          <SidebarNav isCollapsed={isCollapsed && !isMobile} />
         </nav>
         
         <div className="p-4 mt-auto">
@@ -73,31 +77,33 @@ export function Sidebar() {
               variant="ghost" 
               className={cn(
                 "w-full justify-start gap-3 text-evji-accent/90",
-                isCollapsed && "justify-center px-0"
+                isCollapsed && !isMobile && "justify-center px-0"
               )}
               onClick={() => navigate('/login')}
             >
               <LogOut className="h-5 w-5" />
-              {!isCollapsed && <span>Sair</span>}
+              {(!isCollapsed || isMobile) && <span>Sair</span>}
             </Button>
           </div>
         </div>
       </aside>
       
-      <Button 
-        variant="ghost" 
-        size="sm"
-        className={cn(
-          "absolute -right-3 top-20 h-6 w-6 p-0 rounded-full border shadow-md bg-background z-10",
-          isPinned && "bg-evji-accent/20"
-        )}
-        onClick={togglePin}
-      >
-        {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
-        <span className="sr-only">
-          {isPinned ? 'Desafixar menu' : 'Fixar menu'}
-        </span>
-      </Button>
+      {!isMobile && (
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className={cn(
+            "absolute -right-3 top-20 h-6 w-6 p-0 rounded-full border shadow-md bg-background z-10",
+            isPinned && "bg-evji-accent/20"
+          )}
+          onClick={togglePin}
+        >
+          {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          <span className="sr-only">
+            {isPinned ? 'Desafixar menu' : 'Fixar menu'}
+          </span>
+        </Button>
+      )}
     </div>
   );
 }
