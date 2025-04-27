@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
@@ -13,6 +12,7 @@ import { SystemGuide } from '@/components/dashboard/SystemGuide';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { Footer } from '@/components/Footer';
 import { toast } from 'sonner';
+import { Toaster as Sonner } from '@/components/ui/sonner';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const Index = () => {
         </main>
       </div>
       <ChatbotAssistant />
-      <Toaster />
+      <Sonner />
     </div>
   );
 };
