@@ -15,6 +15,7 @@ interface CaseDetailedData {
   alerts: Alert[];
   documents: DocumentMetadata[];
   isLoading: boolean;
+  isLoadingActivities: boolean; // Added this property to match what we're using
   error: Error | null;
 }
 
@@ -126,6 +127,7 @@ export function useCaseDetails(caseId?: string): CaseDetailedData {
     alerts,
     documents,
     isLoading,
+    isLoadingActivities: isActivitiesLoading, // Expose this property explicitly
     error: caseError as Error | null,
   };
 }
