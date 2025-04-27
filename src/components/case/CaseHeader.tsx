@@ -33,7 +33,7 @@ export const CaseHeader = React.memo(({
     <div>
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-evji-primary">{title}</h1>
+          <h1 className="text-2xl font-bold font-serif text-foreground">{title}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant="outline">{type}</Badge>
             <Badge 
@@ -59,4 +59,3 @@ export const CaseHeader = React.memo(({
 });
 
 CaseHeader.displayName = 'CaseHeader';
-

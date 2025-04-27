@@ -25,15 +25,15 @@ export function CaseDetailsContent({
   if (isLoadingCase) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-24 bg-gray-200 rounded-lg" />
-        <div className="h-[400px] bg-gray-200 rounded-lg" />
+        <div className="h-24 bg-muted rounded-lg" />
+        <div className="h-[400px] bg-muted rounded-lg" />
       </div>
     );
   }
 
   // Map case status to display format
   const statusDisplay = caseData.status === 'em_andamento' ? 'Em Andamento' : 
-                        caseData.status === 'concluido' ? 'Concluído' : 'Arquivado';
+                       caseData.status === 'concluido' ? 'Concluído' : 'Arquivado';
 
   // Format created_at date
   const createdAt = new Date(caseData.created_at);
