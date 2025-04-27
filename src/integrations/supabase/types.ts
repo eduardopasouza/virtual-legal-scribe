@@ -9,7 +9,165 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      activities: {
+        Row: {
+          action: string
+          agent: string
+          case_id: string | null
+          created_at: string | null
+          id: string
+          result: string | null
+          status: string | null
+        }
+        Insert: {
+          action: string
+          agent: string
+          case_id?: string | null
+          created_at?: string | null
+          id?: string
+          result?: string | null
+          status?: string | null
+        }
+        Update: {
+          action?: string
+          agent?: string
+          case_id?: string | null
+          created_at?: string | null
+          id?: string
+          result?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          client: string
+          court: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          main_agent: string | null
+          number: string | null
+          status: string | null
+          title: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client: string
+          court?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          main_agent?: string | null
+          number?: string | null
+          status?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client?: string
+          court?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          main_agent?: string | null
+          number?: string | null
+          status?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      deadlines: {
+        Row: {
+          case_id: string | null
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          status: string | null
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string | null
+          date: string
+          description: string
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deadlines_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          date: string
+          description: string | null
+          end_time: string
+          id: string
+          related_case: string | null
+          start_time: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          description?: string | null
+          end_time: string
+          id?: string
+          related_case?: string | null
+          start_time: string
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          end_time?: string
+          id?: string
+          related_case?: string | null
+          start_time?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_related_case_fkey"
+            columns: ["related_case"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
