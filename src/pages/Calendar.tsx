@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { CalendarGrid } from '@/components/calendar/CalendarGrid';
@@ -46,8 +45,8 @@ export default function Calendar() {
         </div>
 
         <EventFormDialog
-          isOpen={showEventForm}
-          onClose={() => setShowEventForm(false)}
+          open={showEventForm}
+          onOpenChange={setShowEventForm}
           event={newEvent}
           onEventChange={setNewEvent}
           onSubmit={handleAddEvent}
