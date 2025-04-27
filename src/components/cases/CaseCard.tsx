@@ -12,25 +12,37 @@ interface CaseCardProps {
 }
 
 export function CaseCard({ caseItem }: CaseCardProps) {
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'em_andamento':
+        return 'Em Andamento';
+      case 'concluido':
+        return 'Concluído';
+      case 'arquivado':
+        return 'Arquivado';
+      default:
+        return status;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'em_andamento':
+        return 'bg-amber-500';
+      case 'concluido':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
   return (
     <Link to={`/cases/${caseItem.id}`}>
       <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start mb-2">
-            <Badge
-              className={
-                caseItem.status === 'em_andamento'
-                  ? 'bg-amber-500'
-                  : caseItem.status === 'concluido'
-                  ? 'bg-green-500'
-                  : 'bg-gray-500'
-              }
-            >
-              {caseItem.status === 'em_andamento'
-                ? 'Em andamento'
-                : caseItem.status === 'concluido'
-                ? 'Concluído'
-                : 'Arquivado'}
+            <Badge className={getStatusColor(caseItem.status)}>
+              {getStatusLabel(caseItem.status)}
             </Badge>
             {caseItem.area_direito && (
               <Badge variant="outline">{caseItem.area_direito}</Badge>
