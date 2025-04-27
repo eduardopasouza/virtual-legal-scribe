@@ -31,6 +31,7 @@ export type AgentType =
   | 'especialista'
   | 'especialista-adaptavel'
   | 'revisor-legal'
+  | 'revisor-integrador'
   | 'revisor-texto'
   | 'comunicador';
 

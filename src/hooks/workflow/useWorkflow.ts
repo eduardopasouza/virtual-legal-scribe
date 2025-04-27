@@ -11,6 +11,7 @@ import { useFactsAnalysis } from './useFactsAnalysis';
 import { useAdvancedLayersAnalysis } from './useAdvancedLayersAnalysis';
 import { useDocumentDrafting } from './useDocumentDrafting';
 import { useDocumentVerification } from './useDocumentVerification';
+import { useDocumentRevision } from './useDocumentRevision';
 
 export function useWorkflow(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -44,6 +45,10 @@ export function useWorkflow(caseId?: string) {
     verifyDocument,
     isVerifying
   } = useDocumentVerification(caseId);
+  const {
+    reviseDocument,
+    isRevising
+  } = useDocumentRevision(caseId);
 
   // Get recommended agent for current stage
   const getRecommendedAgent = () => {
@@ -83,6 +88,12 @@ export function useWorkflow(caseId?: string) {
   const isReviewStage = () => {
     if (!currentStage?.stage_name) return false;
     return currentStage.stage_name === 'review';
+  };
+  
+  // Determinar se estamos na fase de revisão final/integração
+  const isFinalRevisionStage = () => {
+    if (!currentStage?.stage_name) return false;
+    return currentStage.stage_name === 'final-revision';
   };
 
   // Identificar qual fase estratégica estamos
@@ -144,6 +155,10 @@ export function useWorkflow(caseId?: string) {
       return await verifyDocument.mutateAsync({});
     }
     
+    if (isFinalRevisionStage()) {
+      return await reviseDocument.mutateAsync({});
+    }
+    
     return null;
   };
 
@@ -151,7 +166,8 @@ export function useWorkflow(caseId?: string) {
     stages,
     currentStage,
     isLoading,
-    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || isAnalyzingAdvanced || isDrafting || isVerifying,
+    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || 
+                  isAnalyzingAdvanced || isDrafting || isVerifying || isRevising,
     error,
     initializeWorkflow,
     advanceWorkflow,
@@ -181,6 +197,9 @@ export function useWorkflow(caseId?: string) {
     // Review methods
     isReviewStage,
     verifyDocument,
+    // Final revision methods
+    isFinalRevisionStage,
+    reviseDocument,
     // Execute current stage based on type
     executeCurrentStage
   };
