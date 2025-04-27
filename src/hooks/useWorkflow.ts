@@ -91,7 +91,7 @@ export function useWorkflow(caseId?: string) {
       queryClient.invalidateQueries({ queryKey: ['current_stage', caseId] });
       
       const previousStageName = result.previousStage?.stage_name || '';
-      const stageConfig = workflowService.getStageConfig(previousStageName);
+      const stageConfig = workflowService.getStageConfig(previousStageName as WorkflowStageName);
       
       if (result.currentStage) {
         const newStageConfig = workflowService.getStageConfig(result.currentStage.stage_name);
@@ -165,8 +165,7 @@ export function useWorkflow(caseId?: string) {
   const getRecommendedAgent = () => {
     if (!currentStage || !currentStage.stage_name) return null;
     
-    // Fix for the type error: Ensure we only pass a valid WorkflowStageName
-    // We can't pass an empty string as WorkflowStageName
+    // Type guards to ensure we're passing a valid WorkflowStageName
     if (currentStage.stage_name === "") return null;
     
     return workflowService.getRecommendedAgent(currentStage.stage_name as WorkflowStageName);
