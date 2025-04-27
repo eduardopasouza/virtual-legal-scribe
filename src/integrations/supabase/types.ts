@@ -49,6 +49,7 @@ export type Database = {
       }
       cases: {
         Row: {
+          area_direito: string | null
           client: string
           court: string | null
           created_at: string | null
@@ -62,6 +63,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          area_direito?: string | null
           client: string
           court?: string | null
           created_at?: string | null
@@ -75,6 +77,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          area_direito?: string | null
           client?: string
           court?: string | null
           created_at?: string | null
