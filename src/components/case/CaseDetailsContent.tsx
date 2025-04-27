@@ -5,11 +5,16 @@ import { UploadContainer } from '@/components/upload/UploadContainer';
 import { ActivityList } from './ActivityList';
 import { CaseTimeline } from './CaseTimeline';
 import { CaseAlerts } from './CaseAlerts';
-import { DocumentList } from './DocumentList';
+import { CaseHeader } from './CaseHeader';
 
 interface CaseDetailsContentProps {
   caseId: string;
-  caseData: any;
+  caseData: {
+    title: string;
+    type: string;
+    status: string;
+    created_at: string;
+  };
   activities: Activity[];
   isLoadingActivities: boolean;
 }
@@ -22,18 +27,23 @@ export function CaseDetailsContent({
 }: CaseDetailsContentProps) {
   return (
     <div className="space-y-6">
-      <CaseDetailsHeader caseData={caseData} />
+      <CaseHeader 
+        title={caseData.title}
+        type={caseData.type}
+        status={caseData.status}
+        createdAt={new Date(caseData.created_at)}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <UploadContainer caseId={caseId} />
           <ActivityList activities={activities || []} isLoading={isLoadingActivities} />
         </div>
         <div className="space-y-4">
-          <CaseTimeline caseId={caseId} />
-          <CaseAlerts caseId={caseId} />
-          <DocumentList caseId={caseId} />
+          <CaseTimeline stages={[]} />
+          <CaseAlerts alerts={[]} />
         </div>
       </div>
     </div>
   );
 }
+

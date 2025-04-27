@@ -52,3 +52,4 @@ export function CaseHeader({ title, type, status, createdAt }: CaseHeaderProps) 
     </div>
   );
 }
+
