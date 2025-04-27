@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
@@ -20,12 +21,17 @@ import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/ap
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AgentInteraction } from '@/components/AgentInteraction';
 import { NotificationSystem } from '@/components/notification/NotificationSystem';
+import { CaseDocumentsOrganizer } from '@/components/case/CaseDocumentsOrganizer';
+import { AgentChat } from '@/components/AgentChat';
+import { DocumentMetadata } from '@/hooks/useDocuments';
+import { Card, CardContent } from '@/components/ui/card';
 
 const CaseDetails = () => {
   const { caseId } = useParams<{ caseId: string }>();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('summary');
+  const [selectedDocument, setSelectedDocument] = useState<DocumentMetadata | null>(null);
   
   const { 
     caseData, 
@@ -59,15 +65,6 @@ const CaseDetails = () => {
         description: "O analista de requisitos processou os documentos com sucesso.",
       });
       
-      // Adicionar notificação
-      if ((window as any).addNotification) {
-        (window as any).addNotification(
-          'success', 
-          'Triagem finalizada', 
-          'O analista de requisitos finalizou a triagem do caso.'
-        );
-      }
-      
       // Recarregar os dados
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
@@ -79,17 +76,12 @@ const CaseDetails = () => {
         description: `Ocorreu um erro: ${error.message}`,
         variant: "destructive",
       });
-      
-      // Adicionar notificação de erro
-      if ((window as any).addNotification) {
-        (window as any).addNotification(
-          'alert', 
-          'Erro na triagem', 
-          'Ocorreu um erro ao processar a triagem do caso.'
-        );
-      }
     }
   });
+  
+  const handleDocumentSelect = (doc: DocumentMetadata) => {
+    setSelectedDocument(doc);
+  };
   
   if (isLoading) {
     return (
@@ -144,7 +136,6 @@ const CaseDetails = () => {
               />
               
               <div className="flex gap-2 flex-wrap">
-                {/* Evolua para um dropdown com mais opções futuras */}
                 <Button 
                   onClick={() => chamarAnalistaMutation.mutate()}
                   disabled={chamarAnalistaMutation.isPending}
@@ -213,6 +204,10 @@ const CaseDetails = () => {
                   <Users className="h-4 w-4 mr-2" />
                   Pessoas
                 </TabsTrigger>
+                <TabsTrigger value="agentchat" className="whitespace-nowrap">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Chat com Agentes
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="summary" className="mt-4">
@@ -232,7 +227,30 @@ const CaseDetails = () => {
               </TabsContent>
               
               <TabsContent value="documents" className="mt-4">
-                <CaseDocuments caseId={caseId} />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-4">
+                    <CaseDocumentsOrganizer 
+                      documents={documents} 
+                      onSelectDocument={handleDocumentSelect} 
+                    />
+                  </div>
+                  <div className="lg:col-span-8">
+                    {selectedDocument ? (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="text-center p-12">
+                            <h3 className="text-lg font-medium mb-2">{selectedDocument.name}</h3>
+                            <p className="text-muted-foreground">
+                              Selecione a opção de visualizar ou baixar este documento na seção de documentos.
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <CaseDocuments caseId={caseId} />
+                    )}
+                  </div>
+                </div>
               </TabsContent>
               
               <TabsContent value="timeline" className="mt-4">
@@ -253,6 +271,12 @@ const CaseDetails = () => {
               
               <TabsContent value="people" className="mt-4">
                 <CasePeople />
+              </TabsContent>
+              
+              <TabsContent value="agentchat" className="mt-4">
+                <div className="h-[600px]">
+                  <AgentChat caseId={caseId} />
+                </div>
               </TabsContent>
             </Tabs>
           </div>

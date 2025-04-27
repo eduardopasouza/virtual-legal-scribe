@@ -13,11 +13,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { 
-  Tooltip,
-  TooltipContent, 
-  TooltipTrigger 
-} from '@/components/ui/tooltip';
 
 export function SidebarNav() {
   const location = useLocation();
@@ -37,7 +32,7 @@ export function SidebarNav() {
     <div className="space-y-2 w-full">
       {navItems.map((item) => {
         const isActive = location.pathname === item.path || 
-                         (item.path === '/cases/list' && location.pathname.startsWith('/cases/'));
+                         (item.path === '/cases/list' && location.pathname.includes('/cases/'));
         return (
           <Button
             key={item.path}

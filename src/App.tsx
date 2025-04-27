@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Auth from "./pages/Auth";
+import Cases from "./pages/Cases";
 import CaseDetails from "./pages/CaseDetails";
 import ClientsList from "./pages/ClientsList";
 import AdvancedStats from "./pages/AdvancedStats";
@@ -76,7 +78,7 @@ function App() {
                     path="/cases/list" 
                     element={
                       <ProtectedRoute>
-                        <Index />
+                        <Cases />
                       </ProtectedRoute>
                     } 
                   />
