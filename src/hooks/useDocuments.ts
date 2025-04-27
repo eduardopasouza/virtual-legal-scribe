@@ -47,7 +47,10 @@ export function useDocuments(caseId?: string) {
         .from('documents')
         .upload(filePath, file);
 
-      if (storageError) throw storageError;
+      if (storageError) {
+        console.error('Storage error:', storageError);
+        throw storageError;
+      }
 
       // Store document metadata in database
       const documentMetadata = {
@@ -65,7 +68,10 @@ export function useDocuments(caseId?: string) {
         .from('documents')
         .insert(documentMetadata);
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
 
       toast({
         title: "Documento enviado",
@@ -75,9 +81,10 @@ export function useDocuments(caseId?: string) {
       return documentMetadata;
 
     } catch (error: any) {
+      console.error('Upload error:', error);
       toast({
         title: "Erro ao enviar documento",
-        description: error.message,
+        description: error.message || "Ocorreu um erro ao fazer upload do documento.",
         variant: "destructive"
       });
       throw error;
@@ -87,17 +94,22 @@ export function useDocuments(caseId?: string) {
   };
 
   const getDocumentUrl = async (filePath: string) => {
-    // Create a signed URL that expires in 1 hour
-    const { data, error } = await supabase.storage
-      .from('documents')
-      .createSignedUrl(filePath, 3600);
+    try {
+      // Create a signed URL that expires in 1 hour
+      const { data, error } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(filePath, 3600);
 
-    if (error) {
-      console.error('Error creating signed URL:', error);
+      if (error) {
+        console.error('Error creating signed URL:', error);
+        return null;
+      }
+
+      return data.signedUrl;
+    } catch (error) {
+      console.error('Error getting document URL:', error);
       return null;
     }
-
-    return data.signedUrl;
   };
 
   const listDocuments = async (caseId?: string) => {
@@ -124,6 +136,7 @@ export function useDocuments(caseId?: string) {
       if (error) throw error;
       return data as DocumentMetadata[];
     } catch (error: any) {
+      console.error('List documents error:', error);
       toast({
         title: "Erro ao buscar documentos",
         description: error.message,
@@ -133,10 +146,54 @@ export function useDocuments(caseId?: string) {
     }
   };
 
+  const deleteDocument = async (docId: string, filePath: string) => {
+    if (!user) {
+      toast({
+        title: "Erro de autenticação",
+        description: "Você precisa estar logado para excluir documentos.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    try {
+      // Delete from storage first
+      const { error: storageError } = await supabase.storage
+        .from('documents')
+        .remove([filePath]);
+        
+      if (storageError) throw storageError;
+      
+      // Then delete metadata from database
+      const { error: dbError } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', docId);
+        
+      if (dbError) throw dbError;
+      
+      toast({
+        title: "Documento excluído",
+        description: "O documento foi excluído com sucesso."
+      });
+      
+      return true;
+    } catch (error: any) {
+      console.error('Delete document error:', error);
+      toast({
+        title: "Erro ao excluir documento",
+        description: error.message,
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
   return { 
     uploadDocument, 
     getDocumentUrl, 
     listDocuments,
+    deleteDocument,
     isUploading 
   };
 }

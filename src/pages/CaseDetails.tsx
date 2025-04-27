@@ -1,11 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WorkflowTimeline } from '@/components/WorkflowTimeline';
-import { Clock, FileText, MessageSquare, Calendar, Users, Bell, Loader2 } from 'lucide-react';
+import { Clock, FileText, MessageSquare, Calendar, Users, Bell, Loader2, Info, CheckCircle } from 'lucide-react';
 import { CaseHeader } from '@/components/case/CaseHeader';
 import { CaseInformation } from '@/components/case/CaseInformation';
 import { CaseDocuments } from '@/components/case/CaseDocuments';
@@ -20,11 +19,14 @@ import { CaseTimeline } from '@/components/case/CaseTimeline';
 import { CaseAlerts } from '@/components/case/CaseAlerts';
 import { chamarAnalistaRequisitos, criarAnalise, atualizarEtapa } from '@/lib/api/agentsApi';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AgentInteraction } from '@/components/AgentInteraction';
+import { NotificationSystem } from '@/components/NotificationSystem';
 
 const CaseDetails = () => {
   const { caseId } = useParams<{ caseId: string }>();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('summary');
   
   const { 
     caseData, 
@@ -58,17 +60,35 @@ const CaseDetails = () => {
         description: "O analista de requisitos processou os documentos com sucesso.",
       });
       
+      // Adicionar notificação
+      if ((window as any).addNotification) {
+        (window as any).addNotification(
+          'success', 
+          'Triagem finalizada', 
+          'O analista de requisitos finalizou a triagem do caso.'
+        );
+      }
+      
       // Recarregar os dados
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
       queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Erro ao processar triagem",
         description: `Ocorreu um erro: ${error.message}`,
         variant: "destructive",
       });
+      
+      // Adicionar notificação de erro
+      if ((window as any).addNotification) {
+        (window as any).addNotification(
+          'alert', 
+          'Erro na triagem', 
+          'Ocorreu um erro ao processar a triagem do caso.'
+        );
+      }
     }
   });
   
@@ -116,7 +136,7 @@ const CaseDetails = () => {
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center flex-wrap gap-4">
               <CaseHeader 
                 title={caseData.title}
                 type={caseData.type || ""}
@@ -124,20 +144,31 @@ const CaseDetails = () => {
                 createdAt={new Date(caseData.created_at)}
               />
               
-              <Button 
-                onClick={() => chamarAnalistaMutation.mutate()}
-                disabled={chamarAnalistaMutation.isPending}
-                className="ml-4"
-              >
-                {chamarAnalistaMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  "Acionar Analista de Requisitos (simulado)"
-                )}
-              </Button>
+              <div className="flex gap-2 flex-wrap">
+                {/* Evolua para um dropdown com mais opções futuras */}
+                <Button 
+                  onClick={() => chamarAnalistaMutation.mutate()}
+                  disabled={chamarAnalistaMutation.isPending}
+                  variant="outline"
+                >
+                  {chamarAnalistaMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <Info className="mr-2 h-4 w-4" />
+                      Acionar Analista de Requisitos
+                    </>
+                  )}
+                </Button>
+                
+                <Button className="bg-evji-primary hover:bg-evji-primary/90">
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Avançar Etapa
+                </Button>
+              </div>
             </div>
             
             <CaseInformation 
@@ -148,46 +179,52 @@ const CaseDetails = () => {
               description={caseData.description || "Sem descrição"}
             />
             
-            <Tabs defaultValue="summary" className="mt-6">
-              <TabsList>
-                <TabsTrigger value="summary">
-                  <MessageSquare className="h-4 w-4 mr-2" />
+            <Tabs 
+              defaultValue="summary" 
+              value={activeTab}
+              onValueChange={setActiveTab} 
+              className="mt-6"
+            >
+              <TabsList className="mb-4 overflow-auto flex-nowrap max-w-full max-md:justify-start">
+                <TabsTrigger value="summary" className="whitespace-nowrap">
+                  <Info className="h-4 w-4 mr-2" />
                   Resumo
                 </TabsTrigger>
-                <TabsTrigger value="documents">
+                <TabsTrigger value="documents" className="whitespace-nowrap">
                   <FileText className="h-4 w-4 mr-2" />
                   Documentos
                 </TabsTrigger>
-                <TabsTrigger value="timeline">
+                <TabsTrigger value="timeline" className="whitespace-nowrap">
                   <Clock className="h-4 w-4 mr-2" />
                   Linha do Tempo
                 </TabsTrigger>
-                <TabsTrigger value="alerts">
+                <TabsTrigger value="alerts" className="whitespace-nowrap">
                   <Bell className="h-4 w-4 mr-2" />
-                  Alertas
+                  Alertas {alerts.length > 0 && <span className="ml-1 text-xs bg-red-500 text-white rounded-full w-5 h-5 inline-flex items-center justify-center">{alerts.length}</span>}
                 </TabsTrigger>
-                <TabsTrigger value="activities">
+                <TabsTrigger value="activities" className="whitespace-nowrap">
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Atividades
                 </TabsTrigger>
-                <TabsTrigger value="deadlines">
+                <TabsTrigger value="deadlines" className="whitespace-nowrap">
                   <Calendar className="h-4 w-4 mr-2" />
                   Prazos
                 </TabsTrigger>
-                <TabsTrigger value="people">
+                <TabsTrigger value="people" className="whitespace-nowrap">
                   <Users className="h-4 w-4 mr-2" />
                   Pessoas
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="summary" className="mt-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  <div className="lg:col-span-8 space-y-6">
                     <CaseTimeline stages={workflowStages} />
+                    <AgentInteraction caseId={caseId} />
                     {alerts.length > 0 && <CaseAlerts alerts={alerts} />}
                   </div>
                   
-                  <div>
+                  <div className="lg:col-span-4">
                     <DocumentUploader caseId={caseId} onSuccess={() => {
                       queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
                     }} />

@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UploadCloud, File, X, Loader2 } from "lucide-react";
+import { UploadCloud, File, X, Loader2, AlertCircle, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useDocuments } from "@/hooks/useDocuments";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface DocumentUploaderProps {
   caseId?: string;
@@ -20,6 +21,20 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [documentType, setDocumentType] = useState<string>("petition");
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error' | 'loading'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  // Reset status after 3 seconds of success or error
+  useEffect(() => {
+    if (uploadStatus === 'success' || uploadStatus === 'error') {
+      const timer = setTimeout(() => {
+        setUploadStatus('idle');
+        setErrorMessage(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [uploadStatus]);
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -35,31 +50,26 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
     setIsDragging(false);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        setSelectedFile(file);
-      } else {
-        toast({
-          title: "Formato Inválido",
-          description: "Por favor, envie apenas arquivos PDF.",
-          variant: "destructive",
-        });
-      }
+      handleFileSelection(e.dataTransfer.files[0]);
     }
   };
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        setSelectedFile(file);
-      } else {
-        toast({
-          title: "Formato Inválido",
-          description: "Por favor, envie apenas arquivos PDF.",
-          variant: "destructive",
-        });
-      }
+      handleFileSelection(e.target.files[0]);
+    }
+  };
+  
+  const handleFileSelection = (file: File) => {
+    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      setSelectedFile(file);
+      setUploadStatus('idle');
+    } else {
+      toast({
+        title: "Formato Inválido",
+        description: "Por favor, envie apenas arquivos PDF.",
+        variant: "destructive",
+      });
     }
   };
   
@@ -73,20 +83,28 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
       return;
     }
     
+    setUploadStatus('loading');
+    
     try {
-      await uploadDocument(selectedFile);
+      const metadata = await uploadDocument(selectedFile);
+      
+      setUploadStatus('success');
       setSelectedFile(null);
       setDocumentType("petition");
-      if (onSuccess) {
+      
+      if (onSuccess && metadata) {
         onSuccess([selectedFile]);
       }
-    } catch (error) {
-      // Error is handled inside uploadDocument function
+    } catch (error: any) {
+      setUploadStatus('error');
+      setErrorMessage(error.message || "Falha no upload do documento");
     }
   };
   
   const clearSelectedFile = () => {
     setSelectedFile(null);
+    setUploadStatus('idle');
+    setErrorMessage(null);
   };
   
   return (
@@ -118,10 +136,31 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
             </Select>
           </div>
           
+          {uploadStatus === 'success' && (
+            <Alert className="bg-green-50 border-green-200 text-green-800">
+              <Check className="h-4 w-4 text-green-600" />
+              <AlertTitle>Sucesso!</AlertTitle>
+              <AlertDescription>
+                O documento foi enviado com sucesso.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {uploadStatus === 'error' && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erro no Upload</AlertTitle>
+              <AlertDescription>
+                {errorMessage || "Ocorreu um erro ao enviar o documento."}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div 
-            className={`border-2 border-dashed rounded-md p-6 text-center mt-4 ${
-              isDragging ? 'border-primary bg-primary/5' : 'border-border'
-            } ${selectedFile ? 'bg-secondary/50' : ''}`}
+            className={`border-2 border-dashed rounded-md p-6 text-center mt-4 transition-all duration-200
+              ${isDragging ? 'border-primary bg-primary/5' : 'border-border'}
+              ${selectedFile ? 'bg-secondary/50' : ''}
+              ${uploadStatus === 'loading' ? 'opacity-50' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -170,6 +209,7 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
                   variant="ghost" 
                   size="icon" 
                   onClick={clearSelectedFile}
+                  disabled={uploadStatus === 'loading'}
                 >
                   <X className="h-4 w-4" />
                 </Button>
@@ -179,12 +219,14 @@ export function DocumentUploader({ caseId, onSuccess }: DocumentUploaderProps) {
         </div>
       </CardContent>
       <CardFooter className="justify-between">
-        <Button variant="outline" onClick={clearSelectedFile}>Cancelar</Button>
+        <Button variant="outline" onClick={clearSelectedFile} disabled={uploadStatus === 'loading' || !selectedFile}>
+          Cancelar
+        </Button>
         <Button 
           onClick={handleSubmit} 
-          disabled={!selectedFile || isUploading}
+          disabled={!selectedFile || uploadStatus === 'loading'}
         >
-          {isUploading ? (
+          {uploadStatus === 'loading' ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Enviando...

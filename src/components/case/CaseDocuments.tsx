@@ -2,10 +2,22 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Paperclip } from "lucide-react";
+import { FileText, Paperclip, Trash2, Download, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useDocuments, DocumentMetadata } from '@/hooks/useDocuments';
+import { DocumentUploader } from '@/components/DocumentUploader';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface CaseDocumentsProps {
   caseId?: string;
@@ -13,17 +25,23 @@ interface CaseDocumentsProps {
 
 export function CaseDocuments({ caseId }: CaseDocumentsProps) {
   const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
-  const { listDocuments, getDocumentUrl } = useDocuments(caseId);
+  const { listDocuments, getDocumentUrl, deleteDocument } = useDocuments(caseId);
   const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: boolean }>({});
+  const [refreshing, setRefreshing] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<DocumentMetadata | null>(null);
+  const queryClient = useQueryClient();
+
+  const fetchDocuments = async () => {
+    if (caseId) {
+      setRefreshing(true);
+      const docs = await listDocuments(caseId);
+      setDocuments(docs);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDocuments = async () => {
-      if (caseId) {
-        const docs = await listDocuments(caseId);
-        setDocuments(docs);
-      }
-    };
-    
     fetchDocuments();
   }, [caseId]);
 
@@ -50,50 +68,116 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
     }
   };
 
+  const handleDeleteClick = (doc: DocumentMetadata) => {
+    setDocumentToDelete(doc);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (documentToDelete && documentToDelete.id && documentToDelete.file_path) {
+      const success = await deleteDocument(documentToDelete.id, documentToDelete.file_path);
+      if (success) {
+        fetchDocuments();
+        if (caseId) {
+          queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
+        }
+      }
+    }
+    setDeleteDialogOpen(false);
+    setDocumentToDelete(null);
+  };
+
+  const handleUploadSuccess = () => {
+    fetchDocuments();
+    if (caseId) {
+      queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Documentos do Caso</CardTitle>
-        <CardDescription>
-          Todos os documentos relacionados a este caso
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {documents.length === 0 ? (
-            <div className="text-center p-6 text-muted-foreground">
-              Nenhum documento encontrado para este caso.
-            </div>
-          ) : (
-            documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">{doc.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(doc.size)} • {
-                        doc.uploaded_at 
-                          ? format(new Date(doc.uploaded_at), 'dd/MM/yyyy', { locale: ptBR })
-                          : 'Data desconhecida'
-                      }
-                    </p>
+    <div className="space-y-6">
+      <DocumentUploader caseId={caseId} onSuccess={handleUploadSuccess} />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Documentos do Caso</CardTitle>
+          <CardDescription>
+            Todos os documentos relacionados a este caso
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {refreshing ? (
+              <div className="text-center p-6">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+                <p className="mt-2 text-muted-foreground">Carregando documentos...</p>
+              </div>
+            ) : documents.length === 0 ? (
+              <div className="text-center p-6 text-muted-foreground">
+                Nenhum documento encontrado para este caso.
+              </div>
+            ) : (
+              documents.map((doc) => (
+                <div key={doc.id} className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="font-medium">{doc.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(doc.size)} • {
+                          doc.uploaded_at 
+                            ? format(new Date(doc.uploaded_at), 'dd/MM/yyyy', { locale: ptBR })
+                            : 'Data desconhecida'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDownload(doc)}
+                      disabled={loadingFiles[doc.id!] || !doc.file_path}
+                    >
+                      {loadingFiles[doc.id!] ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4 mr-1" />
+                      )}
+                      <span className="hidden sm:inline">Baixar</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleDeleteClick(doc)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive mr-1" />
+                      <span className="hidden sm:inline">Excluir</span>
+                    </Button>
                   </div>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => handleDownload(doc)}
-                  disabled={loadingFiles[doc.id!] || !doc.file_path}
-                >
-                  <Paperclip className="h-4 w-4 mr-2" />
-                  {loadingFiles[doc.id!] ? 'Carregando...' : 'Baixar'}
-                </Button>
-              </div>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir documento</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o documento "{documentToDelete?.name}"? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

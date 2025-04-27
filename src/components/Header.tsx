@@ -1,68 +1,108 @@
 
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, ArrowLeft } from 'lucide-react';
-import { useMobileContext } from '@/hooks/use-mobile';
-import { NotificationSystem } from './NotificationSystem';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Search, Menu, Plus } from 'lucide-react';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { useMobile } from '@/hooks/use-mobile';
+import { NotificationSystem } from '@/components/NotificationSystem';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
-  const { toggleSidebar } = useMobileContext();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Determine if we should show the back button
-  const showBackButton = location.pathname !== '/' && location.pathname !== '/cases/list';
-  const backDestination = location.pathname.startsWith('/cases/') ? '/cases/list' : '/';
+  const { toggleSidebar } = useMobile();
+
+  const handleNewCase = () => {
+    navigate('/novo-caso');
+  };
 
   return (
-    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur-sm">
+    <header className="border-b bg-background z-10">
       <div className="flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          {showBackButton && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate(backDestination)}
-              title="Voltar"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
+          <button
+            className="lg:hidden"
             onClick={toggleSidebar}
           >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-          <Link to="/" className="flex items-center">
-            <span className="font-serif font-bold text-2xl text-evji-primary">
-              EVJI
-            </span>
-            <span className="ml-2 text-sm text-muted-foreground hidden md:inline-block">
-              Escritório Virtual Jurídico Inteligente
-            </span>
-          </Link>
-        </div>
-        <div className="flex items-center gap-2">
-          <NotificationSystem />
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="rounded-full border border-border"
-          >
-            <Link to="/settings">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-muted uppercase text-sm">
-                U
-              </span>
-              <span className="sr-only">Perfil</span>
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle sidebar</span>
+          </button>
+          <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center">
+              <h2 className="font-serif text-2xl font-bold text-evji-primary">EVJI</h2>
             </Link>
+          </div>
+        </div>
+
+        <div className="hidden md:flex items-center gap-4 flex-1 px-6">
+          <form className="flex-1 max-w-md">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Buscar casos, documentos, clientes..."
+                className="w-full pl-8"
+              />
+            </div>
+          </form>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Button
+            size="sm"
+            variant="outline"
+            className="hidden md:flex"
+            onClick={handleNewCase}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Novo Caso
           </Button>
+
+          <NotificationSystem />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="rounded-full h-8 w-8"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.user_metadata?.avatar_url || ""}
+                    alt={user?.user_metadata?.full_name || "User"}
+                  />
+                  <AvatarFallback>
+                    {user?.user_metadata?.full_name?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/history')}>
+                Histórico
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut}>
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
