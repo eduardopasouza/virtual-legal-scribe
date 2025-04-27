@@ -11,6 +11,7 @@ import { QuickAccess } from '@/components/dashboard/QuickAccess';
 import { OngoingActivities } from '@/components/dashboard/OngoingActivities';
 import { SystemGuide } from '@/components/dashboard/SystemGuide';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
+import { Footer } from '@/components/Footer';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ const Index = () => {
       <Header />
       <div className="flex-1 flex">
         <Sidebar />
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="space-y-6">
+        <main className="flex-1 p-6 overflow-auto flex flex-col">
+          <div className="space-y-6 flex-1">
             {/* Título do Dashboard */}
             <div className="flex justify-between items-center">
               <h2 className="font-serif text-3xl font-bold text-evji-primary">Dashboard</h2>
@@ -51,6 +52,7 @@ const Index = () => {
               <DashboardSidebar />
             </div>
           </div>
+          <Footer />
         </main>
       </div>
       <ChatbotAssistant />

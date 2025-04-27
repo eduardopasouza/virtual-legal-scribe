@@ -1,9 +1,10 @@
-
 # EVJI - Escritório Virtual Jurídico Inteligente
 
 ## Sobre o Projeto
 
 O EVJI (Escritório Virtual Jurídico Inteligente) é uma plataforma que estende as capacidades de profissionais jurídicos através de automação e agentes de IA. O sistema processa casos de forma semi-autônoma mantendo o profissional no controle final das decisões.
+
+**IMPORTANTE**: O EVJI é uma ferramenta de suporte automatizado e NÃO substitui o aconselhamento jurídico profissional. Todo conteúdo gerado deve ser revisado e validado por profissionais qualificados antes de seu uso oficial.
 
 ## Configuração do Ambiente
 
@@ -68,6 +69,17 @@ O sistema processa casos em 7 etapas principais:
 5. **Elaboração**: Estruturação e redação
 6. **Revisão**: Verificação de conformidade
 7. **Entrega**: Apresentação ao cliente
+
+## Aviso Legal
+
+O EVJI é uma plataforma de assistência que utiliza inteligência artificial. É importante compreender que:
+
+- O serviço NÃO substitui aconselhamento jurídico profissional
+- Todo conteúdo gerado deve ser revisado e validado
+- A plataforma não se responsabiliza por decisões tomadas sem validação profissional
+- Os usuários devem ler e aceitar os Termos de Uso antes de utilizar o sistema
+
+Para mais informações, consulte os Termos de Uso completos na plataforma.
 
 ## Arquitetura do Sistema
 
