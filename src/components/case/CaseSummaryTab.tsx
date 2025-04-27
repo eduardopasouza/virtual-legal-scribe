@@ -13,6 +13,7 @@ import { mapWorkflowStatus } from '@/types/workflow';
 import { CaseStrategy } from './CaseStrategy';
 import { CaseFacts } from './CaseFacts';
 import { useFactsAnalysis } from '@/hooks/workflow';
+import { CaseDrafts } from './CaseDrafts';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -74,6 +75,9 @@ export function CaseSummaryTab({
         />
         
         <CaseStrategy strategyData={mockStrategyData} />
+        
+        {/* Document Drafting Section */}
+        <CaseDrafts caseId={caseId} />
         
         <Card>
           <CardHeader className="pb-3">
