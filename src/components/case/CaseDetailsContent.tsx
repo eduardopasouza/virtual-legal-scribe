@@ -1,6 +1,5 @@
-
 import React, { useMemo } from 'react';
-import { Activity } from '@/types/case';
+import { Activity, Case } from '@/types/case';
 import { UploadContainer } from '@/components/upload/UploadContainer';
 import { ActivityList } from './ActivityList';
 import { CaseTimeline } from './CaseTimeline';
@@ -9,12 +8,7 @@ import { CaseHeader } from './CaseHeader';
 
 interface CaseDetailsContentProps {
   caseId: string;
-  caseData: {
-    title: string;
-    type?: string;
-    status: string;
-    created_at: string;
-  };
+  caseData: Case;
   activities: Activity[];
   isLoadingActivities: boolean;
 }
@@ -25,7 +19,6 @@ export const CaseDetailsContent = React.memo(({
   activities, 
   isLoadingActivities 
 }: CaseDetailsContentProps) => {
-  // Memoize the header data to prevent unnecessary recalculations
   const headerData = useMemo(() => ({
     title: caseData.title,
     type: caseData.type || 'Unknown',

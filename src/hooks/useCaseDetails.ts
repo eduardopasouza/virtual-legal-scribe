@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Case, Activity, Deadline, WorkflowStage, Alert } from "@/types/case";
+import { Case, Activity, Deadline, WorkflowStage, Alert } from '@/types/case';
 import { DocumentMetadata, useDocuments } from "./useDocuments";
 import { useActivitiesList } from "./useActivities";
 import { useDeadlines } from "./useDeadlines";
