@@ -1,32 +1,38 @@
-import { useState, useEffect, useMemo } from 'react';
-import { format } from 'date-fns';
-import { Activity } from '@/types/history';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from "@/hooks/use-toast";
+import { useEffect } from 'react';
+import { Activity, ActivityType } from '@/types/history';
+import { useActivityState } from './activity/useActivityState';
+import { useActivityFilters } from './activity/useActivityFilters';
+import { useActivitySorting } from './activity/useActivitySorting';
 
 export function useActivityHistory() {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [dateFilter, setDateFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [sortOrder, setSortOrder] = useState<string>('newest');
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  
-  const { toast } = useToast();
+  const {
+    activities,
+    setActivities,
+    isLoading,
+    setIsLoading,
+    searchTerm,
+    setSearchTerm,
+    dateFilter,
+    setDateFilter,
+    typeFilter,
+    setTypeFilter,
+    sortOrder,
+    setSortOrder,
+    selectedActivity,
+    dialogOpen,
+    setDialogOpen,
+    handleViewDetails,
+    toast
+  } = useActivityState();
 
-  // Fetch activities from the database
+  // Fetch activities on mount
   useEffect(() => {
     const fetchActivities = async () => {
       setIsLoading(true);
       try {
-        // Simulating data fetch - in a real app, we'd load from the database
-        // Initially we'll use the mock data
-        // Later we can replace this with actual database fetch
-        
-        // For demo purposes, let's use the mock data
-        const mockActivities = [
+        // For now, using mock data as per the original implementation
+        // Later we can replace this with actual API calls
+        const mockActivities: Activity[] = [
           {
             id: '1',
             type: 'document',
@@ -156,30 +162,6 @@ export function useActivityHistory() {
         ];
         
         setActivities(mockActivities);
-
-        // In the future, we can implement the actual fetching logic:
-        /*
-        const { data, error } = await supabase
-          .from('activities')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        
-        // Map activities to our Activity type
-        const mappedActivities = data.map(item => ({
-          id: item.id,
-          type: mapActivityType(item.type) as Activity['type'],
-          action: item.action,
-          agent: item.agent,
-          caseId: item.case_id,
-          caseName: item.case_name, // This might need to be fetched separately
-          date: new Date(item.created_at),
-          details: item.result
-        }));
-
-        setActivities(mappedActivities);
-        */
       } catch (error) {
         console.error("Error fetching activities:", error);
         toast({
@@ -195,81 +177,17 @@ export function useActivityHistory() {
     fetchActivities();
   }, [toast]);
 
-  // Filter activities based on search term and filters
-  const filteredActivities = useMemo(() => {
-    return activities.filter(activity => {
-      // Search term filter
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        const matchesAction = activity.action.toLowerCase().includes(searchLower);
-        const matchesAgent = activity.agent.toLowerCase().includes(searchLower);
-        const matchesCase = activity.caseName?.toLowerCase().includes(searchLower);
-        const matchesDetails = activity.details?.toLowerCase().includes(searchLower);
-        
-        if (!(matchesAction || matchesAgent || matchesCase || matchesDetails)) {
-          return false;
-        }
-      }
-      
-      // Date filter
-      if (dateFilter !== 'all') {
-        const now = new Date();
-        if (dateFilter === 'today') {
-          const isToday = activity.date.getDate() === now.getDate() && 
-                         activity.date.getMonth() === now.getMonth() && 
-                         activity.date.getFullYear() === now.getFullYear();
-          if (!isToday) return false;
-        } else if (dateFilter === 'week') {
-          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          if (activity.date < oneWeekAgo) return false;
-        } else if (dateFilter === 'month') {
-          const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-          if (activity.date < oneMonthAgo) return false;
-        } else if (dateFilter === 'quarter') {
-          const oneQuarterAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
-          if (activity.date < oneQuarterAgo) return false;
-        }
-      }
-      
-      // Type filter
-      if (typeFilter !== 'all' && activity.type !== typeFilter) {
-        return false;
-      }
-      
-      return true;
-    });
-  }, [activities, searchTerm, dateFilter, typeFilter]);
-  
-  // Sort activities based on sort order
-  const sortedActivities = useMemo(() => {
-    return [...filteredActivities].sort((a, b) => {
-      if (sortOrder === 'newest') {
-        return b.date.getTime() - a.date.getTime();
-      } else {
-        return a.date.getTime() - b.date.getTime();
-      }
-    });
-  }, [filteredActivities, sortOrder]);
-  
-  // Group activities by date
-  const groupedActivities = useMemo(() => {
-    const grouped: Record<string, Activity[]> = {};
-    
-    sortedActivities.forEach(activity => {
-      const dateKey = format(activity.date, 'yyyy-MM-dd');
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = [];
-      }
-      grouped[dateKey].push(activity);
-    });
-    
-    return grouped;
-  }, [sortedActivities]);
+  const filteredActivities = useActivityFilters({
+    activities,
+    searchTerm,
+    dateFilter,
+    typeFilter
+  });
 
-  const handleViewDetails = (activity: Activity) => {
-    setSelectedActivity(activity);
-    setDialogOpen(true);
-  };
+  const { sortedActivities, groupedActivities } = useActivitySorting({
+    activities: filteredActivities,
+    sortOrder
+  });
 
   return {
     activities: sortedActivities,
