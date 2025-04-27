@@ -105,6 +105,10 @@ function App() {
                     } 
                   />
                   <Route 
+                    path="/statistics" 
+                    element={<Navigate to="/stats" />}
+                  />
+                  <Route 
                     path="/calendar" 
                     element={
                       <ProtectedRoute>
@@ -144,7 +148,6 @@ function App() {
                       </ProtectedRoute>
                     } 
                   />
-                  <Route path="/statistics" element={<Statistics />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <FloatingChatButton />
