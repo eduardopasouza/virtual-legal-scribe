@@ -20,22 +20,30 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     mutationFn: async () => {
       if (!caseData || !caseId) throw new Error("Caso não encontrado");
       
+      // 1. Chamar analista de requisitos
       const res = await chamarAnalistaRequisitos(documents, caseData);
+      
+      // 2. Criar análise no banco
       await criarAnalise({ 
         caso_id: caseId, 
         agente: 'analista-requisitos', 
         conteudo: JSON.stringify(res) 
       });
+      
+      // 3. Atualizar etapas do workflow
       await atualizarEtapa(caseId, 'reception', 'completed');
       await atualizarEtapa(caseId, 'planning', 'in_progress');
+      
       return res;
     },
     onSuccess: () => {
+      // Exibir toast de sucesso
       toast({
         title: "Triagem concluída",
         description: "O analista de requisitos processou os documentos com sucesso.",
       });
       
+      // Atualizar dados na tela
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
       queryClient.invalidateQueries({ queryKey: ["activities", caseId] });
       queryClient.invalidateQueries({ queryKey: ["workflow_stages", caseId] });
@@ -43,7 +51,7 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     onError: (error: any) => {
       toast({
         title: "Erro ao processar triagem",
-        description: `Ocorreu um erro: ${error.message}`,
+        description: `Falha na triagem: ${error.message}. Tente novamente.`,
         variant: "destructive",
       });
     }
