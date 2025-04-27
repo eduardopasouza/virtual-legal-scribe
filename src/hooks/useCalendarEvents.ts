@@ -162,10 +162,11 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           activitySummary: note,
         };
         
+        // Store the note somewhere else for now since activity_summary doesn't exist in the database
         const { error } = await supabase
           .from('events')
           .update({
-            activity_summary: updatedEvent.activitySummary
+            description: note // Using description field to store the note for now
           })
           .eq('id', existingEvent.id);
         
@@ -175,7 +176,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           if (e.id === existingEvent.id) {
             return {
               ...e,
-              activitySummary: updatedEvent.activitySummary,
+              activitySummary: note,
             };
           }
           return e;
@@ -189,8 +190,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           start_time: '00:00',
           end_time: '00:00',
           type: 'outro',
-          description: 'Anotação diária',
-          activity_summary: note
+          description: note // Store the note in the description field
         };
         
         const { data, error } = await supabase
@@ -208,7 +208,7 @@ export function useCalendarEvents(initialEvents: Event[] = []) {
           startTime: '00:00',
           endTime: '00:00',
           type: 'outro',
-          description: 'Anotação diária',
+          description: note,
           activitySummary: note,
         };
         

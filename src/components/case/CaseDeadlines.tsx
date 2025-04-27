@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +39,7 @@ export function CaseDeadlines({ caseId, caseName }: { caseId?: string, caseName?
           date: new Date(),
         });
         toast({
+          title: "Prazo adicionado",
           description: "O prazo foi salvo com sucesso e adicionado ao calendário"
         });
       }
