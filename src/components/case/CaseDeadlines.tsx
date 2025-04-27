@@ -4,13 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface Deadline {
-  id: string;
-  description: string;
-  date: Date;
-  status: string;
-}
+import { Deadline } from "@/types/case";
 
 interface CaseDeadlinesProps {
   deadlines: Deadline[];
@@ -32,20 +26,20 @@ export function CaseDeadlines({ deadlines }: CaseDeadlinesProps) {
               <div>
                 <p className="font-medium">{deadline.description}</p>
                 <p className="text-xs text-muted-foreground">
-                  {format(deadline.date, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  {format(new Date(deadline.date), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </p>
               </div>
               <Badge 
                 className={
                   deadline.status === 'pendente' 
                     ? 'bg-amber-500' 
-                    : deadline.status === 'concluído' 
+                    : deadline.status === 'concluido' 
                     ? 'bg-green-500' 
                     : 'bg-red-500'
                 }
               >
                 {deadline.status === 'pendente' ? 'Pendente' : 
-                 deadline.status === 'concluído' ? 'Concluído' : 'Atrasado'}
+                 deadline.status === 'concluido' ? 'Concluído' : 'Atrasado'}
               </Badge>
             </div>
           ))}

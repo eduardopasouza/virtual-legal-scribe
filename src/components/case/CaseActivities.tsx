@@ -1,14 +1,9 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface Activity {
-  id: string;
-  agent: string;
-  action: string;
-  date: Date;
-}
+import { Activity } from "@/types/case";
 
 interface CaseActivitiesProps {
   activities: Activity[];
@@ -32,9 +27,11 @@ export function CaseActivities({ activities }: CaseActivitiesProps) {
               <div className="space-y-1">
                 <div className="font-medium">{activity.agent}</div>
                 <p className="text-sm">{activity.action}</p>
-                <p className="text-xs text-muted-foreground">
-                  {format(activity.date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                </p>
+                {activity.created_at && (
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(activity.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  </p>
+                )}
               </div>
             </div>
           ))}
@@ -43,4 +40,3 @@ export function CaseActivities({ activities }: CaseActivitiesProps) {
     </Card>
   );
 }
-
