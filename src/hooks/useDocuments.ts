@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +13,16 @@ export interface DocumentMetadata {
   uploaded_at?: string;
   file_path?: string;
   created_by?: string;
+  document_type?: string;
+  has_extracted_text?: boolean;
+  processed_status?: 'pending' | 'processed' | 'failed';
+  content_size?: number;
+}
+
+interface UploadMetadata {
+  documentType?: string;
+  hasExtractedText?: boolean;
+  [key: string]: any;
 }
 
 export function useDocuments(caseId?: string) {
@@ -21,7 +30,7 @@ export function useDocuments(caseId?: string) {
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const uploadDocument = async (file: File) => {
+  const uploadDocument = async (file: File, metadata?: UploadMetadata) => {
     if (!user) {
       toast({
         title: "Erro de autenticação",
@@ -53,7 +62,7 @@ export function useDocuments(caseId?: string) {
       }
 
       // Store document metadata in database
-      const documentMetadata = {
+      const documentMetadata: DocumentMetadata = {
         id: uuidv4(),
         name: file.name,
         size: file.size,
@@ -61,7 +70,10 @@ export function useDocuments(caseId?: string) {
         case_id: caseId || null,
         uploaded_at: new Date().toISOString(),
         file_path: filePath,
-        created_by: user.id
+        created_by: user.id,
+        document_type: metadata?.documentType,
+        has_extracted_text: metadata?.hasExtractedText || false,
+        processed_status: metadata?.hasExtractedText ? 'processed' : 'pending'
       };
 
       const { error: dbError } = await supabase
@@ -189,11 +201,96 @@ export function useDocuments(caseId?: string) {
     }
   };
 
+  const processDocument = async (documentId: string) => {
+    try {
+      // Get document metadata
+      const { data: docMetadata, error: fetchError } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('id', documentId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      if (!docMetadata.file_path) throw new Error('Caminho do arquivo não encontrado');
+      
+      // Update processing status
+      await supabase
+        .from('documents')
+        .update({ processed_status: 'pending' })
+        .eq('id', documentId);
+      
+      // Process the document
+      const { data, error: urlError } = await supabase.storage
+        .from('documents')
+        .createSignedUrl(docMetadata.file_path, 3600);
+        
+      if (urlError) throw urlError;
+      
+      // Import the document processing service dynamically
+      const { DocumentProcessingService } = await import('@/services/documentProcessing');
+      
+      // Process the document
+      const content = await DocumentProcessingService.extractTextFromUrl(data.signedUrl);
+      
+      // Update document status
+      await supabase
+        .from('documents')
+        .update({ 
+          processed_status: content.text ? 'processed' : 'failed',
+          has_extracted_text: Boolean(content.text),
+          content_size: content.text?.length || 0
+        })
+        .eq('id', documentId);
+        
+      return content;
+      
+    } catch (error: any) {
+      console.error('Error processing document:', error);
+      
+      // Update document status to failed
+      await supabase
+        .from('documents')
+        .update({ processed_status: 'failed' })
+        .eq('id', documentId);
+        
+      throw error;
+    }
+  };
+
+  const getDocumentContent = async (documentId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('document_content')
+        .select('*')
+        .eq('document_id', documentId)
+        .single();
+        
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // Document content not found, try to process it
+          return await processDocument(documentId);
+        }
+        throw error;
+      }
+      
+      return {
+        text: data.content,
+        pages: data.pages,
+        metadata: data.metadata
+      };
+    } catch (error) {
+      console.error('Error getting document content:', error);
+      throw error;
+    }
+  };
+
   return { 
     uploadDocument, 
     getDocumentUrl, 
     listDocuments,
     deleteDocument,
+    processDocument,
+    getDocumentContent,
     isUploading 
   };
 }

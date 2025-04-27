@@ -8,9 +8,14 @@ import { Button } from "@/components/ui/button";
 interface DropZoneProps {
   onFileSelect: (file: File) => void;
   disabled?: boolean;
+  allowedFileTypes?: string[];
 }
 
-export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
+export function DropZone({ 
+  onFileSelect, 
+  disabled = false,
+  allowedFileTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+}: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   
@@ -39,7 +44,14 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
   };
   
   const handleFileSelection = (file: File) => {
-    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+    const fileType = file.type;
+    const fileName = file.name.toLowerCase();
+    
+    // Check if file type is allowed
+    const isPdf = fileType === 'application/pdf' || fileName.endsWith('.pdf');
+    const isDocx = fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || fileName.endsWith('.docx');
+    
+    if (isPdf || isDocx) {
       onFileSelect(file);
     }
   };
@@ -47,6 +59,12 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
   const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
+  
+  // Generate accepted file types for the input
+  const acceptedTypes = allowedFileTypes.join(',');
+  
+  // Create a readable list of allowed file types
+  const allowedExtensions = ['.pdf', '.docx'];
 
   return (
     <div 
@@ -63,7 +81,7 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
         </div>
         <div className="space-y-2">
           <p className="text-sm font-medium">
-            Arraste e solte seu PDF aqui
+            Arraste e solte seu documento aqui
           </p>
           <Button 
             onClick={handleButtonClick}
@@ -78,14 +96,14 @@ export function DropZone({ onFileSelect, disabled = false }: DropZoneProps) {
             ref={fileInputRef}
             id="file-upload"
             type="file"
-            accept=".pdf"
+            accept={acceptedTypes}
             className="sr-only"
             onChange={handleFileChange}
             disabled={disabled}
           />
         </div>
         <p className="text-xs text-muted-foreground">
-          Apenas arquivos PDF são aceitos.
+          Formatos aceitos: {allowedExtensions.join(', ')}
         </p>
       </div>
     </div>

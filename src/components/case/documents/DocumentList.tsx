@@ -7,8 +7,10 @@ import { DocumentCard } from './DocumentCard';
 interface DocumentListProps {
   documents: DocumentMetadata[];
   loadingFiles: { [key: string]: boolean };
+  processingFiles?: { [key: string]: boolean };
   onDownload: (doc: DocumentMetadata) => void;
   onDelete: (doc: DocumentMetadata) => void;
+  onProcess?: (doc: DocumentMetadata) => void;
   onAddTag: (doc: DocumentMetadata, category: string) => void;
   refreshing?: boolean;
 }
@@ -16,8 +18,10 @@ interface DocumentListProps {
 export function DocumentList({
   documents,
   loadingFiles,
+  processingFiles = {},
   onDownload,
   onDelete,
+  onProcess,
   onAddTag,
   refreshing
 }: DocumentListProps) {
@@ -45,8 +49,10 @@ export function DocumentList({
           key={doc.id}
           doc={doc}
           isLoading={loadingFiles[doc.id!]}
+          isProcessing={processingFiles[doc.id!]}
           onDownload={onDownload}
           onDelete={onDelete}
+          onProcess={onProcess}
           onAddTag={onAddTag}
         />
       ))}

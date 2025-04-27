@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { DocumentUploader } from '@/components/DocumentUploader';
 import { useDocuments, DocumentMetadata } from '@/hooks/useDocuments';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { DocumentList } from './documents/DocumentList';
 import { DocumentFilters } from './documents/DocumentFilters';
+import { Button } from '@/components/ui/button';
+import { FileText, Loader2, RefreshCcw } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,13 +33,15 @@ const DOCUMENT_CATEGORIES = [
 
 interface CaseDocumentsProps {
   caseId?: string;
+  onDocumentProcessed?: (docId: string, content: string) => void;
 }
 
-export function CaseDocuments({ caseId }: CaseDocumentsProps) {
+export function CaseDocuments({ caseId, onDocumentProcessed }: CaseDocumentsProps) {
   const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentMetadata[]>([]);
-  const { listDocuments, getDocumentUrl, deleteDocument } = useDocuments(caseId);
+  const { listDocuments, getDocumentUrl, deleteDocument, processDocument } = useDocuments(caseId);
   const [loadingFiles, setLoadingFiles] = useState<{ [key: string]: boolean }>({});
+  const [processingFiles, setProcessingFiles] = useState<{ [key: string]: boolean }>({});
   const [refreshing, setRefreshing] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<DocumentMetadata | null>(null);
@@ -50,10 +54,20 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
   const fetchDocuments = async () => {
     if (caseId) {
       setRefreshing(true);
-      const docs = await listDocuments(caseId);
-      setDocuments(docs);
-      setFilteredDocuments(docs);
-      setRefreshing(false);
+      try {
+        const docs = await listDocuments(caseId);
+        setDocuments(docs);
+        setFilteredDocuments(docs);
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+        toast({
+          title: "Erro ao carregar documentos",
+          description: "Não foi possível carregar os documentos do caso.",
+          variant: "destructive"
+        });
+      } finally {
+        setRefreshing(false);
+      }
     }
   };
 
@@ -71,20 +85,39 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
     }
     
     if (selectedCategory !== 'all') {
-      const categoryMapping: {[key: string]: string[]} = {
-        'petition': ['.doc', '.docx', '.pdf'],
-        'contract': ['.pdf', '.docx'],
-        'evidence': ['.jpg', '.png', '.pdf', '.mp4'],
-        'proceeding': ['.pdf'],
-        'legal-research': ['.pdf', '.docx', '.txt'],
-        'court-decision': ['.pdf'],
-        'other': ['.xlsx', '.pptx', '.zip']
-      };
-      
-      const extensions = categoryMapping[selectedCategory] || [];
-      results = results.filter(doc => 
-        extensions.some(ext => doc.name.toLowerCase().endsWith(ext))
-      );
+      if (selectedCategory === 'petition') {
+        results = results.filter(doc => doc.document_type === 'petition');
+      } else if (selectedCategory === 'contract') {
+        results = results.filter(doc => doc.document_type === 'contract');
+      } else if (selectedCategory === 'evidence') {
+        results = results.filter(doc => doc.document_type === 'evidence');
+      } else if (selectedCategory === 'proceeding') {
+        results = results.filter(doc => doc.document_type === 'proceeding');
+      } else if (selectedCategory === 'legal-research') {
+        results = results.filter(doc => doc.document_type === 'legal-research');
+      } else if (selectedCategory === 'court-decision') {
+        const courtExtensions = ['.pdf'];
+        results = results.filter(doc => 
+          doc.document_type === 'court-decision' || 
+          courtExtensions.some(ext => doc.name.toLowerCase().endsWith(ext))
+        );
+      } else {
+        // Filter by file extension for other categories
+        const extensionMapping: {[key: string]: string[]} = {
+          'petition': ['.pdf', '.docx'],
+          'contract': ['.pdf', '.docx'],
+          'evidence': ['.jpg', '.png', '.pdf', '.mp4'],
+          'proceeding': ['.pdf'],
+          'legal-research': ['.pdf', '.docx', '.txt'],
+          'court-decision': ['.pdf'],
+          'other': ['.xlsx', '.pptx', '.zip']
+        };
+        
+        const extensions = extensionMapping[selectedCategory] || [];
+        results = results.filter(doc => 
+          extensions.some(ext => doc.name.toLowerCase().endsWith(ext))
+        );
+      }
     }
     
     setFilteredDocuments(results);
@@ -112,6 +145,42 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
     }
   };
 
+  const handleProcessDocument = async (doc: DocumentMetadata) => {
+    if (!doc.id) return;
+    
+    setProcessingFiles(prev => ({ ...prev, [doc.id!]: true }));
+    
+    try {
+      const result = await processDocument(doc.id);
+      
+      if (result.text) {
+        toast({
+          title: "Documento processado",
+          description: `O conteúdo do documento foi extraído com sucesso (${result.text.length} caracteres)`
+        });
+        
+        // Refresh document list to update status
+        fetchDocuments();
+        
+        // Notify parent component if callback provided
+        if (onDocumentProcessed) {
+          onDocumentProcessed(doc.id, result.text);
+        }
+      } else if (result.error) {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      console.error('Error processing document:', error);
+      toast({
+        title: "Erro ao processar documento",
+        description: error.message || "Não foi possível extrair o conteúdo do documento",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessingFiles(prev => ({ ...prev, [doc.id!]: false }));
+    }
+  };
+
   const handleDeleteClick = (doc: DocumentMetadata) => {
     setDocumentToDelete(doc);
     setDeleteDialogOpen(true);
@@ -131,10 +200,18 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
     setDocumentToDelete(null);
   };
 
-  const handleUploadSuccess = () => {
+  const handleUploadSuccess = (files: File[], extractedContent?: string) => {
     fetchDocuments();
     if (caseId) {
       queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
+    }
+    
+    // If we have extracted content and a callback, notify parent component
+    if (extractedContent && onDocumentProcessed) {
+      // We don't have the document ID here since it was just created
+      // In a real implementation, we might want to return the ID from the upload function
+      // For now, we'll just use a placeholder
+      onDocumentProcessed("latest", extractedContent);
     }
   };
   
@@ -172,12 +249,32 @@ export function CaseDocuments({ caseId }: CaseDocumentsProps) {
           <DocumentList
             documents={filteredDocuments}
             loadingFiles={loadingFiles}
+            processingFiles={processingFiles}
             onDownload={handleDownload}
             onDelete={handleDeleteClick}
+            onProcess={handleProcessDocument}
             onAddTag={handleAddTag}
             refreshing={refreshing}
           />
         </CardContent>
+        <CardFooter className="flex justify-between">
+          <div className="text-sm text-muted-foreground">
+            {filteredDocuments.length} documento(s)
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={fetchDocuments}
+            disabled={refreshing}
+          >
+            {refreshing ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <RefreshCcw className="h-4 w-4 mr-2" />
+            )}
+            Atualizar
+          </Button>
+        </CardFooter>
       </Card>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
