@@ -7,6 +7,7 @@ import { AnalistaFatosAgent } from './AnalistaFatosAgent';
 import { EspecialistaAdaptavelAgent } from './EspecialistaAdaptavelAgent';
 import { RevisorLegalAgent } from './RevisorLegalAgent';
 import { RevisorIntegradorAgent } from './RevisorIntegradorAgent';
+import { ComunicadorAgent } from './ComunicadorAgent';
 
 const agents: Agent[] = [
   new AnalistaRequisitosAgent(),
@@ -15,7 +16,8 @@ const agents: Agent[] = [
   new AnalistaFatosAgent(),
   new EspecialistaAdaptavelAgent(),
   new RevisorLegalAgent(),
-  new RevisorIntegradorAgent()
+  new RevisorIntegradorAgent(),
+  new ComunicadorAgent()
 ];
 
 export const getAgent = (type: string): Agent | undefined => {

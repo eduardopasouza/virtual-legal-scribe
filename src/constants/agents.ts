@@ -130,9 +130,11 @@ export const suggestionsByAgent: Record<AgentType, string[]> = {
     'Verifique a formatação final'
   ],
   'comunicador': [
-    'Prepare uma apresentação para o cliente',
-    'Como explicar este caso de forma simplificada?',
-    'Registre as comunicações com o cliente'
+    'Prepare um resumo executivo para o cliente',
+    'Explique os termos técnicos em linguagem simples',
+    'Quais são as perguntas frequentes sobre este caso?',
+    'Gere uma apresentação do caso para o cliente',
+    'Como devo explicar esse documento ao cliente?'
   ],
   'assistente-redacao': [
     'Gerar rascunho do documento',

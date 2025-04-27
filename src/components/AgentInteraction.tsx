@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { AgentType } from '@/hooks/agent/types';
-import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen, ClipboardCheck, Edit } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen, ClipboardCheck, Edit, Users, MessageSquare } from "lucide-react";
 
 interface AgentInteractionProps {
   caseId?: string;
@@ -64,6 +64,12 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       name: 'Revisor Integrador',
       description: 'Revisa e aprimora os documentos jurídicos, integrando contribuições e garantindo coesão e uniformidade.',
       icon: <Edit className="h-5 w-5" />
+    },
+    {
+      type: 'comunicador',
+      name: 'Comunicador com Cliente',
+      description: 'Prepara resumos executivos, explica termos técnicos e antecipa perguntas do cliente.',
+      icon: <MessageSquare className="h-5 w-5" />
     }
   ];
 

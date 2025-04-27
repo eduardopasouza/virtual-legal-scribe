@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { workflowService } from '@/workflow';
 import { useWorkflowInitialization } from './useWorkflowInitialization';
@@ -12,6 +11,7 @@ import { useAdvancedLayersAnalysis } from './useAdvancedLayersAnalysis';
 import { useDocumentDrafting } from './useDocumentDrafting';
 import { useDocumentVerification } from './useDocumentVerification';
 import { useDocumentRevision } from './useDocumentRevision';
+import { useClientCommunication } from './useClientCommunication';
 
 export function useWorkflow(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,8 +49,12 @@ export function useWorkflow(caseId?: string) {
     reviseDocument,
     isRevising
   } = useDocumentRevision(caseId);
+  
+  const {
+    generateCommunication,
+    isGenerating: isGeneratingCommunication
+  } = useClientCommunication(caseId);
 
-  // Get recommended agent for current stage
   const getRecommendedAgent = () => {
     if (!currentStage?.stage_name) return null;
     return workflowService.getRecommendedAgent(currentStage.stage_name);
@@ -66,37 +70,36 @@ export function useWorkflow(caseId?: string) {
     return await workflowService.logProgress(caseId, message, details);
   };
 
-  // Determinar se estamos em uma fase estratégica
   const isStrategicStage = () => {
     if (!currentStage?.stage_name) return false;
     return ['planning', 'strategy-review', 'strategic-validation'].includes(currentStage.stage_name);
   };
 
-  // Determinar se estamos na fase de análise de fatos
   const isFactsAnalysisStage = () => {
     if (!currentStage?.stage_name) return false;
     return currentStage.stage_name === 'facts-analysis';
   };
   
-  // Determinar se estamos em uma fase que requer análise avançada
   const isAdvancedAnalysisStage = () => {
     if (!currentStage?.stage_name) return false;
     return ['research', 'constitutional-review', 'international-law'].includes(currentStage.stage_name);
   };
   
-  // Determinar se estamos na fase de revisão/verificação
   const isReviewStage = () => {
     if (!currentStage?.stage_name) return false;
     return currentStage.stage_name === 'review';
   };
   
-  // Determinar se estamos na fase de revisão final/integração
   const isFinalRevisionStage = () => {
     if (!currentStage?.stage_name) return false;
     return currentStage.stage_name === 'final-revision';
   };
 
-  // Identificar qual fase estratégica estamos
+  const isClientCommunicationStage = () => {
+    if (!currentStage?.stage_name) return false;
+    return currentStage.stage_name === 'delivery';
+  };
+
   const getCurrentStrategicPhase = () => {
     if (!currentStage?.stage_name) return null;
     
@@ -112,7 +115,6 @@ export function useWorkflow(caseId?: string) {
     }
   };
 
-  // Executar a fase estratégica atual automaticamente
   const executeCurrentStrategicPhase = async () => {
     if (!currentStage?.stage_name) return null;
     
@@ -131,7 +133,6 @@ export function useWorkflow(caseId?: string) {
     }
   };
 
-  // Execute current workflow stage based on its type
   const executeCurrentStage = async () => {
     if (!currentStage?.stage_name) return null;
     
@@ -144,7 +145,6 @@ export function useWorkflow(caseId?: string) {
     }
     
     if (isAdvancedAnalysisStage()) {
-      // Determine which type of advanced analysis to execute based on the stage
       const specialtyType = currentStage.stage_name === 'constitutional-review' ? 'constitutional' : 
                           currentStage.stage_name === 'international-law' ? 'international' : 'interdisciplinary';
       
@@ -159,6 +159,10 @@ export function useWorkflow(caseId?: string) {
       return await reviseDocument.mutateAsync({});
     }
     
+    if (isClientCommunicationStage()) {
+      return await generateCommunication.mutateAsync();
+    }
+    
     return null;
   };
 
@@ -167,7 +171,8 @@ export function useWorkflow(caseId?: string) {
     currentStage,
     isLoading,
     isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || 
-                  isAnalyzingAdvanced || isDrafting || isVerifying || isRevising,
+                  isAnalyzingAdvanced || isDrafting || isVerifying || isRevising || 
+                  isGeneratingCommunication,
     error,
     initializeWorkflow,
     advanceWorkflow,
@@ -177,30 +182,25 @@ export function useWorkflow(caseId?: string) {
     verifyStageCompleteness,
     logWorkflowProgress,
     workflowMetadata: workflowService.getWorkflowMetadata(),
-    // Strategic methods
     isStrategicStage,
     getCurrentStrategicPhase,
     executeCurrentStrategicPhase,
     executeInitialStrategy,
     executeIntermediateStrategy,
     executeFinalStrategy,
-    // Facts analysis methods
     isFactsAnalysisStage,
     executeFactsAnalysis,
     factsAnalysis,
-    // Advanced analysis methods
     isAdvancedAnalysisStage,
     executeAdvancedAnalysis,
     advancedAnalyses,
-    // Document drafting
     draftDocument,
-    // Review methods
     isReviewStage,
     verifyDocument,
-    // Final revision methods
     isFinalRevisionStage,
     reviseDocument,
-    // Execute current stage based on type
+    isClientCommunicationStage,
+    generateCommunication,
     executeCurrentStage
   };
 }
