@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { format } from 'date-fns';
+import { format, isToday, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, CalendarIcon, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from '@/lib/utils';
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Event } from '@/types/calendar';
 import { getTypeColor } from '@/utils/calendar';
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +15,7 @@ interface CalendarGridProps {
   currentMonth: Date;
   selectedDate: Date;
   events: Event[];
+  isLoading?: boolean;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
   onTodayClick: () => void;
@@ -25,6 +27,7 @@ export function CalendarGrid({
   currentMonth, 
   selectedDate,
   events, 
+  isLoading = false,
   onPreviousMonth,
   onNextMonth,
   onTodayClick,
@@ -46,9 +49,7 @@ export function CalendarGrid({
 
   const getEventsForDay = (date: Date) => {
     return events.filter(event => 
-      event.date.getDate() === date.getDate() && 
-      event.date.getMonth() === date.getMonth() && 
-      event.date.getFullYear() === date.getFullYear()
+      isSameDay(new Date(event.date), date)
     );
   };
   
@@ -76,12 +77,39 @@ export function CalendarGrid({
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-40" />
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-8 w-8" />
+            <Skeleton className="h-8 w-16" />
+            <Skeleton className="h-8 w-8" />
+          </div>
+        </div>
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {Array(7).fill(null).map((_, i) => (
+            <Skeleton key={i} className="h-8" />
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {Array(35).fill(null).map((_, i) => (
+            <Skeleton key={i} className="aspect-square" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <CalendarIcon className="h-5 w-5 mr-2 text-muted-foreground" />
-          {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+          <span className="text-lg font-medium">
+            {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
+          </span>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="ghost" size="icon" onClick={onPreviousMonth}>
@@ -111,10 +139,8 @@ export function CalendarGrid({
         
         {days.map((day) => {
           const eventsForDay = getEventsForDay(day);
-          const isToday = day.getDate() === today.getDate() && 
-                        day.getMonth() === today.getMonth() && 
-                        day.getFullYear() === today.getFullYear();
-          const isSelected = selectedDate?.getTime() === day.getTime();
+          const isCurrentDay = isToday(day);
+          const isSelected = isSameDay(selectedDate, day);
           const summary = getSummaryForDay(day);
           
           return (
@@ -122,14 +148,14 @@ export function CalendarGrid({
               key={day.toString()} 
               className={cn(
                 "aspect-square p-0.5",
-                isToday ? "bg-muted/50 rounded-sm" : ""
+                isCurrentDay ? "bg-muted/50 rounded-sm" : ""
               )}
             >
               <div 
                 className={cn(
                   "h-full rounded-sm cursor-pointer hover:bg-muted transition-colors p-1",
                   isSelected ? "bg-muted ring-1 ring-primary" : "",
-                  isToday ? "font-bold" : ""
+                  isCurrentDay ? "font-bold" : ""
                 )}
                 onClick={() => handleDayClick(day)}
               >
@@ -138,18 +164,18 @@ export function CalendarGrid({
                 </div>
                 
                 <div className="space-y-0.5 mt-0.5">
-                  {eventsForDay.slice(0, 2).map(event => (
+                  {eventsForDay.slice(0, 3).map(event => (
                     <div 
                       key={event.id}
                       className="flex items-center space-x-0.5"
                     >
                       <div className={`w-1.5 h-1.5 rounded-full ${getTypeColor(event.type)}`} />
-                      <span className="text-xs truncate text-xs">{event.title}</span>
+                      <span className="text-xs truncate">{event.title}</span>
                     </div>
                   ))}
-                  {eventsForDay.length > 2 && (
+                  {eventsForDay.length > 3 && (
                     <div className="text-xs text-muted-foreground">
-                      +{eventsForDay.length - 2} mais
+                      +{eventsForDay.length - 3} mais
                     </div>
                   )}
                   
