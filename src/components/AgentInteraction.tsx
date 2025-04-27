@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { AgentType } from '@/hooks/agent/types';
-import { Loader2, CheckCircle, AlertCircle, Info } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest } from "lucide-react";
 
 interface AgentInteractionProps {
   caseId?: string;
@@ -33,7 +33,13 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       type: 'estrategista',
       name: 'Estrategista Jurídico',
       description: 'Desenvolve estratégias legais baseadas na análise do caso.',
-      icon: <Info className="h-5 w-5" />
+      icon: <GitPullRequest className="h-5 w-5" />
+    },
+    {
+      type: 'analista-fatos',
+      name: 'Analista de Fatos',
+      description: 'Extrai e categoriza fatos do caso, identificando quais são controversos ou incontroversos.',
+      icon: <FileText className="h-5 w-5" />
     },
     {
       type: 'revisor-legal',

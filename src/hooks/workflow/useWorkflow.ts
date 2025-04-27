@@ -7,6 +7,7 @@ import { useWorkflowAdvancement } from './useWorkflowAdvancement';
 import { useWorkflowAlerts } from './useWorkflowAlerts';
 import { useWorkflowStatus } from './useWorkflowStatus';
 import { useWorkflowStrategy } from './useWorkflowStrategy';
+import { useFactsAnalysis } from './useFactsAnalysis';
 
 export function useWorkflow(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -22,6 +23,11 @@ export function useWorkflow(caseId?: string) {
     executeFinalStrategy,
     isProcessingStrategy 
   } = useWorkflowStrategy(caseId);
+  const {
+    executeFactsAnalysis,
+    factsAnalysis,
+    isAnalyzing: isAnalyzingFacts
+  } = useFactsAnalysis(caseId);
 
   // Get recommended agent for current stage
   const getRecommendedAgent = () => {
@@ -43,6 +49,12 @@ export function useWorkflow(caseId?: string) {
   const isStrategicStage = () => {
     if (!currentStage?.stage_name) return false;
     return ['planning', 'strategy-review', 'strategic-validation'].includes(currentStage.stage_name);
+  };
+
+  // Determinar se estamos na fase de análise de fatos
+  const isFactsAnalysisStage = () => {
+    if (!currentStage?.stage_name) return false;
+    return currentStage.stage_name === 'facts-analysis';
   };
 
   // Identificar qual fase estratégica estamos
@@ -80,11 +92,26 @@ export function useWorkflow(caseId?: string) {
     }
   };
 
+  // Execute current workflow stage based on its type
+  const executeCurrentStage = async () => {
+    if (!currentStage?.stage_name) return null;
+    
+    if (isStrategicStage()) {
+      return await executeCurrentStrategicPhase();
+    }
+    
+    if (isFactsAnalysisStage()) {
+      return await executeFactsAnalysis.mutateAsync();
+    }
+    
+    return null;
+  };
+
   return {
     stages,
     currentStage,
     isLoading,
-    isProcessing: isProcessing || isProcessingStrategy,
+    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts,
     error,
     initializeWorkflow,
     advanceWorkflow,
@@ -100,6 +127,12 @@ export function useWorkflow(caseId?: string) {
     executeCurrentStrategicPhase,
     executeInitialStrategy,
     executeIntermediateStrategy,
-    executeFinalStrategy
+    executeFinalStrategy,
+    // Facts analysis methods
+    isFactsAnalysisStage,
+    executeFactsAnalysis,
+    factsAnalysis,
+    // Execute current stage based on type
+    executeCurrentStage
   };
 }

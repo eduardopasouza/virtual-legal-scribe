@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { mapWorkflowStatus } from '@/types/workflow';
 import { CaseStrategy } from './CaseStrategy';
+import { CaseFacts } from './CaseFacts';
+import { useFactsAnalysis } from '@/hooks/workflow';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -26,6 +28,8 @@ export function CaseSummaryTab({
   objective 
 }: CaseSummaryTabProps) {
   const queryClient = useQueryClient();
+  const { factsAnalysis, isLoading: isLoadingFacts, executeFactsAnalysis } = useFactsAnalysis(caseId);
+  
   const mappedWorkflowStages = workflowStages.map(stage => ({
     ...stage,
     status: mapWorkflowStatus(stage.status)
@@ -62,6 +66,12 @@ export function CaseSummaryTab({
             </CardContent>
           </Card>
         )}
+        
+        {/* Facts Analysis Section */}
+        <CaseFacts 
+          analysisData={factsAnalysis} 
+          isLoading={isLoadingFacts} 
+        />
         
         <CaseStrategy strategyData={mockStrategyData} />
         

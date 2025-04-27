@@ -19,10 +19,11 @@ export type WorkflowStageName =
   | 'reception'
   | 'planning'
   | 'analysis'
+  | 'facts-analysis'  // New stage for facts analysis
   | 'research'
-  | 'strategy-review'   // Nova etapa de revisão estratégica intermediária
+  | 'strategy-review'
   | 'drafting'
-  | 'strategic-validation'  // Nova etapa de validação estratégica final
+  | 'strategic-validation'
   | 'review'
   | 'delivery';
 
