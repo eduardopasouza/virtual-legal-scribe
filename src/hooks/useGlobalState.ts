@@ -1,4 +1,3 @@
-
 import { useQueryClient } from '@tanstack/react-query';
 import { handleError } from '@/utils/errorHandling';
 
@@ -33,6 +32,15 @@ const queryKeys = {
   alerts: {
     all: ['alerts'],
     byCaseId: (caseId: string) => ['alerts', caseId],
+  },
+  statistics: {
+    caseMetrics: ['statistics', 'case-metrics'],
+    agentMetrics: ['statistics', 'agent-metrics'],
+    clientMetrics: ['statistics', 'client-metrics'],
+    documentMetrics: ['statistics', 'document-metrics'],
+    areaMetrics: ['statistics', 'area-metrics'],
+    workflowMetrics: ['statistics', 'workflow-metrics'],
+    timeSeriesData: ['statistics', 'time-series'],
   }
 };
 
