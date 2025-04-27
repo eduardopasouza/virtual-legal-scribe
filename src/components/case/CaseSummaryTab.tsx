@@ -1,20 +1,18 @@
 
 import React from 'react';
-import { AgentInteraction } from '@/components/AgentInteraction';
+import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { CaseTimeline } from './CaseTimeline';
 import { CaseAlerts } from './CaseAlerts';
-import { DocumentUploader } from '@/components/DocumentUploader';
 import { Alert, WorkflowStage as CaseWorkflowStage } from '@/types/case';
-import { useQueryClient } from '@tanstack/react-query';
-import { AgentCoordinator } from '@/components/agent/AgentCoordinator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { mapWorkflowStatus } from '@/types/workflow';
 import { CaseStrategy } from './CaseStrategy';
 import { CaseFacts } from './CaseFacts';
+import { CaseRules } from './CaseRules';
+import { CaseLegalIssues } from './CaseLegalIssues';
+import { CaseArgumentsAnalysis } from './CaseArgumentsAnalysis';
 import { useFactsAnalysis } from '@/hooks/workflow';
-import { CaseDrafts } from './CaseDrafts';
-import { CaseAdvancedAnalysis } from './CaseAdvancedAnalysis';
 
 interface CaseSummaryTabProps {
   caseId: string;
@@ -29,8 +27,7 @@ export function CaseSummaryTab({
   alerts,
   objective 
 }: CaseSummaryTabProps) {
-  const queryClient = useQueryClient();
-  const { factsAnalysis, isLoading: isLoadingFacts, executeFactsAnalysis } = useFactsAnalysis(caseId);
+  const { factsAnalysis, isLoading: isLoadingFacts } = useFactsAnalysis(caseId);
   
   const mappedWorkflowStages = workflowStages.map(stage => ({
     ...stage,
@@ -55,6 +52,86 @@ export function CaseSummaryTab({
     currentPhase: 'intermediate' as 'initial' | 'intermediate' | 'final'
   };
 
+  // Mock data for rules section (in a real app, this would come from the API)
+  const mockRulesData = {
+    relevantLegislation: [
+      {
+        name: 'Código Civil',
+        articles: ['Art. 422 - Princípio da boa-fé contratual', 'Art. 475 - Direito de resolução por inadimplemento']
+      },
+      {
+        name: 'Código de Defesa do Consumidor',
+        articles: ['Art. 39 - Práticas abusivas', 'Art. 51 - Cláusulas abusivas']
+      }
+    ],
+    jurisprudence: [
+      'REsp 1.735.645/SP - Superior Tribunal de Justiça - Proteção contra cláusulas abusivas',
+      'REsp 1.631.278/PR - Superior Tribunal de Justiça - Dever de informação e transparência'
+    ],
+    doctrines: [
+      'Princípio da função social do contrato',
+      'Teoria do adimplemento substancial'
+    ]
+  };
+
+  // Mock data for legal issues (in a real app, this would come from the API)
+  const mockLegalIssuesData = [
+    {
+      id: 1,
+      issue: 'Possível nulidade de cláusulas contratuais abusivas',
+      description: 'Identificação de potenciais cláusulas leoninas no contrato que podem ser consideradas inválidas.',
+      priority: 'high',
+      relatedFacts: ['Cláusula 3.2 do contrato', 'E-mail datado de 12/04/2023']
+    },
+    {
+      id: 2,
+      issue: 'Caracterização de danos materiais e morais',
+      description: 'Avaliação da extensão dos danos causados e possibilidade de reparação.',
+      priority: 'medium',
+      relatedFacts: ['Laudo técnico', 'Comprovantes de pagamento']
+    },
+    {
+      id: 3,
+      issue: 'Responsabilidade por atraso na entrega',
+      description: 'Determinação de culpabilidade e excludentes de responsabilidade no caso de atraso.',
+      priority: 'high',
+      relatedFacts: ['Cronograma acordado', 'Notificações de atraso']
+    }
+  ];
+
+  // Mock data for arguments analysis (in a real app, this would come from the API)
+  const mockArgumentsAnalysisData = {
+    plaintiffArguments: [
+      {
+        argument: 'Violação contratual por entrega de produto diferente do especificado',
+        strength: 'strong',
+        supportingEvidence: ['Especificações técnicas do contrato', 'Laudo pericial']
+      },
+      {
+        argument: 'Danos materiais decorrentes da paralisação da atividade empresarial',
+        strength: 'medium',
+        supportingEvidence: ['Relatório financeiro', 'Testemunhos']
+      }
+    ],
+    defendantArguments: [
+      {
+        argument: 'Alteração do projeto foi concordada verbalmente entre as partes',
+        strength: 'weak',
+        counterEvidence: ['Ausência de documentação formal', 'E-mails rejeitando alterações']
+      },
+      {
+        argument: 'Força maior devido a problemas de fornecimento',
+        strength: 'medium',
+        counterEvidence: ['Ausência de notificação tempestiva', 'Jurisprudência contrária']
+      }
+    ],
+    keyDisputes: [
+      'Existência de consentimento para alteração do projeto',
+      'Nexo causal entre o descumprimento e os danos alegados',
+      'Quantificação dos danos materiais'
+    ]
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 space-y-6">
@@ -75,14 +152,19 @@ export function CaseSummaryTab({
           isLoading={isLoadingFacts} 
         />
         
+        {/* Rules Section */}
+        <CaseRules rulesData={mockRulesData} />
+        
+        {/* Legal Issues Section */}
+        <CaseLegalIssues issuesData={mockLegalIssuesData} />
+        
+        {/* Arguments Analysis Section */}
+        <CaseArgumentsAnalysis analysisData={mockArgumentsAnalysisData} />
+        
+        {/* Strategy Section */}
         <CaseStrategy strategyData={mockStrategyData} />
         
-        {/* Advanced Layers Analysis Section */}
-        <CaseAdvancedAnalysis caseId={caseId} />
-        
-        {/* Document Drafting Section */}
-        <CaseDrafts caseId={caseId} />
-        
+        {/* Workflow Process Timeline */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Fluxo do Processo</CardTitle>
@@ -96,14 +178,11 @@ export function CaseSummaryTab({
         
         <Separator className="my-6" />
         
-        <AgentInteraction caseId={caseId} />
         {alerts.length > 0 && <CaseAlerts alerts={alerts} />}
       </div>
       
       <div className="lg:col-span-4">
-        <DocumentUploader caseId={caseId} onSuccess={() => {
-          queryClient.invalidateQueries({ queryKey: ["documents", caseId] });
-        }} />
+        {/* This column is deliberately empty to maintain the layout */}
       </div>
     </div>
   );

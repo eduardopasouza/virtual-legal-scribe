@@ -1,12 +1,11 @@
 
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clock, Calendar, Users, Bell, Info, MessageSquare } from 'lucide-react';
-import { Loader2 } from 'lucide-react';
 import { Case, Activity } from "@/types/case";
 import { ActivityList } from "@/components/case/ActivityList";
 import { CaseContentTabs } from "@/components/case/CaseContentTabs";
 import { WebChat } from "@/components/WebChat";
+import { MessageSquare } from 'lucide-react';
+import { CaseHeader } from "@/components/case/CaseHeader";
 
 interface CaseDetailsContentProps {
   caseId: string;
@@ -32,33 +31,37 @@ export function CaseDetailsContent({
     );
   }
 
+  // Map case status to display format
+  const statusDisplay = caseData.status === 'em_andamento' ? 'Em Andamento' : 
+                        caseData.status === 'concluido' ? 'Concluído' : 'Arquivado';
+
+  // Format created_at date
+  const createdAt = new Date(caseData.created_at);
+
   return (
     <div className="space-y-4">
       {/* Case Header with essential information */}
+      <CaseHeader 
+        title={caseData.title}
+        type={caseData.type || 'Não especificado'}
+        status={statusDisplay}
+        createdAt={createdAt}
+      />
+
+      {/* Basic Case Information Card */}
       <Card className="p-6">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div>
-            <h2 className="text-2xl font-semibold text-evji-primary">{caseData.title}</h2>
-            <p className="text-sm text-muted-foreground">Processo: {caseData.number || 'N/A'}</p>
+            <p className="text-sm font-medium text-muted-foreground">Número do Processo</p>
+            <p className="font-medium">{caseData.number || 'N/A'}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Cliente</p>
             <p className="font-medium">{caseData.client}</p>
-            <p className="text-sm font-medium text-muted-foreground mt-2">Status</p>
-            <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              caseData.status === 'em_andamento' ? 'bg-blue-100 text-blue-800' : 
-              caseData.status === 'concluido' ? 'bg-green-100 text-green-800' : 
-              'bg-gray-100 text-gray-800'
-            }`}>
-              {caseData.status === 'em_andamento' ? 'Em Andamento' : 
-               caseData.status === 'concluido' ? 'Concluído' : 'Arquivado'}
-            </div>
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground">Área do Direito</p>
             <p>{caseData.area_direito || 'Não especificada'}</p>
-            <p className="text-sm font-medium text-muted-foreground mt-2">Tipo</p>
-            <p>{caseData.type || 'Não especificado'}</p>
           </div>
         </div>
       </Card>

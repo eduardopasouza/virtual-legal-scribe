@@ -40,8 +40,7 @@ export function WebChat({
     activeAgent,
     isProcessing,
     clientInfo,
-    handleSendMessage,
-    changeAgent
+    handleSendMessage
   } = useWebChat(caseId);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ export function WebChat({
     if (messages.length <= 1 && !localStorage.getItem('evji_welcome_seen')) {
       const timer = setTimeout(() => {
         toast.info('Bem-vindo ao Chat Jurídico EVJI', {
-          description: 'Aqui você pode conversar com nossos assistentes especializados em diferentes áreas do direito.',
+          description: 'Aqui você pode conversar com nosso assistente especializado para este caso.',
           duration: 6000,
         });
         localStorage.setItem('evji_welcome_seen', 'true');
@@ -116,10 +115,10 @@ export function WebChat({
   return (
     <Card className={`flex flex-col ${fullScreen ? 'h-[calc(100vh-8rem)]' : 'h-[600px]'}`}>
       <ChatHeader
-        activeAgent={activeAgent}
-        onAgentChange={changeAgent}
+        activeAgent="comunicador"
         currentStage={currentStage}
         clientInfo={clientInfo}
+        showAgentSelector={false}
       />
       
       <CardContent className="flex-1 p-0 overflow-hidden">

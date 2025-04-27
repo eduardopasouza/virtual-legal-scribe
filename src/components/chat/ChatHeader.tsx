@@ -1,129 +1,74 @@
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AgentType } from '@/hooks/agent/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { agents } from '@/constants/agents';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AgentType } from '@/hooks/agent/types';
+import { WorkflowStage } from '@/workflow/types';
+import { Badge } from '@/components/ui/badge';
 
 interface ChatHeaderProps {
-  activeAgent?: AgentType;
+  activeAgent: AgentType;
   onAgentChange?: (agent: AgentType) => void;
-  currentStage?: string;
+  currentStage?: WorkflowStage;
   clientInfo?: any;
+  showAgentSelector?: boolean;
 }
 
 export function ChatHeader({ 
-  activeAgent = 'analista-requisitos', 
+  activeAgent, 
   onAgentChange,
   currentStage,
-  clientInfo
+  clientInfo,
+  showAgentSelector = true
 }: ChatHeaderProps) {
-  const selectedAgent = agents.find(agent => agent.type === activeAgent);
+  // Find the active agent details
+  const agent = agents.find(a => a.type === activeAgent) || agents[0];
   
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .substring(0, 2)
-      .toUpperCase();
-  };
-
-  const handleAgentChange = (agentType: AgentType) => {
-    if (onAgentChange) {
-      onAgentChange(agentType);
-    }
-  };
-
   return (
-    <div className="flex justify-between items-center p-3 border-b">
-      <div className="flex items-center">
-        <Avatar className="h-8 w-8 mr-2">
-          <AvatarImage src={`/agents/${activeAgent}.png`} alt={selectedAgent?.name} />
-          <AvatarFallback>{selectedAgent?.name.substring(0, 2)}</AvatarFallback>
+    <CardHeader className="p-4 border-b flex flex-row items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Avatar className="h-9 w-9">
+          <AvatarImage src={agent.avatar} alt={agent.name} />
+          <AvatarFallback>{agent.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <h3 className="text-sm font-medium">{selectedAgent?.name}</h3>
-          {currentStage && (
-            <Badge variant="outline" className="text-xs py-0">
-              {currentStage}
-            </Badge>
-          )}
+          <p className="font-medium">{agent.name}</p>
+          <p className="text-xs text-muted-foreground">{agent.role}</p>
         </div>
       </div>
       
-      {clientInfo && (
-        <div className="flex items-center">
-          <Badge variant="secondary" className="ml-2">
-            Cliente: {clientInfo.name}
+      <div className="flex items-center gap-2">
+        {currentStage && (
+          <Badge variant="outline" className="font-normal bg-muted/50 text-xs">
+            {currentStage.status === 'completed' ? 'Concluído' : 
+             currentStage.status === 'in_progress' ? 'Em andamento' : 
+             'Pendente'}: {currentStage.stage_name}
           </Badge>
-        </div>
-      )}
-      
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="ml-auto h-8">
-            Agentes <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <DropdownMenuLabel>Selecione um Agente</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {agents.map((agent) => (
-            <DropdownMenuItem 
-              key={agent.type}
-              onClick={() => handleAgentChange(agent.type as AgentType)}
-              className={activeAgent === agent.type ? "bg-secondary" : ""}
-            >
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={`/agents/${agent.type}.png`} alt={agent.name} />
-                  <AvatarFallback>{getInitials(agent.name)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">{agent.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{agent.description}</p>
-                </div>
-              </div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      
-      <div className="hidden md:flex space-x-1">
-        <TooltipProvider>
-          {agents.slice(0, 5).map((agent) => (
-            <Tooltip key={agent.type}>
-              <TooltipTrigger asChild>
-                <Button
-                  key={agent.type}
-                  variant={agent.type === activeAgent ? "secondary" : "ghost"}
-                  size="sm"
-                  className="h-7 px-2 text-xs"
-                  onClick={() => handleAgentChange(agent.type as AgentType)}
-                >
-                  {getInitials(agent.name)}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{agent.name}</p>
-                <p className="text-xs text-muted-foreground">{agent.description}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </TooltipProvider>
+        )}
+        
+        {showAgentSelector && onAgentChange && (
+          <Select value={activeAgent} onValueChange={(value) => onAgentChange(value as AgentType)}>
+            <SelectTrigger className="w-[180px] h-8 text-xs">
+              <SelectValue placeholder="Mudar especialista" />
+            </SelectTrigger>
+            <SelectContent>
+              {agents.map(a => (
+                <SelectItem key={a.type} value={a.type}>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-5 w-5">
+                      <AvatarImage src={a.avatar} alt={a.name} />
+                      <AvatarFallback>{a.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span>{a.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
-    </div>
+    </CardHeader>
   );
 }
