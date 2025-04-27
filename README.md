@@ -14,12 +14,18 @@ O EVJI (Escritório Virtual Jurídico Inteligente) é uma plataforma que estende
 
 ### Variáveis de Ambiente
 
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+1. Copie o arquivo `.env.example` para criar um novo arquivo `.env` na raiz do projeto:
+   ```bash
+   cp .env.example .env
+   ```
 
-```env
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
-```
+2. Edite o arquivo `.env` e atualize com suas credenciais do Supabase:
+   ```env
+   VITE_SUPABASE_URL=sua_url_do_supabase
+   VITE_SUPABASE_PUBLISHABLE_KEY=sua_chave_anonima_do_supabase
+   ```
+
+> **Importante:** Nunca comite o arquivo `.env` para o repositório.
 
 ### Instalação
 
