@@ -13,8 +13,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-export function SidebarNav() {
+interface SidebarNavProps {
+  isCollapsed?: boolean;
+}
+
+export function SidebarNav({ isCollapsed = false }: SidebarNavProps) {
   const location = useLocation();
   
   const navItems = [
@@ -33,25 +38,40 @@ export function SidebarNav() {
       {navItems.map((item) => {
         const isActive = location.pathname === item.path || 
                          (item.path === '/cases/list' && location.pathname.includes('/cases/'));
-        return (
+        
+        const buttonContent = (
           <Button
             key={item.path}
             asChild
             variant={isActive ? 'secondary' : 'ghost'}
             size="sm"
             className={cn(
-              'w-full flex justify-start gap-3 h-10 px-3',
+              'w-full flex items-center h-10',
+              isCollapsed ? 'justify-center px-0' : 'justify-start gap-3 px-3',
               isActive 
                 ? 'bg-sidebar-accent text-sidebar-accent-foreground' 
                 : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
             )}
           >
             <NavLink to={item.path} className="flex items-center w-full">
-              <item.icon className="h-5 w-5" />
-              <span className="ml-2">{item.label}</span>
+              <item.icon className={cn("h-5 w-5", !isCollapsed && 'mr-2')} />
+              {!isCollapsed && <span>{item.label}</span>}
             </NavLink>
           </Button>
         );
+        
+        return isCollapsed ? (
+          <TooltipProvider key={item.path}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {buttonContent}
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{item.label}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : buttonContent;
       })}
     </div>
   );

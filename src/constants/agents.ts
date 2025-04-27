@@ -28,3 +28,38 @@ export const agents = [
     description: 'Busca jurisprudência e referências legais relevantes'
   }
 ];
+
+// Exportações adicionais para uso nos componentes
+export const agentOptions = agents.map(agent => ({
+  value: agent.type as AgentType,
+  label: agent.name,
+  description: agent.description
+}));
+
+export const suggestionsByAgent: Record<AgentType, string[]> = {
+  'analista-requisitos': [
+    'Quais são os requisitos deste caso?',
+    'Poderia extrair as informações principais?',
+    'Qual a legislação aplicável?'
+  ],
+  'estrategista': [
+    'Qual a melhor estratégia para este caso?',
+    'Quais os pontos fortes e fracos?',
+    'Qual o próximo passo recomendado?'
+  ],
+  'revisor-legal': [
+    'Este documento está em conformidade?',
+    'Existem problemas legais a considerar?',
+    'O que precisa ser revisado?'
+  ],
+  'assistente-redacao': [
+    'Como posso melhorar este documento?',
+    'Preciso de ajuda para redigir uma petição',
+    'Sugestões de estrutura para este documento'
+  ],
+  'pesquisador': [
+    'Encontre jurisprudência relacionada',
+    'Busque precedentes sobre este tema',
+    'Quais referências legais são relevantes?'
+  ]
+};

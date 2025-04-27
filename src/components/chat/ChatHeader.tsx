@@ -1,66 +1,80 @@
 
 import React from 'react';
-import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AgentType } from '@/hooks/useAgentSimulation';
 import { agents } from '@/constants/agents';
 
 interface ChatHeaderProps {
-  activeAgent: AgentType;
-  onAgentChange: (agent: AgentType) => void;
-  currentStage: string;
-  clientInfo: any | null;
+  activeAgent?: AgentType;
+  onAgentChange?: (agent: AgentType) => void;
+  currentStage?: string;
+  clientInfo?: any;
 }
 
-export function ChatHeader({ activeAgent, onAgentChange, currentStage, clientInfo }: ChatHeaderProps) {
-  const getNextStageName = () => {
-    switch (currentStage) {
-      case 'reception': return 'Análise Jurídica';
-      case 'analysis': return 'Planejamento Estratégico';
-      case 'strategy': return 'Pesquisa e Fundamentação';
-      case 'research': return 'Elaboração de Documentos';
-      case 'drafting': return 'Revisão Legal';
-      case 'review': return 'Entrega e Feedback';
-      default: return 'Próxima etapa';
+export function ChatHeader({ 
+  activeAgent = 'analista-requisitos', 
+  onAgentChange,
+  currentStage,
+  clientInfo
+}: ChatHeaderProps) {
+  const selectedAgent = agents.find(agent => agent.type === activeAgent);
+  
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  };
+
+  const handleAgentChange = (agentType: AgentType) => {
+    if (onAgentChange) {
+      onAgentChange(agentType);
     }
   };
 
   return (
-    <CardHeader className="py-3 px-4 border-b flex flex-row items-center justify-between space-y-0">
-      <div>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-primary" />
-          <span>Assistente EVJI</span>
-          {clientInfo && (
-            <Badge variant="outline" className="ml-2">
-              Cliente: {clientInfo.name}
+    <div className="flex justify-between items-center p-3 border-b">
+      <div className="flex items-center">
+        <Avatar className="h-8 w-8 mr-2">
+          <AvatarImage src={`/agents/${activeAgent}.png`} alt={selectedAgent?.name} />
+          <AvatarFallback>{selectedAgent?.name.substring(0, 2)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <h3 className="text-sm font-medium">{selectedAgent?.name}</h3>
+          {currentStage && (
+            <Badge variant="outline" className="text-xs py-0">
+              {currentStage}
             </Badge>
           )}
-        </CardTitle>
-        <CardDescription>
-          {currentStage === 'reception' 
-            ? 'Identificação de necessidades e coleta de informações' 
-            : `Etapa: ${getNextStageName()}`}
-        </CardDescription>
+        </div>
       </div>
       
-      <Tabs value={activeAgent} className="w-auto">
-        <TabsList className="grid grid-cols-5 gap-1">
-          {agents.map(agent => (
-            <TabsTrigger
-              key={agent.type}
-              value={agent.type}
-              onClick={() => onAgentChange(agent.type)}
-              title={agent.description}
-              className="text-xs px-2 py-1"
-            >
-              {agent.name.split(' ')[0]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-    </CardHeader>
+      {clientInfo && (
+        <div className="flex items-center">
+          <Badge variant="secondary" className="ml-2">
+            Cliente: {clientInfo.name}
+          </Badge>
+        </div>
+      )}
+      
+      <div className="flex space-x-1">
+        {agents.map((agent) => (
+          <Button
+            key={agent.type}
+            variant={agent.type === activeAgent ? "secondary" : "ghost"}
+            size="sm"
+            className="h-7 px-2 text-xs"
+            title={agent.description}
+            onClick={() => handleAgentChange(agent.type as AgentType)}
+          >
+            {getInitials(agent.name)}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Message } from '@/types/agent-chat';
 import { AgentType, useAgentSimulation } from './useAgentSimulation';
-import { agentOptions } from '@/constants/agents';
+import { agents } from '@/constants/agents';
 
 export function useAgentChat(caseId?: string) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -15,9 +15,10 @@ export function useAgentChat(caseId?: string) {
   // Add welcome message on first render
   useEffect(() => {
     if (messages.length === 0) {
+      const agentName = agents.find(agent => agent.type === selectedAgent)?.name || 'Assistente';
       const welcomeMessage: Message = {
         id: 'welcome',
-        text: `Olá! Sou o ${agentOptions.find(agent => agent.value === selectedAgent)?.label}. Como posso ajudar hoje?`,
+        text: `Olá! Sou o ${agentName}. Como posso ajudar hoje?`,
         sender: 'agent',
         timestamp: new Date(),
         agentType: selectedAgent
@@ -81,9 +82,10 @@ export function useAgentChat(caseId?: string) {
     
     setSelectedAgent(agent);
     
+    const agentName = agents.find(a => a.type === agent)?.name || 'Assistente';
     const switchMessage: Message = {
       id: `switch-${Date.now()}`,
-      text: `Olá! Agora você está falando com ${agentOptions.find(a => a.value === agent)?.label}. Como posso ajudar?`,
+      text: `Olá! Agora você está falando com ${agentName}. Como posso ajudar?`,
       sender: 'agent',
       timestamp: new Date(),
       agentType: agent
