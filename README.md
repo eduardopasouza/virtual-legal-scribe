@@ -1,3 +1,4 @@
+
 # EVJI - Escritório Virtual Jurídico Inteligente
 
 ## Sobre o Projeto
@@ -38,6 +39,33 @@ npm install
 npm run dev
 ```
 
+## Gestão de Projeto
+
+Utilizamos GitHub Issues e Projects para gerenciar o desenvolvimento do EVJI:
+
+### Issues
+
+Todas as tarefas, bugs e solicitações de recursos são rastreados como GitHub Issues:
+
+- Use o modelo adequado ao criar uma nova issue
+- Inclua descrições detalhadas, critérios de aceitação e exemplos
+- Aplique etiquetas para categorizar a issue (bug, enhancement, frontend, etc.)
+
+### Projeto Kanban
+
+Utilizamos GitHub Projects com uma abordagem Kanban:
+
+- **To Do**: Issues prontas para serem trabalhadas
+- **In Progress**: Issues sendo trabalhadas atualmente
+- **Review**: PRs aguardando revisão
+- **Done**: Issues completadas e PRs mesclados
+
+[Link para o Project Board](https://github.com/seu-usuario/seu-repo/projects/1) (atualize com o link real)
+
+### Como Contribuir
+
+Veja nosso [Guia de Contribuição](CONTRIBUTING.md) para instruções detalhadas sobre como contribuir para o EVJI.
+
 ## Estrutura do Banco de Dados
 
 O EVJI utiliza o Supabase como backend. As principais tabelas são:
@@ -70,6 +98,10 @@ O sistema processa casos em 7 etapas principais:
 6. **Revisão**: Verificação de conformidade
 7. **Entrega**: Apresentação ao cliente
 
+## Status do Build
+
+[![Continuous Integration](https://github.com/seu-usuario/seu-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/seu-usuario/seu-repo/actions/workflows/ci.yml)
+
 ## Aviso Legal
 
 O EVJI é uma plataforma de assistência que utiliza inteligência artificial. É importante compreender que:
@@ -97,14 +129,6 @@ Para mais informações, consulte os Termos de Uso completos na plataforma.
 - Agentes especializados por função
 - Coordenação central via workflow
 - Processamento assíncrono de tarefas
-
-## Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Faça commit das alterações
-4. Push para a branch
-5. Abra um Pull Request
 
 ## Licença
 

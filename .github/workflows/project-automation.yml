@@ -1,0 +1,29 @@
+
+name: Project Automation
+
+on:
+  issues:
+    types: [opened, reopened]
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add to Project
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Note: Replace PROJECT_ID with your actual project ID when creating the project
+            // This script will need to be updated with the actual project ID
+            console.log('Event triggered:', context.eventName);
+            
+            // For now, we log the event but you'll need to configure this
+            // with an actual project ID when you create the GitHub project
+            if (context.eventName === 'issues') {
+              console.log('New issue created:', context.payload.issue.title);
+            } else if (context.eventName === 'pull_request') {
+              console.log('New PR created:', context.payload.pull_request.title);
+            }
