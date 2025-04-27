@@ -1,47 +1,68 @@
-
-import React from 'react';
+import { AlertCircle } from "lucide-react";
+import { Alert } from "@/types/case";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert } from '@/types/case';
 
 interface CaseAlertsProps {
   alerts: Alert[];
+  isLoading?: boolean;
 }
 
-export const CaseAlerts = React.memo(({ alerts }: CaseAlertsProps) => {
+export function CaseAlerts({ alerts, isLoading = false }: CaseAlertsProps) {
+  if (isLoading) {
+    return (
+      <Card className="border-l-4 border-l-gray-300 animate-pulse">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-gray-400" />
+            Alertas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="h-16 bg-gray-200 rounded-lg" />
+            <div className="h-16 bg-gray-200 rounded-lg" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (alerts.length === 0) {
+    return (
+      <Card className="border-l-4 border-l-green-500">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-green-500" />
+            Alertas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <p className="text-sm">Nenhum alerta pendente no momento.</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Alertas</CardTitle>
+    <Card className="border-l-4 border-l-red-500">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-red-500" />
+          Alertas ({alerts.length})
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {alerts && alerts.length > 0 ? (
-          <div className="space-y-4">
-            {alerts.map((alert) => (
-              <div 
-                key={alert.id} 
-                className={`p-3 border rounded-md ${
-                  alert.priority === 'high' 
-                    ? 'border-red-400 bg-red-50 dark:bg-red-900/10' 
-                    : alert.priority === 'medium'
-                    ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/10'
-                    : 'border-blue-400 bg-blue-50 dark:bg-blue-900/10'
-                }`}
-              >
-                <p className="font-medium">{alert.title}</p>
-                {alert.description && (
-                  <p className="text-sm mt-1">{alert.description}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-center py-6">
-            Nenhum alerta pendente.
-          </p>
-        )}
+        <div className="space-y-3">
+          {alerts.map((alert) => (
+            <div key={alert.id} className={`p-4 rounded-md border shadow-sm ${alert.priority === 'high' ? 'border-red-400' : 'border-amber-400'}`}>
+              <h4 className="text-sm font-semibold">{alert.title}</h4>
+              {alert.description && <p className="text-xs text-muted-foreground">{alert.description}</p>}
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
-});
-
-CaseAlerts.displayName = 'CaseAlerts';
+}
