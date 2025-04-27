@@ -1,12 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
+import { useGlobalState } from './useGlobalState';
 
 export function useCase(id?: string) {
-  const queryClient = useQueryClient();
+  const { queryClient, queryKeys, handleError } = useGlobalState();
 
   const { data: caseData, isLoading } = useQuery({
-    queryKey: ['case', id],
+    queryKey: queryKeys.cases.byId(id || ''),
     queryFn: async () => {
       if (!id) return null;
       const { data, error } = await supabase
@@ -33,8 +35,9 @@ export function useCase(id?: string) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cases'] });
-    }
+      queryClient.invalidateQueries({ queryKey: queryKeys.cases.all });
+    },
+    onError: handleError
   });
 
   return { caseData, isLoading, createCase };

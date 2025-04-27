@@ -2,10 +2,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Case } from '@/types/case';
+import { useGlobalState } from './useGlobalState';
 
 export function useCases() {
+  const { queryKeys, handleError } = useGlobalState();
+
   const { data: cases, isLoading } = useQuery({
-    queryKey: ['cases'],
+    queryKey: queryKeys.cases.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('cases')
@@ -14,7 +17,8 @@ export function useCases() {
 
       if (error) throw error;
       return data as Case[];
-    }
+    },
+    onError: handleError
   });
 
   const stats = {

@@ -1,15 +1,14 @@
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Activity } from '@/types/case';
-import { useNotifications } from '@/components/notification/NotificationSystem';
+import { useGlobalState } from './useGlobalState';
 
 export function useActivities(caseId?: string) {
-  const queryClient = useQueryClient();
-  const { addNotification } = useNotifications();
+  const { queryClient, queryKeys, handleError } = useGlobalState();
 
   const { data: activities, isLoading } = useQuery({
-    queryKey: ['activities', caseId],
+    queryKey: queryKeys.activities.all(caseId || ''),
     queryFn: async () => {
       if (!caseId) return [];
       const { data, error } = await supabase
@@ -21,7 +20,8 @@ export function useActivities(caseId?: string) {
       if (error) throw error;
       return data as Activity[];
     },
-    enabled: !!caseId
+    enabled: !!caseId,
+    onError: handleError
   });
 
   const createActivity = useMutation({
@@ -33,18 +33,14 @@ export function useActivities(caseId?: string) {
         .single();
 
       if (error) throw error;
-
-      addNotification(
-        'info',
-        'Nova atividade registrada',
-        `A atividade "${newActivity.action}" foi registrada.`
-      );
-
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['activities', caseId] });
-    }
+      if (caseId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.activities.all(caseId) });
+      }
+    },
+    onError: handleError
   });
 
   return { activities, isLoading, createActivity };

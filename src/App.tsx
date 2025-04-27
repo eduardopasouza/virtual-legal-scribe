@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { StrictMode } from "react";
 import { MobileProvider } from "@/hooks/use-mobile";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthContext";
+import { queryClient } from "@/lib/react-query/queryClient";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
