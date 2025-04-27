@@ -8,6 +8,7 @@ import { CaseHeader } from '@/components/case/CaseHeader';
 import { CaseInformation } from '@/components/case/CaseInformation';
 import { CaseContentTabs } from '@/components/case/CaseContentTabs';
 import { CaseActions } from '@/components/case/CaseActions';
+import { WebChat } from '@/components/WebChat';
 import { useCaseDetails } from '@/hooks/useCaseDetails';
 
 const CaseDetails = () => {
@@ -66,38 +67,48 @@ const CaseDetails = () => {
       <div className="flex-1 flex">
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
-          <div className="space-y-6">
-            <div className="flex justify-between items-center flex-wrap gap-4">
-              <CaseHeader 
-                title={caseData.title}
-                type={caseData.type || ""}
-                status={caseData.status || "em_andamento"}
-                createdAt={new Date(caseData.created_at)}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column with case information and tabs */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex justify-between items-center flex-wrap gap-4">
+                <CaseHeader 
+                  title={caseData.title}
+                  type={caseData.type || ""}
+                  status={caseData.status || "em_andamento"}
+                  createdAt={new Date(caseData.created_at)}
+                />
+                
+                <CaseActions 
+                  caseId={caseId}
+                  documents={documents}
+                  caseData={caseData}
+                />
+              </div>
+              
+              <CaseInformation 
+                number={caseData.number || "Não informado"}
+                court={caseData.court || "Não informado"}
+                client={caseData.client}
+                mainAgent={caseData.main_agent || "Não definido"}
+                description={caseData.description || "Sem descrição"}
               />
               
-              <CaseActions 
+              <CaseContentTabs
                 caseId={caseId}
+                activities={activities}
+                deadlines={deadlines}
+                workflowStages={workflowStages}
+                alerts={alerts}
                 documents={documents}
-                caseData={caseData}
               />
             </div>
-            
-            <CaseInformation 
-              number={caseData.number || "Não informado"}
-              court={caseData.court || "Não informado"}
-              client={caseData.client}
-              mainAgent={caseData.main_agent || "Não definido"}
-              description={caseData.description || "Sem descrição"}
-            />
-            
-            <CaseContentTabs
-              caseId={caseId}
-              activities={activities}
-              deadlines={deadlines}
-              workflowStages={workflowStages}
-              alerts={alerts}
-              documents={documents}
-            />
+
+            {/* Right column with WebChat */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-6">
+                <WebChat caseId={caseId} />
+              </div>
+            </div>
           </div>
         </main>
       </div>
