@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { AgentType } from '@/hooks/agent/types';
-import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Info, FileText, GitPullRequest, BookOpen, ClipboardCheck } from "lucide-react";
 
 interface AgentInteractionProps {
   caseId?: string;
@@ -48,16 +48,16 @@ export function AgentInteraction({ caseId }: AgentInteractionProps) {
       icon: <BookOpen className="h-5 w-5" />
     },
     {
-      type: 'revisor-legal',
-      name: 'Revisor Legal',
-      description: 'Revisa documentos para garantir conformidade legal e acurácia.',
-      icon: <Info className="h-5 w-5" />
+      type: 'redator',
+      name: 'Redator Jurídico',
+      description: 'Elabora documentos jurídicos baseados nas análises do caso.',
+      icon: <FileText className="h-5 w-5" />
     },
     {
-      type: 'assistente-redacao',
-      name: 'Assistente de Redação',
-      description: 'Auxilia na redação de documentos jurídicos baseados no caso.',
-      icon: <Info className="h-5 w-5" />
+      type: 'revisor-legal',
+      name: 'Verificador de Conformidade',
+      description: 'Verifica requisitos formais, conformidade legal, citações, coerência e alinhamento com objetivos.',
+      icon: <ClipboardCheck className="h-5 w-5" />
     }
   ];
 

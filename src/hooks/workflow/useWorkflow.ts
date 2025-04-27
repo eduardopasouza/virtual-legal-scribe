@@ -10,6 +10,7 @@ import { useWorkflowStrategy } from './useWorkflowStrategy';
 import { useFactsAnalysis } from './useFactsAnalysis';
 import { useAdvancedLayersAnalysis } from './useAdvancedLayersAnalysis';
 import { useDocumentDrafting } from './useDocumentDrafting';
+import { useDocumentVerification } from './useDocumentVerification';
 
 export function useWorkflow(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -39,6 +40,10 @@ export function useWorkflow(caseId?: string) {
     draftDocument,
     isDrafting
   } = useDocumentDrafting(caseId);
+  const {
+    verifyDocument,
+    isVerifying
+  } = useDocumentVerification(caseId);
 
   // Get recommended agent for current stage
   const getRecommendedAgent = () => {
@@ -72,6 +77,12 @@ export function useWorkflow(caseId?: string) {
   const isAdvancedAnalysisStage = () => {
     if (!currentStage?.stage_name) return false;
     return ['research', 'constitutional-review', 'international-law'].includes(currentStage.stage_name);
+  };
+  
+  // Determinar se estamos na fase de revisão/verificação
+  const isReviewStage = () => {
+    if (!currentStage?.stage_name) return false;
+    return currentStage.stage_name === 'review';
   };
 
   // Identificar qual fase estratégica estamos
@@ -129,6 +140,10 @@ export function useWorkflow(caseId?: string) {
       return await executeAdvancedAnalysis.mutateAsync({ specialtyType });
     }
     
+    if (isReviewStage()) {
+      return await verifyDocument.mutateAsync({});
+    }
+    
     return null;
   };
 
@@ -136,7 +151,7 @@ export function useWorkflow(caseId?: string) {
     stages,
     currentStage,
     isLoading,
-    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || isAnalyzingAdvanced || isDrafting,
+    isProcessing: isProcessing || isProcessingStrategy || isAnalyzingFacts || isAnalyzingAdvanced || isDrafting || isVerifying,
     error,
     initializeWorkflow,
     advanceWorkflow,
@@ -163,6 +178,9 @@ export function useWorkflow(caseId?: string) {
     advancedAnalyses,
     // Document drafting
     draftDocument,
+    // Review methods
+    isReviewStage,
+    verifyDocument,
     // Execute current stage based on type
     executeCurrentStage
   };
