@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from 'lucide-react';
 import { Case, Activity } from "@/types/case";
+import { ActivityList } from "@/components/case/ActivityList";
 
 interface CaseDetailsContentProps {
   caseId: string;

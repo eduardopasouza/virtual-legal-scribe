@@ -9,7 +9,7 @@ import { DropZone } from '@/components/document/DropZone';
 import { useDocuments } from '@/hooks/useDocuments';
 import { Button } from '@/components/ui/button';
 import { FilePreview } from '@/components/document/FilePreview';
-import { Paperclip, X } from 'lucide-react';
+import { Paperclip, X, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface WebChatProps {
@@ -30,6 +30,7 @@ export function WebChat({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showUploader, setShowUploader] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showTips, setShowTips] = useState(!localStorage.getItem('evji_tips_seen'));
   const { uploadDocument, isUploading } = useDocuments(caseId);
 
   const {
@@ -47,6 +48,21 @@ export function WebChat({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, showUploader]);
+
+  // Display welcome message if this is the first time using the system
+  useEffect(() => {
+    if (messages.length <= 1 && !localStorage.getItem('evji_welcome_seen')) {
+      const timer = setTimeout(() => {
+        toast.info('Bem-vindo ao Chat Jurídico EVJI', {
+          description: 'Aqui você pode conversar com nossos assistentes especializados em diferentes áreas do direito.',
+          duration: 6000,
+        });
+        localStorage.setItem('evji_welcome_seen', 'true');
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [messages]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -67,7 +83,7 @@ export function WebChat({
       // Add message about document upload
       const uploadMessage = {
         id: `upload-${Date.now()}`,
-        text: `Documento "${selectedFile.name}" enviado com sucesso.`,
+        text: `Documento "${selectedFile.name}" enviado com sucesso e será analisado pelo sistema.`,
         sender: 'user',
         timestamp: new Date(),
         isSystemMessage: true
@@ -76,10 +92,26 @@ export function WebChat({
       // Set as system message to display differently
       
       toast.success('Documento enviado com sucesso!', {
-        description: `${selectedFile.name} foi anexado ao caso.`
+        description: `${selectedFile.name} foi anexado ao caso e está sendo analisado.`
       });
       setSelectedFile(null);
       setShowUploader(false);
+
+      // Simulate assistant response to document
+      setTimeout(() => {
+        const agentResponse = {
+          id: `agent-${Date.now()}`,
+          text: `Recebi o documento "${selectedFile.name}". Gostaria que eu fizesse uma análise preliminar deste documento ou o associe a um caso específico?`,
+          sender: 'agent',
+          timestamp: new Date(),
+          agentType: activeAgent
+        };
+        
+        // Add to messages
+        const currentMessages = messages || [];
+        const newMessages = [...currentMessages, agentResponse];
+        // setMessages(newMessages);
+      }, 2000);
     } catch (error) {
       console.error('Error uploading document:', error);
       toast.error('Falha ao enviar documento', {
@@ -93,6 +125,11 @@ export function WebChat({
     setSelectedFile(null);
   };
 
+  const hideTips = () => {
+    setShowTips(false);
+    localStorage.setItem('evji_tips_seen', 'true');
+  };
+
   return (
     <Card className={`flex flex-col ${fullScreen ? 'h-[calc(100vh-8rem)]' : 'h-[600px]'}`}>
       <ChatHeader
@@ -103,7 +140,29 @@ export function WebChat({
       />
       
       <CardContent className="flex-1 p-0 overflow-hidden">
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col relative">
+          {showTips && (
+            <div className="absolute inset-x-0 top-0 bg-blue-50 p-3 z-10 shadow-sm border-b border-blue-100">
+              <div className="flex justify-between items-start">
+                <div className="flex gap-2 items-start">
+                  <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-blue-700">Dicas para utilizar o Chat Jurídico:</p>
+                    <ul className="list-disc pl-5 text-blue-600 mt-1 space-y-1">
+                      <li>Pergunte sobre análise de documentos jurídicos</li>
+                      <li>Solicite minutas de contratos ou petições</li>
+                      <li>Peça assistência com prazos processuais</li>
+                      <li>Troque entre agentes especializados para diferentes tarefas</li>
+                    </ul>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" onClick={hideTips} className="h-6 w-6 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+          
           <ChatMessages 
             messages={messages}
             messagesEndRef={messagesEndRef}
@@ -112,7 +171,7 @@ export function WebChat({
           {showUploader && (
             <div className="bg-muted/20 border-t p-4">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">Upload de documento</h3>
+                <h3 className="font-medium">Upload de documento jurídico</h3>
                 <Button variant="ghost" size="sm" onClick={toggleUploader}>
                   <X className="h-4 w-4" />
                 </Button>
@@ -138,12 +197,17 @@ export function WebChat({
                       onClick={handleUploadDocument}
                       disabled={isUploading}
                     >
-                      {isUploading ? 'Enviando...' : 'Enviar documento'}
+                      {isUploading ? 'Enviando...' : 'Enviar para análise'}
                     </Button>
                   </div>
                 </div>
               ) : (
-                <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
+                <>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Envie documentos jurídicos como contratos, petições ou documentos processuais para análise automatizada.
+                  </p>
+                  <DropZone onFileSelect={handleFileSelect} disabled={isUploading} />
+                </>
               )}
             </div>
           )}
@@ -160,6 +224,7 @@ export function WebChat({
             isProcessing={isProcessing}
             onAttachmentClick={toggleUploader}
             showAttachmentButton={!showUploader}
+            placeholder="Digite sua consulta jurídica..."
           />
         </div>
       </CardFooter>

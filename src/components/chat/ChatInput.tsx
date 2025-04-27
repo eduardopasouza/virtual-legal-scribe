@@ -21,7 +21,7 @@ export function ChatInput({
   onSend,
   onKeyPress,
   isProcessing = false,
-  placeholder = "Digite sua mensagem...",
+  placeholder = "Digite sua consulta jurídica...",
   onAttachmentClick,
   showAttachmentButton = false
 }: ChatInputProps) {
@@ -34,9 +34,10 @@ export function ChatInput({
           variant="ghost" 
           className="h-9 w-9"
           onClick={onAttachmentClick}
+          title="Enviar documento para análise"
         >
           <Paperclip className="h-4 w-4" />
-          <span className="sr-only">Anexar arquivo</span>
+          <span className="sr-only">Enviar documento para análise</span>
         </Button>
       )}
       
@@ -47,6 +48,7 @@ export function ChatInput({
         placeholder={placeholder}
         disabled={isProcessing}
         className="flex-1"
+        aria-label="Digite sua mensagem para o assistente jurídico"
       />
       
       <Button 
@@ -55,6 +57,7 @@ export function ChatInput({
         onClick={onSend} 
         disabled={isProcessing || !value.trim()}
         className="h-9 w-9"
+        title={isProcessing ? "Processando..." : "Enviar mensagem"}
       >
         {isProcessing ? (
           <Loader2 className="h-4 w-4 animate-spin" />

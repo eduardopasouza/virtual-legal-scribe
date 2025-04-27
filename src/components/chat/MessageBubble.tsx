@@ -15,6 +15,11 @@ interface MessageBubbleProps {
 export function MessageBubble({ message }: MessageBubbleProps) {
   const isAgent = message.sender === 'agent';
   const agent = message.agentType ? agents.find(a => a.type === message.agentType) : null;
+
+  // This allows HTML tags to be rendered from highlighted legal terms
+  const createMarkup = (html: string) => {
+    return { __html: html };
+  };
   
   return (
     <div className={cn(
@@ -43,7 +48,11 @@ export function MessageBubble({ message }: MessageBubbleProps) {
                        message.action === 'request' ? 'outline' : 'default'} 
                 className="text-[10px] px-1 py-0 h-4"
               >
-                {message.action}
+                {message.action === 'info' ? 'Informação' : 
+                 message.action === 'request' ? 'Solicitação' : 
+                 message.action === 'legal_advice' ? 'Orientação Jurídica' :
+                 message.action === 'document_analysis' ? 'Análise Documental' :
+                 message.action}
               </Badge>
             )}
           </div>
@@ -55,8 +64,39 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             ? "bg-secondary text-secondary-foreground rounded-tl-none" 
             : "bg-primary text-primary-foreground rounded-tr-none"
         )}>
-          <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+          <p 
+            className="text-sm whitespace-pre-wrap"
+            dangerouslySetInnerHTML={createMarkup(message.text)}
+          />
+          
+          {/* Display metadata if present (e.g., document analysis results) */}
+          {isAgent && message.metadata && (
+            <div className="mt-2 pt-2 border-t border-gray-200">
+              {message.metadata.documentAnalysis && (
+                <div className="text-xs">
+                  <p className="font-medium">Análise do Documento:</p>
+                  <ul className="list-disc pl-4 mt-1 space-y-1">
+                    {message.metadata.documentAnalysis.keyPoints?.map((point: string, idx: number) => (
+                      <li key={idx}>{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {message.metadata.legalReferences && (
+                <div className="text-xs mt-2">
+                  <p className="font-medium">Referências Legais:</p>
+                  <ul className="mt-1 space-y-1">
+                    {message.metadata.legalReferences.map((ref: string, idx: number) => (
+                      <li key={idx}>{ref}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
+        
         <div className={cn(
           "text-xs mt-1 text-muted-foreground",
           isAgent ? "text-left" : "text-right"

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   id: string;
@@ -15,13 +16,14 @@ interface Message {
 }
 
 export function ChatbotAssistant() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       sender: 'bot',
-      text: 'Olá! Sou o assistente virtual do EVJI. Como posso ajudar você hoje?',
+      text: 'Olá! Sou o assistente jurídico virtual do EVJI. Como posso ajudar na sua rotina de advocacia hoje?',
       timestamp: new Date()
     }
   ]);
@@ -40,18 +42,40 @@ export function ChatbotAssistant() {
     userMessage = userMessage.toLowerCase();
     
     if (userMessage.includes('prazo') || userMessage.includes('vencimento')) {
-      return 'O próximo prazo importante é para contestação no dia 05/05/2024. Deseja mais informações sobre este prazo?';
+      return 'O próximo prazo importante é para contestação no dia 05/05/2024. Deseja que eu crie um lembrete ou adicione à sua agenda?';
     } else if (userMessage.includes('documento') || userMessage.includes('upload') || userMessage.includes('enviar')) {
-      return 'Para enviar documentos, vá até a página de detalhes do caso e clique na aba "Documentos", depois use o botão "Enviar Documento".';
+      return 'Para enviar documentos, vá até a página de detalhes do caso e clique na aba "Documentos", depois use o botão "Enviar Documento". Posso guiar você por esse processo se desejar.';
     } else if (userMessage.includes('caso') || userMessage.includes('processo')) {
-      return 'Você tem 7 casos ativos no momento. O mais recente é "Ação de Indenização por Danos Morais" aberto em 10/04/2024. Deseja ver detalhes deste caso?';
+      return 'Você tem 7 casos ativos no momento. O mais recente é "Ação de Indenização por Danos Morais" aberto em 10/04/2024. Gostaria de abrir este caso ou criar um novo?';
+    } else if (userMessage.includes('redigir') || userMessage.includes('minuta') || userMessage.includes('contrato')) {
+      return 'Posso ajudar a redigir minutas de contratos, petições ou pareceres. Que tipo de documento você precisa criar hoje?';
+    } else if (userMessage.includes('cliente') || userMessage.includes('cadastrar cliente')) {
+      return 'Para cadastrar ou consultar informações sobre seus clientes, utilize o módulo de clientes. Deseja que eu abra essa página para você?';
     } else if (userMessage.includes('ajuda') || userMessage.includes('funcionalidade')) {
-      return 'Posso ajudar você a navegar pelo sistema, encontrar informações sobre casos, prazos, documentos e muito mais. O que você gostaria de saber especificamente?';
+      return 'Posso ajudar você a navegar pelo sistema, analisar documentos, redigir minutas, gerenciar prazos e casos, organizar sua agenda e muito mais. Como advogado, qual área do seu trabalho posso otimizar hoje?';
     } else if (userMessage.includes('olá') || userMessage.includes('oi') || userMessage.includes('bom dia') || userMessage.includes('boa tarde')) {
-      return 'Olá! Como posso ajudar você hoje?';
+      return 'Olá! Como advogado, como posso auxiliar você hoje? Posso ajudar com análise de documentos, redação de minutas, gestão de casos ou agenda.';
+    } else if (userMessage.includes('analise') || userMessage.includes('documento') || userMessage.includes('análise')) {
+      return 'Posso analisar documentos jurídicos, identificar pontos relevantes e sugerir estratégias. Gostaria de fazer upload de um documento para análise ou utilizar um já existente no sistema?';
     }
     
-    return 'Não tenho informações específicas sobre isso. Posso ajudar com prazos, documentos, casos ativos ou navegação pelo sistema. Por favor, seja mais específico ou reformule sua pergunta.';
+    return 'Como seu assistente jurídico, posso ajudar com análise de documentos, redação de minutas, gerenciamento de prazos ou casos. Poderia me dar mais detalhes sobre sua necessidade específica?';
+  };
+
+  const handleNavigate = (path: string) => {
+    if (path.includes('caso') || path.includes('processo')) {
+      navigate('/cases/list');
+    } else if (path.includes('documento') || path.includes('upload')) {
+      navigate('/cases/list');
+    } else if (path.includes('cliente')) {
+      navigate('/clients');
+    } else if (path.includes('agenda') || path.includes('prazo')) {
+      navigate('/calendar');
+    } else if (path.includes('novo')) {
+      navigate('/novo-caso');
+    } else if (path.includes('chat')) {
+      navigate('/webchat');
+    }
   };
 
   const handleSendMessage = () => {
@@ -79,6 +103,20 @@ export function ChatbotAssistant() {
       
       setMessages(prev => [...prev, botResponse]);
       setIsTyping(false);
+
+      // If the message suggests navigation, offer a button on next message
+      if (newUserMessage.text.toLowerCase().includes('ir para') || newUserMessage.text.toLowerCase().includes('abrir')) {
+        setTimeout(() => {
+          const navigationMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            sender: 'bot',
+            text: 'Gostaria que eu te redirecione para alguma página específica?',
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, navigationMessage]);
+        }, 1000);
+      }
     }, 1500);
   };
 
@@ -107,7 +145,7 @@ export function ChatbotAssistant() {
       {isOpen && (
         <Card className="absolute bottom-20 right-0 w-80 md:w-96 h-96 shadow-xl flex flex-col">
           <div className="bg-evji-primary text-white p-3 flex justify-between items-center rounded-t-md">
-            <div className="font-medium">Assistente EVJI</div>
+            <div className="font-medium">Assistente Jurídico EVJI</div>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -137,6 +175,54 @@ export function ChatbotAssistant() {
                     )}
                   >
                     {msg.text}
+
+                    {/* Add navigation buttons for certain keywords */}
+                    {msg.sender === 'bot' && 
+                      (msg.text.includes('abra essa página') || msg.text.includes('página para você') || 
+                       msg.text.includes('Gostaria que eu te redirecione')) && (
+                      <div className="mt-2 space-x-2 flex flex-wrap gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={() => handleNavigate('caso')}
+                          className="text-xs py-0 h-7"
+                        >
+                          Casos
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={() => handleNavigate('cliente')}
+                          className="text-xs py-0 h-7"
+                        >
+                          Clientes
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={() => handleNavigate('agenda')}
+                          className="text-xs py-0 h-7"
+                        >
+                          Agenda
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={() => handleNavigate('novo')}
+                          className="text-xs py-0 h-7"
+                        >
+                          Novo Caso
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={() => handleNavigate('chat')}
+                          className="text-xs py-0 h-7"
+                        >
+                          Chat Completo
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -160,7 +246,7 @@ export function ChatbotAssistant() {
           <div className="p-3 border-t">
             <div className="flex items-center gap-2">
               <Input
-                placeholder="Digite sua mensagem..."
+                placeholder="Digite sua dúvida jurídica..."
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
