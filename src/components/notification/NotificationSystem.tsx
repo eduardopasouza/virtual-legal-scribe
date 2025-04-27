@@ -55,6 +55,7 @@ export function NotificationSystem() {
         </PopoverContent>
       </Popover>
       
+      {/* Export notification function for global use */}
       {(window as any).addNotification = addNotification}
     </>
   );
