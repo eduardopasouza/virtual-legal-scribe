@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import SearchPage from "./pages/SearchPage";
 import ActivityHistory from "./pages/ActivityHistory";
 import NovoCaso from "./pages/NovoCaso";
+import WebChatPage from "./pages/WebChatPage";
 import { FloatingChatButton } from "./components/FloatingChatButton";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -136,6 +137,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <ActivityHistory />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/webchat" 
+                    element={
+                      <ProtectedRoute>
+                        <WebChatPage />
                       </ProtectedRoute>
                     } 
                   />
