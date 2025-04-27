@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import SearchPage from "./pages/SearchPage";
 import ActivityHistory from "./pages/ActivityHistory";
 import NovoCaso from "./pages/NovoCaso";
+import { FloatingChatButton } from "./components/FloatingChatButton";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -140,6 +141,7 @@ function App() {
                   />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <FloatingChatButton />
               </MobileProvider>
             </TooltipProvider>
           </AuthProvider>

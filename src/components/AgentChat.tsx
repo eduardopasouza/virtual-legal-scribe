@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar } from '@/components/ui/avatar';
 import { Send, User, Bot, ChevronDown } from 'lucide-react';
 import { useAgentSimulation, AgentType } from '@/hooks/useAgentSimulation';
+import { Badge } from './ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface AgentChatProps {
   caseId?: string;
@@ -27,21 +29,54 @@ export function AgentChat({ caseId }: AgentChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Agent options
-  const agentOptions: { value: AgentType; label: string }[] = [
-    { value: 'analista-requisitos', label: 'Analista de Requisitos' },
-    { value: 'estrategista', label: 'Estrategista' },
-    { value: 'revisor-legal', label: 'Revisor Legal' },
-    { value: 'assistente-redacao', label: 'Assistente de Redação' },
-    { value: 'pesquisador', label: 'Pesquisador' },
+  const agentOptions: { value: AgentType; label: string; description: string }[] = [
+    { value: 'analista-requisitos', label: 'Analista de Requisitos', description: 'Especialista em extrair informações e identificar requisitos legais de documentos' },
+    { value: 'estrategista', label: 'Estrategista', description: 'Desenvolve estratégias jurídicas e planos de ação para o caso' },
+    { value: 'revisor-legal', label: 'Revisor Legal', description: 'Verifica aspectos legais e conformidade com a legislação' },
+    { value: 'assistente-redacao', label: 'Assistente de Redação', description: 'Ajuda a elaborar e estruturar documentos jurídicos' },
+    { value: 'pesquisador', label: 'Pesquisador', description: 'Busca jurisprudência e referências legais relevantes' },
   ];
+
+  // Sugestões de perguntas comuns para cada agente
+  const suggestionsByAgent: Record<AgentType, string[]> = {
+    'analista-requisitos': [
+      'O que você pode identificar neste documento?',
+      'Quais são os principais pontos de atenção?',
+      'Quais documentos adicionais preciso fornecer?'
+    ],
+    'estrategista': [
+      'Qual sua recomendação para este caso?',
+      'Quais são os riscos envolvidos?',
+      'Qual a probabilidade de sucesso?'
+    ],
+    'revisor-legal': [
+      'Este documento está conforme a legislação?',
+      'Há alguma inconsistência legal?',
+      'Quais são os pontos fortes e fracos?'
+    ],
+    'assistente-redacao': [
+      'Ajude-me a redigir uma resposta',
+      'Como posso melhorar este argumento?',
+      'Preciso de um modelo de petição'
+    ],
+    'pesquisador': [
+      'Busque jurisprudência sobre este assunto',
+      'Quais precedentes se aplicam a este caso?',
+      'Encontre legislação relacionada a este tema'
+    ]
+  };
   
   // Add welcome message from agent on first render
   useEffect(() => {
     if (messages.length === 0) {
+      const welcomeMessage = caseId 
+        ? `Olá! Sou o ${agentOptions.find(agent => agent.value === selectedAgent)?.label}. Como posso ajudar com este caso específico?`
+        : `Olá! Sou o ${agentOptions.find(agent => agent.value === selectedAgent)?.label}. Como posso ajudar hoje?`;
+      
       setMessages([
         {
           id: 'welcome',
-          text: `Olá! Sou o ${agentOptions.find(agent => agent.value === selectedAgent)?.label}. Como posso ajudar com este caso?`,
+          text: welcomeMessage,
           sender: 'agent',
           timestamp: new Date(),
           agentType: selectedAgent
@@ -121,78 +156,97 @@ export function AgentChat({ caseId }: AgentChatProps) {
     setMessages(prev => [...prev, switchMessage]);
   };
 
+  const useSuggestion = (suggestion: string) => {
+    setNewMessage(suggestion);
+  };
+
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader>
+      <CardHeader className="py-3 px-4 border-b">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg">Chat com Agente</CardTitle>
-          <div className="relative group">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <Bot className="h-4 w-4" />
-              {agentOptions.find(agent => agent.value === selectedAgent)?.label}
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-            <div className="absolute right-0 mt-1 w-56 rounded-md shadow-lg bg-popover text-popover-foreground z-10 hidden group-hover:block">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Bot className="h-4 w-4" />
+                {agentOptions.find(agent => agent.value === selectedAgent)?.label}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0">
               <div className="py-1">
                 {agentOptions.map((agent) => (
                   <button
                     key={agent.value}
                     onClick={() => changeAgent(agent.value)}
-                    className={`block w-full text-left px-4 py-2 text-sm ${
+                    className={`block w-full text-left px-4 py-2 ${
                       agent.value === selectedAgent
                         ? 'bg-accent text-accent-foreground'
                         : 'hover:bg-muted'
                     }`}
                   >
-                    {agent.label}
+                    <div className="font-medium">{agent.label}</div>
+                    <div className="text-xs text-muted-foreground">{agent.description}</div>
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 overflow-auto mb-4">
-        <div className="flex flex-col space-y-4">
-          {messages.map((message) => (
+      <CardContent className="flex-1 overflow-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.sender === 'user' ? 'justify-end' : 'justify-start'
+            }`}
+          >
             <div
-              key={message.id}
-              className={`flex ${
-                message.sender === 'user' ? 'justify-end' : 'justify-start'
+              className={`max-w-[80%] rounded-lg p-3 ${
+                message.sender === 'user'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted'
               }`}
             >
-              <div
-                className={`max-w-[80%] rounded-lg p-3 ${
-                  message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
-                }`}
-              >
-                <div className="flex items-start gap-2">
-                  {message.sender === 'agent' && (
-                    <Avatar className="h-6 w-6 bg-background">
-                      <Bot className="h-4 w-4" />
-                    </Avatar>
-                  )}
-                  <div>
-                    <div className="text-sm whitespace-pre-wrap">{message.text}</div>
-                    <div className="text-xs mt-1 opacity-70">
-                      {message.timestamp.toLocaleTimeString()}
-                    </div>
+              <div className="flex items-start gap-2">
+                {message.sender === 'agent' && (
+                  <Avatar className="h-6 w-6 bg-background">
+                    <Bot className="h-4 w-4" />
+                  </Avatar>
+                )}
+                <div>
+                  <div className="text-sm whitespace-pre-wrap">{message.text}</div>
+                  <div className="text-xs mt-1 opacity-70">
+                    {message.timestamp.toLocaleTimeString()}
                   </div>
-                  {message.sender === 'user' && (
-                    <Avatar className="h-6 w-6 bg-background">
-                      <User className="h-4 w-4" />
-                    </Avatar>
-                  )}
                 </div>
+                {message.sender === 'user' && (
+                  <Avatar className="h-6 w-6 bg-background">
+                    <User className="h-4 w-4" />
+                  </Avatar>
+                )}
               </div>
             </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
       </CardContent>
-      <CardFooter className="border-t pt-4">
+      <div className="px-4 pb-2">
+        <div className="flex flex-wrap gap-2 mb-2">
+          {suggestionsByAgent[selectedAgent].map((suggestion, index) => (
+            <Badge 
+              key={index} 
+              variant="outline" 
+              className="cursor-pointer hover:bg-accent"
+              onClick={() => useSuggestion(suggestion)}
+            >
+              {suggestion}
+            </Badge>
+          ))}
+        </div>
+      </div>
+      <CardFooter className="border-t pt-3 pb-3">
         <div className="flex w-full gap-2">
           <Input
             placeholder="Digite sua mensagem..."
