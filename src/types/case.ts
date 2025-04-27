@@ -1,4 +1,3 @@
-
 export interface Case {
   id: string;
   title: string;
@@ -32,3 +31,25 @@ export interface Deadline {
   created_at: string;
 }
 
+export interface WorkflowStage {
+  id: string;
+  case_id: string;
+  stage_number: number;
+  stage_name: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  started_at?: string;
+  completed_at?: string;
+  created_at?: string;
+}
+
+export interface Alert {
+  id: string;
+  case_id: string;
+  title: string;
+  description?: string;
+  type: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'pending' | 'resolved';
+  created_at?: string;
+  resolved_at?: string;
+}

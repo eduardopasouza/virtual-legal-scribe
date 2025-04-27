@@ -47,6 +47,50 @@ export type Database = {
           },
         ]
       }
+      alerts: {
+        Row: {
+          case_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          priority: string
+          resolved_at: string | null
+          status: string
+          title: string
+          type: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          title: string
+          type: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cases: {
         Row: {
           area_direito: string | null
@@ -203,6 +247,47 @@ export type Database = {
           {
             foreignKeyName: "events_related_case_fkey"
             columns: ["related_case"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_stages: {
+        Row: {
+          case_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          stage_name: string
+          stage_number: number
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          case_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          stage_name: string
+          stage_number: number
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          case_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          stage_name?: string
+          stage_number?: number
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_stages_case_id_fkey"
+            columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "cases"
             referencedColumns: ["id"]
