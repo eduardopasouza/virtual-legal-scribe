@@ -1,11 +1,11 @@
 
 import { getAgent } from '@/agents';
-import { AgentType, AgentResult, AgentSimulationHook } from './types';
-import { AgentTask } from '@/types/agent';
+import { AgentType } from './types';
+import { AgentResult, AgentTask } from '@/types/agent';
 import { useAgentProcessing } from './useAgentProcessing';
 import { useAgentNotifications } from './useAgentNotifications';
 
-export function useAgentSimulation(caseId?: string): AgentSimulationHook {
+export function useAgentSimulation(caseId?: string) {
   const { isProcessing, startProcessing, stopProcessing } = useAgentProcessing();
   const { notifyResult, notifyError } = useAgentNotifications();
 

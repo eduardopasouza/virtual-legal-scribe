@@ -1,7 +1,7 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/components/notification/NotificationSystem';
-import { AgentResult } from './types';
+import { AgentResult } from '@/types/agent';
 
 export function useAgentNotifications() {
   const { toast } = useToast();

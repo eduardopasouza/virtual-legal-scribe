@@ -33,7 +33,10 @@ export type AgentType =
   | 'revisor-legal'
   | 'revisor-integrador'
   | 'revisor-texto'
-  | 'comunicador';
+  | 'comunicador'
+  | 'arquivista'
+  | 'extrator-dados'
+  | 'secretaria';
 
 export type AgentSimulationState = {
   [key in AgentType]?: boolean;

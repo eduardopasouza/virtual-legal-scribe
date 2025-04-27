@@ -3,7 +3,11 @@ import { NavLink } from "react-router-dom";
 import { Home, User, Users, Calendar, FileText, Settings, BookText, Search, FolderArchive } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const SidebarNav = () => {
+interface SidebarNavProps {
+  isCollapsed?: boolean;
+}
+
+const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
   const navigationItems = [
     { to: "/", icon: <Home className="mr-2 h-4 w-4" />, label: "Home" },
     { to: "/cases", icon: <FileText className="mr-2 h-4 w-4" />, label: "Casos" },
@@ -32,7 +36,7 @@ const SidebarNav = () => {
           end
         >
           {item.icon}
-          {item.label}
+          {isCollapsed ? null : item.label}
         </NavLink>
       ))}
     </nav>

@@ -33,3 +33,5 @@ export interface AgentSimulationHook {
   simulateAgent: (agentType: AgentType, task?: Omit<AgentTask, 'caseId'>) => Promise<AgentResult>;
   isProcessing: AgentSimulationState;
 }
+
+export type { AgentResult };

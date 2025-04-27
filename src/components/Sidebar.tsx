@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { SidebarNav } from '@/components/SidebarNav';
+import SidebarNav from '@/components/SidebarNav';
 import { Separator } from "@/components/ui/separator";
 import { LogOut, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
