@@ -2,6 +2,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { toast } from "sonner";
+import { executeWithRecovery } from '@/utils/errorRecoveryUtils';
 
 export function useUpdateCheck(caseId?: string) {
   const { simulateAgent } = useAgentSimulation(caseId);
@@ -10,17 +11,26 @@ export function useUpdateCheck(caseId?: string) {
     mutationFn: async () => {
       if (!caseId) throw new Error("ID do caso não fornecido");
       
-      const result = await simulateAgent('comunicador', {
-        metadata: {
-          action: 'check-for-updates'
+      const result = await executeWithRecovery(
+        async () => {
+          const response = await simulateAgent('comunicador', {
+            metadata: { action: 'check-for-updates' }
+          });
+          
+          if (!response.success) {
+            throw new Error(response.message || "Falha ao verificar atualizações");
+          }
+          
+          return response.details?.updatesNeeded as boolean;
+        },
+        ['retry', 'notify'],
+        {
+          maxRetries: 2,
+          errorMessage: "Erro ao verificar atualizações do documento"
         }
-      });
-      
-      if (!result.success) {
-        throw new Error(result.message || "Falha ao verificar atualizações");
-      }
-      
-      return result.details?.updatesNeeded as boolean;
+      );
+
+      return result;
     },
     onSuccess: (updatesNeeded) => {
       if (updatesNeeded) {

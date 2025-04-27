@@ -4,6 +4,7 @@ import { workflowService } from '@/workflow';
 import { useAgentSimulation } from '@/hooks/agent/useAgentSimulation';
 import { toast } from "sonner";
 import { ClientCommunication } from '@/agents/comunicador/types';
+import { executeWithRecovery } from '@/utils/errorRecoveryUtils';
 
 export function useGenerateCommunication(caseId?: string) {
   const { simulateAgent } = useAgentSimulation(caseId);
@@ -12,17 +13,26 @@ export function useGenerateCommunication(caseId?: string) {
     mutationFn: async () => {
       if (!caseId) throw new Error("ID do caso não fornecido");
 
-      const result = await simulateAgent('comunicador', {
-        metadata: {
-          action: 'generate-communication'
+      const result = await executeWithRecovery(
+        async () => {
+          const response = await simulateAgent('comunicador', {
+            metadata: { action: 'generate-communication' }
+          });
+          
+          if (!response.success || !response.details?.communication) {
+            throw new Error(response.message || "Falha ao gerar comunicação");
+          }
+          
+          return response.details.communication as ClientCommunication;
+        },
+        ['retry', 'notify'],
+        {
+          maxRetries: 2,
+          errorMessage: "Erro ao gerar comunicação para o cliente"
         }
-      });
-      
-      if (!result.success || !result.details?.communication) {
-        throw new Error(result.message || "Falha ao gerar comunicação");
-      }
-      
-      return result.details.communication as ClientCommunication;
+      );
+
+      return result;
     },
     onSuccess: () => {
       toast.success("Comunicação para cliente gerada", {
@@ -32,11 +42,6 @@ export function useGenerateCommunication(caseId?: string) {
       if (caseId) {
         workflowService.logProgress(caseId, "Comunicação para cliente gerada");
       }
-    },
-    onError: (error: Error) => {
-      toast.error("Erro ao gerar comunicação", {
-        description: error.message
-      });
     }
   });
 }
