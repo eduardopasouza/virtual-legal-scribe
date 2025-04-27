@@ -8,6 +8,10 @@ import { useCaseOperations } from '@/hooks/useCaseOperations';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { CaseDetailsForm } from '@/components/case/CaseDetailsForm';
 import { CaseDocumentsStep } from '@/components/case/CaseDocumentsStep';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { NavigationBreadcrumbs } from '@/components/NavigationBreadcrumbs';
+import { Steps, Step } from '@/components/ui/steps';
 
 export default function NovoCaso() {
   const navigate = useNavigate();
@@ -23,6 +27,10 @@ export default function NovoCaso() {
     client: '',
     area_direito: '',
     description: '',
+    priority: '',
+    complexity: '',
+    court: '',
+    number: '',
   });
 
   const handleChange = (field: string, value: string) => {
@@ -67,15 +75,29 @@ export default function NovoCaso() {
       <div className="flex-1 flex">
         <Sidebar />
         <main className="flex-1 p-6 overflow-auto">
+          <div className="mb-4">
+            <NavigationBreadcrumbs />
+          </div>
+          
           <div className="max-w-3xl mx-auto space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Novo Caso</h1>
-              <p className="text-muted-foreground">
-                {step === 1 
-                  ? 'Preencha os dados básicos do caso.'
-                  : 'Faça upload dos documentos iniciais (opcional).'}
-              </p>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-evji-primary">Novo Caso</h1>
+                <p className="text-muted-foreground mt-1">
+                  Preencha as informações necessárias para criar um novo caso.
+                </p>
+              </div>
             </div>
+
+            {/* Progress indicator */}
+            <Card className="border-muted/40">
+              <CardContent className="py-4">
+                <Steps currentStep={step} className="mb-0">
+                  <Step title="Informações básicas" />
+                  <Step title="Documentos" />
+                </Steps>
+              </CardContent>
+            </Card>
 
             {step === 1 ? (
               <CaseDetailsForm
