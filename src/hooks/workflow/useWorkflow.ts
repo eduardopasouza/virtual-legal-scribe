@@ -8,6 +8,7 @@ import { useWorkflowStatus } from './useWorkflowStatus';
 import { useWorkflowStageValidation } from './useWorkflowStageValidation';
 import { useWorkflowStageActions } from './useWorkflowStageActions';
 import { useWorkflowExecution } from './useWorkflowExecution';
+import { WorkflowStageName } from '@/workflow/types';
 
 export function useWorkflow(caseId?: string) {
   const { initializeWorkflow } = useWorkflowInitialization(caseId);
@@ -15,7 +16,15 @@ export function useWorkflow(caseId?: string) {
   const { advanceWorkflow } = useWorkflowAdvancement(caseId);
   const { createWorkflowAlert } = useWorkflowAlerts(caseId);
   const { updateStageStatus } = useWorkflowStatus(caseId);
-  const stageValidation = useWorkflowStageValidation(caseId);
+  const { 
+    isStrategicStage, 
+    isFactsAnalysisStage, 
+    isAdvancedAnalysisStage,
+    isReviewStage,
+    isFinalRevisionStage,
+    isClientCommunicationStage,
+    getCurrentStrategicPhase
+  } = useWorkflowStageValidation(caseId);
   const stageActions = useWorkflowStageActions(caseId);
   const { executeCurrentStage, isProcessing } = useWorkflowExecution(caseId);
 
@@ -24,7 +33,7 @@ export function useWorkflow(caseId?: string) {
     return workflowService.getRecommendedAgent(currentStage.stage_name);
   };
 
-  const verifyStageCompleteness = async (stageName: any) => {
+  const verifyStageCompleteness = async (stageName: WorkflowStageName) => {
     if (!caseId) return { complete: false, missingItems: ['ID do caso não informado'] };
     return await workflowService.verifyStageCompleteness(caseId, stageName);
   };
@@ -48,8 +57,14 @@ export function useWorkflow(caseId?: string) {
     verifyStageCompleteness,
     logWorkflowProgress,
     workflowMetadata: workflowService.getWorkflowMetadata(),
-    ...stageValidation,
-    ...stageActions,
-    executeCurrentStage
+    isStrategicStage,
+    isFactsAnalysisStage,
+    isAdvancedAnalysisStage,
+    isReviewStage,
+    isFinalRevisionStage,
+    isClientCommunicationStage,
+    getCurrentStrategicPhase,
+    executeCurrentStage,
+    executeCurrentStrategicPhase: stageActions.executeCurrentStrategicPhase
   };
 }

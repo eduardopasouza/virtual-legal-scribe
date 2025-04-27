@@ -90,16 +90,16 @@ export class ClientCommunicationService {
 
   /**
    * Records feedback from the client for future improvements
+   * Since we don't have a feedback table in the database, we'll store feedback in activities table
    */
   async recordFeedback(caseId: string, feedback: FeedbackItem): Promise<boolean> {
     const { error } = await supabase
-      .from('feedback')
+      .from('activities')
       .insert({
         case_id: caseId,
-        type: feedback.type,
-        content: feedback.content,
-        priority: feedback.priority,
-        resolved: feedback.resolved
+        agent: 'comunicador',
+        action: `Feedback: ${feedback.type}`,
+        result: JSON.stringify(feedback)
       });
     
     return !error;
@@ -107,14 +107,16 @@ export class ClientCommunicationService {
 
   /**
    * Checks if any updates or corrections are needed based on feedback
+   * Since we don't have a feedback table, we'll check activities for correction feedback
    */
   async checkForRequiredUpdates(caseId: string): Promise<boolean> {
     const { data } = await supabase
-      .from('feedback')
+      .from('activities')
       .select('*')
       .eq('case_id', caseId)
-      .eq('type', 'correction')
-      .eq('resolved', false);
+      .eq('agent', 'comunicador')
+      .like('action', 'Feedback: correction%')
+      .eq('status', 'pendente');
     
     return (data && data.length > 0);
   }

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Loader2, Info, CheckCircle, BarChart2, BookOpen } from 'lucide-react';
@@ -71,8 +70,8 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
       const recommendedAgent = getRecommendedAgent();
       
       // If we're in a strategic stage, execute the strategic phase
-      if (isStrategicStage()) {
-        await executeCurrentStrategicPhase();
+      if (isStrategicStage(currentStage?.stage_name)) {
+        await executeCurrentStrategicPhase(currentStage?.stage_name);
       }
       // Otherwise execute recommended agent if possible
       else if (recommendedAgent && !isProcessing[recommendedAgent]) {
@@ -97,7 +96,7 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
 
   const handleExecuteStrategy = async () => {
     try {
-      if (!isStrategicStage()) {
+      if (!isStrategicStage(currentStage?.stage_name)) {
         toast({
           title: "Ação indisponível",
           description: "Esta ação só está disponível em etapas estratégicas.",
@@ -106,7 +105,7 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
         return;
       }
       
-      await executeCurrentStrategicPhase();
+      await executeCurrentStrategicPhase(currentStage?.stage_name);
       
       // Invalidate queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ["case", caseId] });
@@ -142,7 +141,7 @@ export function CaseActions({ caseId, documents, caseData }: CaseActionsProps) {
     }
   };
 
-  const isCurrentStageStrategic = isStrategicStage();
+  const isCurrentStageStrategic = isStrategicStage(currentStage?.stage_name);
 
   return (
     <div className="flex gap-2 flex-wrap">

@@ -33,11 +33,7 @@ export function useClientCommunication(caseId?: string) {
       
       // Log this action in the workflow
       if (caseId) {
-        workflowService.logProgress(
-          caseId, 
-          "Comunicação para cliente gerada",
-          { communicationGenerated: true }
-        );
+        workflowService.logProgress(caseId, "Comunicação para cliente gerada");
       }
     },
     onError: (error: Error) => {

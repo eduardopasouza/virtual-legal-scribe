@@ -70,12 +70,13 @@ export class ComunicadorAgent extends BaseAgent {
       };
     }
     
-    // Get document content
-    const documentContent = documents[0].content || '';
+    // We need to get document content but it's not available directly in the documents table
+    // Instead, we'll use the document information we have
+    const documentInfo = documents[0];
     
-    // Generate communication package
+    // Generate communication package using document metadata since we don't have content
     const communication = await this.communicationService.createClientCommunication(
-      documentContent, 
+      `Documento: ${documentInfo.name} (${documentInfo.type})`, 
       caseId
     );
     

@@ -14,7 +14,7 @@ export function useWorkflowExecution(caseId?: string) {
     if (stageValidation.isStrategicStage(currentStageName)) {
       const phase = stageValidation.getCurrentStrategicPhase(currentStageName);
       if (phase) {
-        return await stageActions.executeCurrentStrategicPhase(phase);
+        return await stageActions.executeCurrentStrategicPhase(currentStageName);
       }
     }
     

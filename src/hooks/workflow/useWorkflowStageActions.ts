@@ -8,6 +8,7 @@ import { useDocumentDrafting } from './useDocumentDrafting';
 import { useDocumentVerification } from './useDocumentVerification';
 import { useDocumentRevision } from './useDocumentRevision';
 import { useClientCommunication } from './useClientCommunication';
+import { WorkflowStageName } from '@/workflow/types';
 
 export function useWorkflowStageActions(caseId?: string) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,7 +50,10 @@ export function useWorkflowStageActions(caseId?: string) {
     isGenerating: isGeneratingCommunication
   } = useClientCommunication(caseId);
 
-  const executeCurrentStrategicPhase = async (phase: 'initial' | 'intermediate' | 'final') => {
+  const executeCurrentStrategicPhase = async (stageName: WorkflowStageName) => {
+    const phase = getStrategicPhase(stageName);
+    if (!phase) return null;
+    
     switch (phase) {
       case 'initial':
         return await executeInitialStrategy.mutateAsync();
@@ -57,6 +61,21 @@ export function useWorkflowStageActions(caseId?: string) {
         return await executeIntermediateStrategy.mutateAsync({});
       case 'final':
         return await executeFinalStrategy.mutateAsync('');
+      default:
+        return null;
+    }
+  };
+  
+  const getStrategicPhase = (stageName?: WorkflowStageName): 'initial' | 'intermediate' | 'final' | null => {
+    if (!stageName) return null;
+    
+    switch (stageName) {
+      case 'planning':
+        return 'initial';
+      case 'strategy-review':
+        return 'intermediate';
+      case 'strategic-validation':
+        return 'final';
       default:
         return null;
     }
