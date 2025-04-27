@@ -30,7 +30,7 @@ export default function CaseDetails() {
         <main className="flex-1 p-6 overflow-auto">
           <CaseDetailsContent 
             caseId={caseId}
-            caseData={caseData}
+            caseData={caseData} // caseData is already of type Case, which now matches our props
             activities={activities}
             isLoadingActivities={isLoadingActivities}
           />

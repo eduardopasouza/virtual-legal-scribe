@@ -9,7 +9,7 @@ import { ptBR } from "date-fns/locale";
 
 interface CaseHeaderProps {
   title: string;
-  type: string;
+  type: string; // We handle this at the CaseDetailsContent level
   status: string;
   createdAt: Date;
 }
@@ -52,4 +52,3 @@ export function CaseHeader({ title, type, status, createdAt }: CaseHeaderProps) 
     </div>
   );
 }
-

@@ -11,7 +11,7 @@ interface CaseDetailsContentProps {
   caseId: string;
   caseData: {
     title: string;
-    type: string;
+    type?: string; // Make type optional to match Case type
     status: string;
     created_at: string;
   };
@@ -29,7 +29,7 @@ export function CaseDetailsContent({
     <div className="space-y-6">
       <CaseHeader 
         title={caseData.title}
-        type={caseData.type}
+        type={caseData.type || 'Unknown'} // Provide a default value when type is undefined
         status={caseData.status}
         createdAt={new Date(caseData.created_at)}
       />
@@ -46,4 +46,3 @@ export function CaseDetailsContent({
     </div>
   );
 }
-
