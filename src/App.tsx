@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +15,6 @@ import Auth from "./pages/Auth";
 import Cases from "./pages/Cases";
 import CaseDetails from "./pages/CaseDetails";
 import ClientsList from "./pages/ClientsList";
-import AdvancedStats from "./pages/AdvancedStats";
 import Calendar from "./pages/Calendar";
 import Settings from "./pages/Settings";
 import SearchPage from "./pages/SearchPage";
