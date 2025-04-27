@@ -10,7 +10,7 @@ export interface DocumentMetadata {
   size: number;
   type: string;
   case_id?: string | null;
-  uploaded_at?: Date;
+  uploaded_at?: string;  // Changed from Date to string to match Supabase's format
   file_path?: string;
 }
 
@@ -42,8 +42,8 @@ export function useDocuments(caseId?: string) {
         name: file.name,
         size: file.size,
         type: file.type,
-        case_id: caseId,
-        uploaded_at: new Date().toISOString(),
+        case_id: caseId || null,
+        uploaded_at: new Date().toISOString(),  // Store as ISO string
         file_path: filePath
       };
 
@@ -93,6 +93,7 @@ export function useDocuments(caseId?: string) {
       const { data, error } = await query;
 
       if (error) throw error;
+      // The returned data will match our DocumentMetadata interface
       return data as DocumentMetadata[];
     } catch (error: any) {
       toast({
