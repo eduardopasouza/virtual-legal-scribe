@@ -42,7 +42,7 @@ export function useAgentSimulation(caseId?: string) {
               problemasPotenciais: 2
             }
           };
-          addNotification('success', 'Análise Concluída', 'O analista de requisitos concluiu o processamento dos documentos.');
+          addNotification('success', 'Análise Concluída', 'O analista de requisitos concluiu o processamento dos documentos.', 'case');
           break;
 
         case 'estrategista':
@@ -55,7 +55,7 @@ export function useAgentSimulation(caseId?: string) {
               riscoIdentificado: 'Médio'
             }
           };
-          addNotification('info', 'Estratégia Desenvolvida', 'O estrategista criou recomendações para o caso.');
+          addNotification('info', 'Estratégia Desenvolvida', 'O estrategista criou recomendações para o caso.', 'case');
           break;
 
         case 'revisor-legal':
@@ -68,7 +68,7 @@ export function useAgentSimulation(caseId?: string) {
               nivelConformidade: 'Alto'
             }
           };
-          addNotification('info', 'Revisão Concluída', 'O revisor legal finalizou a análise dos documentos.');
+          addNotification('info', 'Revisão Concluída', 'O revisor legal finalizou a análise dos documentos.', 'document');
           break;
 
         case 'assistente-redacao':
@@ -81,7 +81,7 @@ export function useAgentSimulation(caseId?: string) {
               anexos: 3
             }
           };
-          addNotification('success', 'Documento Gerado', 'O assistente de redação criou um novo documento.');
+          addNotification('success', 'Documento Gerado', 'O assistente de redação criou um novo documento.', 'document');
           break;
 
         case 'pesquisador':
@@ -94,7 +94,7 @@ export function useAgentSimulation(caseId?: string) {
               relevanciaMediaEncontrada: 'Alta'
             }
           };
-          addNotification('info', 'Pesquisa Finalizada', 'O pesquisador encontrou 17 documentos relevantes.');
+          addNotification('info', 'Pesquisa Finalizada', 'O pesquisador encontrou 17 documentos relevantes.', 'document');
           break;
 
         default:
@@ -104,6 +104,7 @@ export function useAgentSimulation(caseId?: string) {
           };
       }
 
+      // Usar o novo formato de toast com sonner para uma experiência melhor
       toast({
         title: result.success ? "Processamento concluído" : "Erro no processamento",
         description: result.message,
@@ -118,6 +119,9 @@ export function useAgentSimulation(caseId?: string) {
         description: errorMessage,
         variant: "destructive",
       });
+      
+      addNotification('alert', 'Erro no Processamento', errorMessage, 'system');
+      
       return {
         success: false,
         message: errorMessage

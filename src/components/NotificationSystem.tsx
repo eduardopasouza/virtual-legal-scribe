@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Bell, Check, X, Info } from 'lucide-react';
+import { Bell, Check, X, Info, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -10,8 +10,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { toast } from '@/components/ui/sonner';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
 
 export interface Notification {
   id: string;
@@ -19,11 +26,15 @@ export interface Notification {
   message: string;
   timestamp: Date;
   read: boolean;
-  type: 'info' | 'alert' | 'success';
+  type: 'info' | 'alert' | 'success' | 'warning';
+  category?: 'case' | 'deadline' | 'document' | 'system';
+  url?: string;
+  relatedId?: string;
 }
 
 export function NotificationSystem() {
-  const { toast } = useToast();
+  const { toast: showToast } = useToast();
+  
   // Exemplo de notificações
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -32,7 +43,8 @@ export function NotificationSystem() {
       message: 'Um novo caso foi atribuído a você',
       timestamp: new Date(Date.now() - 1000 * 60 * 25),
       read: false,
-      type: 'info'
+      type: 'info',
+      category: 'case'
     },
     {
       id: '2',
@@ -40,7 +52,8 @@ export function NotificationSystem() {
       message: 'A análise do documento "Petição Inicial" foi concluída',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
       read: false,
-      type: 'success'
+      type: 'success',
+      category: 'document'
     },
     {
       id: '3',
@@ -48,13 +61,28 @@ export function NotificationSystem() {
       message: 'Recurso do caso #2487 deve ser apresentado em 3 dias',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
       read: false,
-      type: 'alert'
+      type: 'alert',
+      category: 'deadline'
+    },
+    {
+      id: '4',
+      title: 'Atualização do Sistema',
+      message: 'O sistema será atualizado amanhã às 22:00h',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+      read: true,
+      type: 'warning',
+      category: 'system'
     }
   ]);
+  
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewNotification, setHasNewNotification] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const filteredNotifications = activeTab === 'all' 
+    ? notifications 
+    : notifications.filter(n => n.category === activeTab);
   
   // Efeito para animar o sino quando chegam novas notificações
   useEffect(() => {
@@ -65,23 +93,37 @@ export function NotificationSystem() {
     }
   }, [unreadCount]);
   
-  // Adiciona uma notificação de demonstração (para uso com botão de simulação)
-  const addDemoNotification = (type: 'info' | 'alert' | 'success', title: string, message: string) => {
+  // Função para adicionar nova notificação e exibir toast
+  const addNotification = (type: 'info' | 'alert' | 'success' | 'warning', title: string, message: string, category: 'case' | 'deadline' | 'document' | 'system' = 'system') => {
     const newNotification: Notification = {
       id: Date.now().toString(),
       title,
       message,
       timestamp: new Date(),
       read: false,
-      type
+      type,
+      category
     };
     
     setNotifications(prev => [newNotification, ...prev]);
     
-    toast({
-      title: title,
+    // Mostrar toast com cores diferentes dependendo do tipo
+    let variant: "default" | "destructive" | undefined = "default";
+    if (type === 'alert') variant = "destructive";
+    
+    showToast({
+      title,
       description: message,
+      variant,
     });
+    
+    // Mostrar toast com Sonner também (UI mais moderna)
+    toast[type === 'alert' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'](
+      title,
+      {
+        description: message,
+      }
+    );
     
     // Anima o sino
     setHasNewNotification(true);
@@ -104,16 +146,22 @@ export function NotificationSystem() {
     setNotifications(notifications.filter(notif => notif.id !== id));
   };
   
-  const getTypeStyles = (type: Notification['type']) => {
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+  
+  const getTypeIcon = (type: Notification['type']) => {
     switch(type) {
       case 'info':
-        return 'text-blue-500 bg-blue-50 dark:bg-blue-900/20';
+        return <Info size={16} className="text-blue-500" />;
       case 'alert':
-        return 'text-amber-500 bg-amber-50 dark:bg-amber-900/20';
+        return <AlertTriangle size={16} className="text-red-500" />;
       case 'success':
-        return 'text-green-500 bg-green-50 dark:bg-green-900/20';
+        return <CheckCircle size={16} className="text-green-500" />;
+      case 'warning':
+        return <Clock size={16} className="text-amber-500" />;
       default:
-        return 'text-gray-500 bg-gray-50 dark:bg-gray-900/20';
+        return <Info size={16} className="text-gray-500" />;
     }
   };
   
@@ -157,72 +205,105 @@ export function NotificationSystem() {
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0">
+        <PopoverContent className="w-[350px] p-0" align="end">
           <div className="flex items-center justify-between p-4 border-b">
             <h3 className="font-medium">Notificações</h3>
-            {unreadCount > 0 && (
+            <div className="flex gap-2">
+              {unreadCount > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs h-8"
+                  onClick={markAllAsRead}
+                >
+                  Ler tudo
+                </Button>
+              )}
               <Button 
                 variant="ghost" 
                 size="sm" 
                 className="text-xs h-8"
-                onClick={markAllAsRead}
+                onClick={clearAllNotifications}
               >
-                Marcar tudo como lido
+                Limpar
               </Button>
-            )}
+            </div>
           </div>
           
-          <ScrollArea className="h-[300px]">
-            {notifications.length > 0 ? (
-              <div className="divide-y">
-                {notifications.map((notification) => (
-                  <div 
-                    key={notification.id} 
-                    className={`p-4 ${notification.read ? 'bg-transparent' : 'bg-muted/30'}`}
-                  >
-                    <div className="flex justify-between mb-1">
-                      <h4 className="text-sm font-medium flex items-center gap-1">
-                        {notification.type === 'info' && <Info size={12} className="text-blue-500" />}
-                        {notification.type === 'alert' && <Bell size={12} className="text-amber-500" />}
-                        {notification.type === 'success' && <Check size={12} className="text-green-500" />}
-                        {notification.title}
-                      </h4>
-                      <span className="text-xs text-muted-foreground">
-                        {formatTime(notification.timestamp)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
-                    <div className="flex justify-end gap-2">
-                      {!notification.read && (
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          className="h-7 w-7 p-0" 
-                          onClick={() => markAsRead(notification.id)}
-                        >
-                          <Check className="h-4 w-4" />
-                          <span className="sr-only">Marcar como lido</span>
-                        </Button>
-                      )}
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-7 w-7 p-0" 
-                        onClick={() => removeNotification(notification.id)}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full justify-start px-4 py-2 bg-muted/30">
+              <TabsTrigger value="all" className="text-xs">Todos</TabsTrigger>
+              <TabsTrigger value="case" className="text-xs">Casos</TabsTrigger>
+              <TabsTrigger value="document" className="text-xs">Documentos</TabsTrigger>
+              <TabsTrigger value="deadline" className="text-xs">Prazos</TabsTrigger>
+              <TabsTrigger value="system" className="text-xs">Sistema</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value={activeTab} className="mt-0">
+              <ScrollArea className="h-[300px]">
+                {filteredNotifications.length > 0 ? (
+                  <div className="divide-y">
+                    {filteredNotifications.map((notification) => (
+                      <div 
+                        key={notification.id} 
+                        className={`p-4 hover:bg-muted/50 transition-colors ${notification.read ? 'bg-transparent' : 'bg-muted/30'}`}
                       >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Remover</span>
-                      </Button>
-                    </div>
+                        <div className="flex justify-between mb-1">
+                          <h4 className="text-sm font-medium flex items-center gap-1">
+                            {getTypeIcon(notification.type)}
+                            {notification.title}
+                          </h4>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTime(notification.timestamp)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
+                        <div className="flex justify-end gap-2">
+                          {notification.url && (
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-7 text-xs" 
+                              onClick={() => {
+                                window.location.href = notification.url || '#';
+                                markAsRead(notification.id);
+                              }}
+                            >
+                              Ver detalhes
+                            </Button>
+                          )}
+                          {!notification.read && (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="h-7 w-7 p-0" 
+                              onClick={() => markAsRead(notification.id)}
+                            >
+                              <Check className="h-4 w-4" />
+                              <span className="sr-only">Marcar como lido</span>
+                            </Button>
+                          )}
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            className="h-7 w-7 p-0" 
+                            onClick={() => removeNotification(notification.id)}
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Remover</span>
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 text-center text-muted-foreground">
-                Nenhuma notificação
-              </div>
-            )}
-          </ScrollArea>
+                ) : (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Nenhuma notificação
+                  </div>
+                )}
+              </ScrollArea>
+            </TabsContent>
+          </Tabs>
           
           <div className="p-2 border-t">
             <Button variant="outline" size="sm" className="w-full text-xs">
@@ -233,16 +314,16 @@ export function NotificationSystem() {
       </Popover>
       
       {/* Exportando a função para que possa ser usada por outros componentes */}
-      {(window as any).addNotification = addDemoNotification}
+      {(window as any).addNotification = addNotification}
     </>
   );
 }
 
 // Função para expor o sistema de notificações globalmente
 export function useNotifications() {
-  const addNotification = (type: 'info' | 'alert' | 'success', title: string, message: string) => {
+  const addNotification = (type: 'info' | 'alert' | 'success' | 'warning', title: string, message: string, category?: 'case' | 'deadline' | 'document' | 'system') => {
     if ((window as any).addNotification) {
-      return (window as any).addNotification(type, title, message);
+      return (window as any).addNotification(type, title, message, category);
     }
     return null;
   };
