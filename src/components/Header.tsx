@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Menu, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth/AuthContext';
-import { useMobileContext } from '@/hooks/use-mobile'; // Fixed import
-import { NotificationSystem } from '@/components/NotificationSystem';
+import { useMobileContext } from '@/hooks/use-mobile';
+import { NotificationSystem } from '@/components/notification/NotificationSystem';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +19,7 @@ import {
 export function Header() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { toggleSidebar } = useMobileContext(); // Using the correct function from the hook
+  const { toggleSidebar } = useMobileContext();
 
   const handleNewCase = () => {
     navigate('/novo-caso');
