@@ -1,4 +1,5 @@
 
+// We need to add a data-testid to the loading element
 import React, { useMemo } from 'react';
 import { Activity } from '@/types/case';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +31,7 @@ export const ActivityList = React.memo(({ activities, isLoading }: ActivityListP
           <CardTitle className="text-lg">Atividades</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center p-4">
+          <div className="text-center p-4" data-testid="activity-list-loading">
             <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-evji-primary mx-auto"></div>
             <p className="mt-2 text-sm text-muted-foreground">Carregando atividades...</p>
           </div>
@@ -81,4 +82,3 @@ export const ActivityList = React.memo(({ activities, isLoading }: ActivityListP
 });
 
 ActivityList.displayName = 'ActivityList';
-

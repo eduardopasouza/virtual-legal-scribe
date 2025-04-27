@@ -1,20 +1,27 @@
 
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { CaseAlerts } from '../CaseAlerts';
 
 describe('CaseAlerts', () => {
   const mockAlerts = [
     {
       id: '1',
+      case_id: 'case123',
       title: 'High Priority Alert',
       description: 'This needs immediate attention',
+      type: 'warning',
       priority: 'high',
+      status: 'pending',
     },
     {
       id: '2',
+      case_id: 'case123',
       title: 'Medium Priority Alert',
       description: 'This needs attention soon',
+      type: 'info',
       priority: 'medium',
+      status: 'pending',
     }
   ];
 

@@ -1,5 +1,6 @@
 
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { CaseHeader } from '../CaseHeader';
 import { useToast } from '@/hooks/use-toast';
 

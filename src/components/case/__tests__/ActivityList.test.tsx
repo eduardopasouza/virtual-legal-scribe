@@ -1,5 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ActivityList } from '../ActivityList';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -8,14 +9,18 @@ describe('ActivityList', () => {
   const mockActivities = [
     {
       id: '1',
+      case_id: '123',
       action: 'Created document',
       agent: 'System',
+      status: 'concluido',
       created_at: '2024-04-27T10:00:00Z'
     },
     {
       id: '2',
+      case_id: '123',
       action: 'Updated case',
       agent: 'User',
+      status: 'concluido',
       created_at: '2024-04-27T11:00:00Z'
     }
   ];

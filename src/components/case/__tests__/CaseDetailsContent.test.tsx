@@ -1,5 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { CaseDetailsContent } from '../CaseDetailsContent';
 
 describe('CaseDetailsContent', () => {
@@ -11,13 +12,17 @@ describe('CaseDetailsContent', () => {
       type: 'Civil',
       status: 'em_andamento',
       created_at: '2024-04-27T00:00:00Z',
+      updated_at: '2024-04-27T00:00:00Z',
       client: 'John Doe',
+      main_agent: 'Test Agent',
     },
     activities: [
       {
         id: '1',
+        case_id: '123',
         action: 'Test Activity',
         agent: 'Test Agent',
+        status: 'concluido',
         created_at: '2024-04-27T00:00:00Z'
       }
     ],
@@ -40,7 +45,12 @@ describe('CaseDetailsContent', () => {
   });
 
   it('should show loading state for activities when isLoadingActivities is true', () => {
-    render(<CaseDetailsContent {...mockProps} isLoadingActivities={true} />);
+    render(
+      <CaseDetailsContent 
+        {...mockProps}
+        isLoadingActivities={true}
+      />
+    );
     
     expect(screen.getByTestId('activity-list-loading')).toBeInTheDocument();
   });
