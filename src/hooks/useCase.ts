@@ -20,7 +20,10 @@ export function useCase(id?: string) {
       if (error) throw error;
       return data as Case;
     },
-    enabled: !!id
+    enabled: !!id,
+    meta: {
+      onError: handleError
+    }
   });
 
   const createCase = useMutation({

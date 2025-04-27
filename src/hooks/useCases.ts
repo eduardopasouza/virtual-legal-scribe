@@ -18,7 +18,9 @@ export function useCases() {
       if (error) throw error;
       return data as Case[];
     },
-    onError: handleError
+    meta: {
+      onError: handleError
+    }
   });
 
   const stats = {

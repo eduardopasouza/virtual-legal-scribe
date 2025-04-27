@@ -21,7 +21,9 @@ export function useActivities(caseId?: string) {
       return data as Activity[];
     },
     enabled: !!caseId,
-    onError: handleError
+    meta: {
+      onError: handleError
+    }
   });
 
   const createActivity = useMutation({
