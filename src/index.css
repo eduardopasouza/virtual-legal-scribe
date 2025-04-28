@@ -92,6 +92,11 @@
   .scrollbar-clean::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground));
   }
+  
+  /* Toast close button styles */
+  .toast-close-button {
+    @apply absolute top-2 right-2 p-1 rounded-full text-muted-foreground hover:bg-muted transition-colors;
+  }
 }
 
 @keyframes fadeIn {

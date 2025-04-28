@@ -9,15 +9,15 @@ interface SidebarNavProps {
 
 const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
   const navigationItems = [
-    { to: "/", icon: <Home className="h-5 w-5" />, label: "Home" },
-    { to: "/cases", icon: <FileText className="h-5 w-5" />, label: "Casos" },
-    { to: "/clients", icon: <Users className="h-5 w-5" />, label: "Clientes" },
-    { to: "/calendar", icon: <Calendar className="h-5 w-5" />, label: "Calendário" },
-    { to: "/documents", icon: <FolderArchive className="h-5 w-5" />, label: "Documentos" },
-    { to: "/search", icon: <Search className="h-5 w-5" />, label: "Busca" },
-    { to: "/stats", icon: <BookText className="h-5 w-5" />, label: "Estatísticas" },
-    { to: "/integrations", icon: <Activity className="h-5 w-5" />, label: "Integrações" },
-    { to: "/settings", icon: <Settings className="h-5 w-5" />, label: "Configurações" },
+    { to: "/", icon: <Home className="h-4 w-4" />, label: "Home" },
+    { to: "/cases", icon: <FileText className="h-4 w-4" />, label: "Casos" },
+    { to: "/clients", icon: <Users className="h-4 w-4" />, label: "Clientes" },
+    { to: "/calendar", icon: <Calendar className="h-4 w-4" />, label: "Calendário" },
+    { to: "/documents", icon: <FolderArchive className="h-4 w-4" />, label: "Documentos" },
+    { to: "/search", icon: <Search className="h-4 w-4" />, label: "Busca" },
+    { to: "/stats", icon: <BookText className="h-4 w-4" />, label: "Estatísticas" },
+    { to: "/integrations", icon: <Activity className="h-4 w-4" />, label: "Integrações" },
+    { to: "/settings", icon: <Settings className="h-4 w-4" />, label: "Configurações" },
   ];
 
   return (
@@ -28,9 +28,9 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
           to={item.to}
           className={({ isActive }) =>
             cn(
-              `flex ${isCollapsed ? 'flex-col justify-center' : 'items-center'} ${isCollapsed ? 'py-3 px-0' : 'px-3 py-2'} gap-3 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
+              `flex ${isCollapsed ? 'flex-col justify-center' : 'items-center'} ${isCollapsed ? 'py-2 px-1' : 'px-3 py-2'} gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
               isActive
-                ? "bg-evji-primary-light text-primary-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "transparent"
             )
           }
@@ -40,7 +40,7 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
             {item.icon}
           </div>
           {!isCollapsed && <span>{item.label}</span>}
-          {isCollapsed && <span className="text-[10px] mt-1">{item.label}</span>}
+          {isCollapsed && <span className="text-[9px] mt-1">{item.label}</span>}
         </NavLink>
       ))}
     </nav>

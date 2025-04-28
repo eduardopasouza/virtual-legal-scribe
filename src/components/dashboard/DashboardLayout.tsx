@@ -17,7 +17,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { isMobile, toggleSidebar, sidebarOpen, setSidebarOpen } = useMobileContext();
   
   useEffect(() => {
-    // Verificar se estamos em uma página que precisa de mais espaço
+    // Check if we're on a page that needs more space
     const isSpecialPage = window.location.pathname.includes('/case/') || 
                           window.location.pathname.includes('/novo-caso');
     if (isSpecialPage && !isMobile) {
@@ -29,20 +29,20 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Sidebar container com transição suave */}
+        {/* Sidebar container with smooth transition */}
         <div 
           className={`sidebar-container h-[calc(100vh-4rem)] sticky top-16 z-30 transition-all duration-300 ease-in-out
-            ${isMobile ? (sidebarOpen ? 'w-64' : 'w-0') : (sidebarOpen ? 'w-64' : 'w-20')}`}
+            ${isMobile ? (sidebarOpen ? 'w-60' : 'w-0') : (sidebarOpen ? 'w-60' : 'w-16')}`}
         >
           <Sidebar collapsed={!sidebarOpen && !isMobile} />
         </div>
         
-        {/* Botão de toggle da sidebar (visível apenas em desktop) */}
+        {/* Sidebar toggle button (visible only in desktop) */}
         {!isMobile && (
           <Button 
             variant="ghost" 
             size="icon" 
-            className="absolute left-0 top-4 z-50 bg-background/80 border border-border rounded-r-full shadow-sm w-6 h-24"
+            className="absolute left-0 top-4 z-50 ml-4 h-8 w-8 rounded-full shadow-sm bg-background hover:bg-muted"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -52,7 +52,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Mobile menu toggle */}
         {isMobile && <DashboardMobileMenu onToggle={toggleSidebar} />}
         
-        {/* Conteúdo principal */}
+        {/* Main content */}
         <main className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-clean p-4 lg:p-6">
           <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
             {children}
@@ -63,4 +63,4 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <ChatbotAssistant />
     </div>
   );
-};
+}
