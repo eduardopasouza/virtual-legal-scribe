@@ -15,9 +15,9 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
   if (isMobile && !sidebarOpen) return null;
 
   return (
-    <div className={`h-full border-r bg-background flex flex-col ${collapsed ? 'w-16' : 'w-60'} transition-all duration-300`}>
+    <div className={`h-full border-r bg-background flex flex-col ${collapsed ? 'w-16' : 'w-60'} transition-all duration-300 ease-in-out`}>
       <div className="p-4 border-b">
-        <h2 className={`font-medium text-lg truncate ${collapsed ? 'text-center text-xs' : ''}`}>
+        <h2 className={`font-medium text-lg truncate ${collapsed ? 'text-center' : ''}`}>
           {collapsed ? 'EVJI' : 'EVJI Legal'}
         </h2>
       </div>

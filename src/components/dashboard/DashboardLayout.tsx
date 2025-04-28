@@ -30,6 +30,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       // Expand sidebar for normal pages on desktop
       setSidebarOpen(true);
     }
+    
+    // Reset scroll position when changing routes
+    window.scrollTo(0, 0);
   }, [location.pathname, isMobile, setSidebarOpen]);
   
   return (
@@ -49,7 +52,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="absolute left-0 top-4 z-50 ml-4 h-8 w-8 rounded-full shadow-sm bg-background hover:bg-muted"
+            className="absolute left-0 bottom-4 z-50 ml-4 h-8 w-8 rounded-full shadow-sm bg-background hover:bg-muted"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
@@ -61,8 +64,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {isMobile && <DashboardMobileMenu onToggle={toggleSidebar} />}
         
         {/* Main content */}
-        <main className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-clean p-4 lg:p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-clean p-4 lg:p-6 prevent-scroll">
+          <div className="max-w-7xl mx-auto">
             {children}
           </div>
           <Footer />

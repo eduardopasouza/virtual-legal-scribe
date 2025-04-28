@@ -44,13 +44,13 @@
     @apply border-border;
   }
   
-  html, body {
+  html {
     @apply overflow-x-hidden;
     scroll-behavior: smooth;
   }
   
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
     font-family: 'Inter', sans-serif;
   }
   
@@ -103,6 +103,16 @@
   /* Toast close button styles */
   .toast-close-button {
     @apply absolute top-2 right-2 p-1 rounded-full text-muted-foreground hover:bg-muted transition-colors;
+  }
+  
+  /* Fix for overflowing content */
+  .overflow-container {
+    @apply overflow-x-hidden overflow-y-auto;
+  }
+  
+  /* Prevent auto-scrolling */
+  .prevent-scroll {
+    scroll-behavior: auto;
   }
 }
 

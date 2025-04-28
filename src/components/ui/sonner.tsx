@@ -15,7 +15,7 @@ const Toaster = ({ closeButton = true, ...props }: ToasterProps) => {
       theme={theme as SonnerToasterProps["theme"]}
       className="toaster group"
       position="top-right"
-      expand={true}
+      expand={false}
       richColors
       closeButton={closeButton}
       toastOptions={{
@@ -26,7 +26,7 @@ const Toaster = ({ closeButton = true, ...props }: ToasterProps) => {
           cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           closeButton: "group-[.toast]:bg-transparent group-[.toast]:text-muted-foreground hover:group-[.toast]:bg-muted"
         },
-        duration: 5000,
+        duration: 3000,
       }}
       {...props}
     />

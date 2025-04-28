@@ -14,12 +14,13 @@ export default function CaseDetails() {
   
   // Prevent auto-scrolling when the page loads
   useEffect(() => {
+    // Reset window scroll position
+    window.scrollTo(0, 0);
+    
+    // Reset the content container scroll position if it exists
     if (contentRef.current) {
       contentRef.current.scrollTop = 0;
     }
-    
-    // Reset body scroll position
-    window.scrollTo(0, 0);
   }, [caseId]);
 
   if (isLoading) {
@@ -40,7 +41,7 @@ export default function CaseDetails() {
 
   return (
     <DashboardLayout>
-      <div className="overflow-y-auto h-full" ref={contentRef}>
+      <div className="overflow-y-auto h-full scrollbar-clean" ref={contentRef}>
         <CaseDetailsContent 
           caseId={caseId}
           caseData={caseData}

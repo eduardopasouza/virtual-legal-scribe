@@ -28,7 +28,7 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
           to={item.to}
           className={({ isActive }) =>
             cn(
-              `flex ${isCollapsed ? 'flex-col justify-center' : 'items-center'} ${isCollapsed ? 'py-2 px-1' : 'px-3 py-2'} gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
+              `flex items-center ${isCollapsed ? 'justify-center' : ''} ${isCollapsed ? 'py-2 px-1' : 'px-3 py-2'} gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
               isActive
                 ? "bg-primary text-primary-foreground"
                 : "transparent"
@@ -36,11 +36,8 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
           }
           end
         >
-          <div className={`${isCollapsed ? 'text-center' : ''}`}>
-            {item.icon}
-          </div>
+          <div>{item.icon}</div>
           {!isCollapsed && <span>{item.label}</span>}
-          {isCollapsed && <span className="text-[9px] mt-1">{item.label}</span>}
         </NavLink>
       ))}
     </nav>

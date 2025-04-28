@@ -45,10 +45,14 @@ export function CaseContentTabs({
     }
   }, [location.hash]);
 
-  // Update URL hash when tab changes
+  // Update URL hash when tab changes, but prevent auto-scrolling
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+    
+    // Update URL hash without scrolling
+    const currentScrollPosition = window.scrollY;
     window.history.replaceState(null, '', `${location.pathname}#${value}`);
+    window.scrollTo(0, currentScrollPosition);
     
     // Provide feedback based on tab
     const tabFeedback: Record<string, { title: string, description: string }> = {
@@ -68,7 +72,8 @@ export function CaseContentTabs({
     
     if (tabFeedback[value]) {
       toast.info(tabFeedback[value].title, {
-        description: tabFeedback[value].description
+        description: tabFeedback[value].description,
+        duration: 3000
       });
     }
   };
@@ -102,7 +107,7 @@ export function CaseContentTabs({
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="summary">
+      <TabsContent value="summary" className="focus:outline-none">
         <CaseSummaryTab
           caseId={caseId}
           workflowStages={workflowStages}
@@ -111,15 +116,15 @@ export function CaseContentTabs({
         />
       </TabsContent>
 
-      <TabsContent value="documents">
+      <TabsContent value="documents" className="focus:outline-none">
         <CaseDocuments caseId={caseId} />
       </TabsContent>
 
-      <TabsContent value="timeline">
+      <TabsContent value="timeline" className="focus:outline-none">
         <CaseTimeline stages={workflowStages} />
       </TabsContent>
 
-      <TabsContent value="events">
+      <TabsContent value="events" className="focus:outline-none">
         <CaseEventsTimeline 
           activities={activities}
           deadlines={deadlines}
@@ -127,7 +132,7 @@ export function CaseContentTabs({
         />
       </TabsContent>
 
-      <TabsContent value="people">
+      <TabsContent value="people" className="focus:outline-none">
         <CasePeople />
       </TabsContent>
     </Tabs>
