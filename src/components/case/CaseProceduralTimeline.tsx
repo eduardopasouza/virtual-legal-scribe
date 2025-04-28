@@ -50,8 +50,9 @@ export function CaseProceduralTimeline({
     ...documents.map((doc): TimelineEvent => ({
       id: doc.id || `doc-${doc.name}`,
       title: `Documento: ${doc.name}`,
-      description: doc.description || `Tipo: ${doc.document_type || 'Não especificado'}`,
-      date: new Date(doc.uploaded_at),
+      // Fix: Use the document_type as a description instead of accessing a non-existent description property
+      description: doc.document_type ? `Tipo: ${doc.document_type}` : `Tipo: Não especificado`,
+      date: new Date(doc.uploaded_at || new Date()),
       type: 'document',
       status: doc.processed_status,
       icon: <FileText className="h-4 w-4" />,
