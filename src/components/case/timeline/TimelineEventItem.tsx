@@ -3,7 +3,6 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { TimelineEvent } from "@/hooks/useTimelineEvents";
 import { TimelineStatusBadge } from "./TimelineStatusBadge";
-import { createElement } from "react";
 
 interface TimelineEventItemProps {
   event: TimelineEvent;
@@ -11,13 +10,8 @@ interface TimelineEventItemProps {
 }
 
 export function TimelineEventItem({ event, isLastInGroup }: TimelineEventItemProps) {
-  // Render the icon by creating the element from the type and props
-  const renderIcon = () => {
-    if (event.icon && typeof event.icon === 'object' && 'type' in event.icon) {
-      return createElement(event.icon.type, event.icon.props);
-    }
-    return null;
-  };
+  // Use the LucideIcon directly
+  const Icon = event.icon;
 
   return (
     <div className="relative pl-6">
@@ -30,7 +24,7 @@ export function TimelineEventItem({ event, isLastInGroup }: TimelineEventItemPro
       <div className="space-y-1">
         <div className="flex items-center justify-between">
           <div className="font-medium flex items-center gap-2">
-            {renderIcon()}
+            <Icon className="h-4 w-4" />
             <span>{event.title}</span>
           </div>
           <div className="flex items-center gap-2">
