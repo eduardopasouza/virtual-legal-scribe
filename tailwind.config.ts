@@ -175,8 +175,7 @@ export default {
 				'slide-out': 'slide-out 0.3s ease-out',
 			},
 			fontFamily: {
-				serif: ['Merriweather', 'serif'],
-				sans: ['Inter', 'Poppins', 'sans-serif']
+				sans: ['Inter', 'sans-serif']
 			},
 			transitionProperty: {
 				'height': 'height',
