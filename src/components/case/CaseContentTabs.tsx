@@ -8,7 +8,7 @@ import { CaseAlerts } from './CaseAlerts';
 import { CaseActivities } from './CaseActivities';
 import { CaseDeadlines } from './CaseDeadlines';
 import { CasePeople } from './CasePeople';
-import { DocumentMetadata } from '@/hooks/useDocuments';
+import { DocumentMetadata } from '@/types/document'; // Fixed import
 import { Alert, Activity, Deadline, WorkflowStage } from '@/types/case';
 import { CaseSummaryTab } from './CaseSummaryTab';
 import { toast } from "sonner";

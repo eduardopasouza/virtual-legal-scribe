@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Activity, Alert, Deadline, DocumentMetadata } from "@/types/case";
+import { Activity, Alert, Deadline } from "@/types/case";
+import { DocumentMetadata } from "@/types/document"; // Fixed import
 import { AlertTriangle, Calendar, Clock, FileText, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

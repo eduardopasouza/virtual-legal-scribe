@@ -26,6 +26,11 @@ describe('CaseDetailsContent', () => {
         created_at: '2024-04-27T00:00:00Z'
       }
     ],
+    // Add missing required props
+    deadlines: [],
+    workflowStages: [],
+    alerts: [],
+    documents: [],
     isLoadingActivities: false
   };
 
