@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Clock, Calendar, Users, Bell, Info } from 'lucide-react';
+import { FileText, Clock, Calendar, Users, Bell, Info, FileStack } from 'lucide-react';
 import { CaseDocuments } from './CaseDocuments';
 import { CaseTimeline } from './CaseTimeline';
 import { CaseAlerts } from './CaseAlerts';
@@ -14,6 +14,7 @@ import { CaseSummaryTab } from './CaseSummaryTab';
 import { toast } from "sonner";
 import { useLocation } from 'react-router-dom';
 import { CaseEventsTimeline } from './CaseEventsTimeline';
+import { CaseProceduralTimeline } from './CaseProceduralTimeline';
 
 interface CaseContentTabsProps {
   caseId: string;
@@ -40,7 +41,7 @@ export function CaseContentTabs({
   // Extract tab from URL hash if present
   useEffect(() => {
     const hash = location.hash.replace('#', '');
-    if (hash && ['summary', 'documents', 'timeline', 'events', 'people'].includes(hash)) {
+    if (hash && ['summary', 'documents', 'timeline', 'events', 'people', 'procedural'].includes(hash)) {
       setActiveTab(hash);
     }
   }, [location.hash]);
@@ -67,13 +68,18 @@ export function CaseContentTabs({
       events: { 
         title: "Eventos", 
         description: `Atividades, alertas e prazos consolidados` 
+      },
+      procedural: {
+        title: "Movimentação Processual",
+        description: "Linha do tempo dos eventos do processo"
       }
     };
     
     if (tabFeedback[value]) {
       toast.info(tabFeedback[value].title, {
         description: tabFeedback[value].description,
-        duration: 3000
+        duration: 3000,
+        closeButton: true
       });
     }
   };
@@ -96,6 +102,10 @@ export function CaseContentTabs({
         <TabsTrigger value="timeline">
           <Clock className="h-4 w-4 mr-2" />
           Linha do Tempo
+        </TabsTrigger>
+        <TabsTrigger value="procedural">
+          <FileStack className="h-4 w-4 mr-2" />
+          Movimentação
         </TabsTrigger>
         <TabsTrigger value="events">
           <Bell className="h-4 w-4 mr-2" />
@@ -122,6 +132,15 @@ export function CaseContentTabs({
 
       <TabsContent value="timeline" className="focus:outline-none">
         <CaseTimeline stages={workflowStages} />
+      </TabsContent>
+      
+      <TabsContent value="procedural" className="focus:outline-none">
+        <CaseProceduralTimeline 
+          activities={activities}
+          deadlines={deadlines}
+          documents={documents}
+          alerts={alerts}
+        />
       </TabsContent>
 
       <TabsContent value="events" className="focus:outline-none">

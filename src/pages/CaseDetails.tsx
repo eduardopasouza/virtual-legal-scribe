@@ -9,18 +9,24 @@ import { CaseDetailsContent } from '@/components/case/CaseDetailsContent';
 
 export default function CaseDetails() {
   const { caseId } = useParams<{ caseId: string }>();
-  const { caseData, activities, isLoading, isLoadingActivities } = useCaseDetails(caseId);
+  const { caseData, activities, deadlines, workflowStages, alerts, documents, isLoading, isLoadingActivities } = useCaseDetails(caseId);
   const contentRef = useRef<HTMLDivElement>(null);
   
   // Prevent auto-scrolling when the page loads
   useEffect(() => {
-    // Reset window scroll position
+    // Reset window scroll position when component mounts
     window.scrollTo(0, 0);
+    document.body.style.scrollBehavior = 'auto';
     
     // Reset the content container scroll position if it exists
     if (contentRef.current) {
       contentRef.current.scrollTop = 0;
     }
+    
+    // Cleanup function to restore default scroll behavior
+    return () => {
+      document.body.style.scrollBehavior = '';
+    };
   }, [caseId]);
 
   if (isLoading) {
@@ -46,6 +52,10 @@ export default function CaseDetails() {
           caseId={caseId}
           caseData={caseData}
           activities={activities}
+          deadlines={deadlines}
+          workflowStages={workflowStages}
+          alerts={alerts}
+          documents={documents}
           isLoadingActivities={isLoadingActivities}
         />
       </div>

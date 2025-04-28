@@ -1,4 +1,3 @@
-
 import { ReactNode, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
@@ -20,14 +19,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   
   useEffect(() => {
     // Check if we're on a page that needs more space
-    const isSpecialPage = location.pathname.includes('/case/') || 
-                          location.pathname.includes('/novo-caso');
+    // Only auto-collapse on desktop if on a new case form
+    const isNewCasePage = location.pathname.includes('/novo-caso');
     
-    // Only auto-collapse on desktop for special pages
-    if (isSpecialPage && !isMobile) {
+    // For case details pages, keep sidebar open by default
+    if (isNewCasePage && !isMobile) {
       setSidebarOpen(false);
-    } else if (!isSpecialPage && !isMobile) {
-      // Expand sidebar for normal pages on desktop
+    } else {
+      // Ensure sidebar is open on case details and other pages
       setSidebarOpen(true);
     }
     

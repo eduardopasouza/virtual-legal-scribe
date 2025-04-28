@@ -2,6 +2,7 @@
 import { NavLink } from "react-router-dom";
 import { Home, Users, Calendar, FileText, Settings, BookText, Search, FolderArchive, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface SidebarNavProps {
   isCollapsed?: boolean;
@@ -21,26 +22,50 @@ const SidebarNav = ({ isCollapsed }: SidebarNavProps) => {
   ];
 
   return (
-    <nav className={`grid items-start px-2 pt-4 text-sm font-medium ${isCollapsed ? 'gap-1' : 'gap-2'}`}>
-      {navigationItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          className={({ isActive }) =>
-            cn(
-              `flex items-center ${isCollapsed ? 'justify-center' : ''} ${isCollapsed ? 'py-2 px-1' : 'px-3 py-2'} gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
-              isActive
-                ? "bg-primary text-primary-foreground"
-                : "transparent"
-            )
-          }
-          end
-        >
-          <div>{item.icon}</div>
-          {!isCollapsed && <span>{item.label}</span>}
-        </NavLink>
-      ))}
-    </nav>
+    <TooltipProvider>
+      <nav className={`grid items-start px-2 pt-4 text-sm font-medium ${isCollapsed ? 'gap-1' : 'gap-2'}`}>
+        {navigationItems.map((item) => (
+          isCollapsed ? (
+            <Tooltip key={item.to} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      `flex items-center justify-center py-2 px-1 gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "transparent"
+                    )
+                  }
+                  end
+                >
+                  <div>{item.icon}</div>
+                </NavLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="font-normal">{item.label}</TooltipContent>
+            </Tooltip>
+          ) : (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                cn(
+                  `flex items-center px-3 py-2 gap-2 rounded-lg text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50`,
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "transparent"
+                )
+              }
+              end
+            >
+              <div>{item.icon}</div>
+              <span>{item.label}</span>
+            </NavLink>
+          )
+        ))}
+      </nav>
+    </TooltipProvider>
   );
 };
 

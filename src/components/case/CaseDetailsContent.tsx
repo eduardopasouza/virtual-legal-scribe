@@ -1,6 +1,7 @@
 
 import { Card } from "@/components/ui/card";
-import { Case, Activity } from "@/types/case";
+import { Case, Activity, Deadline, WorkflowStage, Alert } from "@/types/case";
+import { DocumentMetadata } from "@/hooks/useDocuments";
 import { ActivityList } from "@/components/case/ActivityList";
 import { CaseContentTabs } from "@/components/case/CaseContentTabs";
 import { WebChat } from "@/components/WebChat";
@@ -11,6 +12,10 @@ interface CaseDetailsContentProps {
   caseId: string;
   caseData: Case;
   activities: Activity[];
+  deadlines: Deadline[];
+  workflowStages: WorkflowStage[];
+  alerts: Alert[];
+  documents: DocumentMetadata[];
   isLoadingActivities: boolean;
   isLoadingCase?: boolean;
 }
@@ -19,6 +24,10 @@ export function CaseDetailsContent({
   caseId,
   caseData,
   activities,
+  deadlines,
+  workflowStages,
+  alerts,
+  documents,
   isLoadingActivities,
   isLoadingCase = false
 }: CaseDetailsContentProps) {
@@ -70,10 +79,10 @@ export function CaseDetailsContent({
       <CaseContentTabs 
         caseId={caseId}
         activities={activities}
-        deadlines={[]} // Will be loaded via the CaseContentTabs component
-        workflowStages={[]} // Will be loaded via the CaseContentTabs component
-        alerts={[]} // Will be loaded via the CaseContentTabs component
-        documents={[]} // Will be loaded via the CaseContentTabs component
+        deadlines={deadlines}
+        workflowStages={workflowStages}
+        alerts={alerts}
+        documents={documents}
         objective={caseData.description}
       />
       

@@ -5,7 +5,6 @@ import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardStats } from '@/components/DashboardStats';
 import { QuickAccess } from '@/components/dashboard/QuickAccess';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
-import { Toaster as Sonner } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { useCases } from '@/hooks/useCases';
 import { DashboardMain } from '@/components/dashboard/sections/DashboardMain';
@@ -13,14 +12,15 @@ import { DashboardMain } from '@/components/dashboard/sections/DashboardMain';
 const Index = () => {
   const { cases, stats, isLoading } = useCases();
   
-  // Welcome message that appears automatically
+  // Welcome message that appears automatically with a close button
   useEffect(() => {
     const timer = setTimeout(() => {
       toast.info(
         'Bem-vindo ao EVJI',
         {
           description: 'Seu assistente jurídico inteligente está pronto para ajudar. Utilize o chat para começar.',
-          duration: 7000,
+          duration: 10000,
+          closeButton: true,
         }
       );
     }, 1500);
@@ -40,7 +40,6 @@ const Index = () => {
           <QuickAccess />
         </div>
       </div>
-      <Sonner />
     </DashboardLayout>
   );
 };
