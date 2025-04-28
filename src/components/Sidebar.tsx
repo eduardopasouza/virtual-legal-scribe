@@ -22,7 +22,7 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
         </h2>
       </div>
       
-      <ScrollArea className="flex-1 overflow-auto">
+      <ScrollArea className="flex-1">
         <SidebarNav isCollapsed={collapsed} />
       </ScrollArea>
     </div>

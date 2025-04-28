@@ -44,12 +44,19 @@
     @apply border-border;
   }
   
+  html, body {
+    @apply overflow-x-hidden;
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-sans tracking-tight font-medium;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -76,8 +83,8 @@
   }
   
   .scrollbar-clean::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   
   .scrollbar-clean::-webkit-scrollbar-track {
@@ -86,7 +93,7 @@
   
   .scrollbar-clean::-webkit-scrollbar-thumb {
     background: hsl(var(--muted));
-    border-radius: 3px;
+    border-radius: 4px;
   }
   
   .scrollbar-clean::-webkit-scrollbar-thumb:hover {

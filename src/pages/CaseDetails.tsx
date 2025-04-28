@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
 import { useCaseDetails } from '@/hooks/useCaseDetails';
@@ -10,6 +10,17 @@ import { CaseDetailsContent } from '@/components/case/CaseDetailsContent';
 export default function CaseDetails() {
   const { caseId } = useParams<{ caseId: string }>();
   const { caseData, activities, isLoading, isLoadingActivities } = useCaseDetails(caseId);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Prevent auto-scrolling when the page loads
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+    
+    // Reset body scroll position
+    window.scrollTo(0, 0);
+  }, [caseId]);
 
   if (isLoading) {
     return (
@@ -29,7 +40,7 @@ export default function CaseDetails() {
 
   return (
     <DashboardLayout>
-      <div className="overflow-y-auto h-full">
+      <div className="overflow-y-auto h-full" ref={contentRef}>
         <CaseDetailsContent 
           caseId={caseId}
           caseData={caseData}

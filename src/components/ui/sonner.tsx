@@ -27,23 +27,6 @@ const Toaster = ({ closeButton = true, ...props }: ToasterProps) => {
           closeButton: "group-[.toast]:bg-transparent group-[.toast]:text-muted-foreground hover:group-[.toast]:bg-muted"
         },
         duration: 5000,
-        render({ id, title, description, ...props }) {
-          return (
-            <div>
-              {title && <p className="text-sm font-medium">{title}</p>}
-              {description && <p className="text-sm opacity-90">{description}</p>}
-              {closeButton && (
-                <button
-                  onClick={() => toast.dismiss(id)}
-                  className="toast-close-button"
-                  aria-label="Close toast"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-          );
-        },
       }}
       {...props}
     />
