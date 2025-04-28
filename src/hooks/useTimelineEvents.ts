@@ -1,6 +1,7 @@
 
 import { Activity, Alert, Deadline } from "@/types/case";
 import { DocumentMetadata } from "@/types/document";
+import { ReactNode } from 'react';
 import { FileText, Clock, Calendar, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -13,7 +14,7 @@ export interface TimelineEvent {
   type: 'activity' | 'document' | 'deadline' | 'alert';
   status?: string;
   priority?: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
 }
 
@@ -31,7 +32,7 @@ export function useTimelineEvents(
       date: new Date(activity.created_at),
       type: 'activity',
       status: activity.status,
-      icon: <Clock className="h-4 w-4" />,
+      icon: { type: Clock, props: { className: "h-4 w-4" } },
       color: 'bg-blue-500'
     })),
     ...documents.map((doc): TimelineEvent => ({
@@ -41,7 +42,7 @@ export function useTimelineEvents(
       date: new Date(doc.uploaded_at || new Date()),
       type: 'document',
       status: doc.processed_status,
-      icon: <FileText className="h-4 w-4" />,
+      icon: { type: FileText, props: { className: "h-4 w-4" } },
       color: 'bg-green-500'
     })),
     ...deadlines.map((deadline): TimelineEvent => ({
@@ -50,7 +51,7 @@ export function useTimelineEvents(
       date: new Date(deadline.date),
       type: 'deadline',
       status: deadline.status,
-      icon: <Calendar className="h-4 w-4" />,
+      icon: { type: Calendar, props: { className: "h-4 w-4" } },
       color: 'bg-amber-500'
     })),
     ...alerts.map((alert): TimelineEvent => ({
@@ -61,7 +62,7 @@ export function useTimelineEvents(
       type: 'alert',
       status: alert.status,
       priority: alert.priority,
-      icon: <AlertTriangle className="h-4 w-4" />,
+      icon: { type: AlertTriangle, props: { className: "h-4 w-4" } },
       color: 'bg-red-500'
     }))
   ].sort((a, b) => b.date.getTime() - a.date.getTime());
